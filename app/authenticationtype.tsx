@@ -1,9 +1,10 @@
-import React, {useRef, useState} from 'react';
+import React, {useState} from 'react';
 import {ImageBackground, StyleSheet, Text, View, Dimensions, Animated} from 'react-native';
-import AnimatedButton from '../components/AnimatedButton';
-import InputField from '../components/InputField';
-
-const { width, height } = Dimensions.get('window');
+import AnimatedButton from '@/components/AnimatedButton';
+import InputField from '@/components/InputField';
+import CommonContainer from '@/components/CommonContainer';
+import CommonBackground from "@/components/CommonBackground";
+import {Href} from "expo-router";
 
 export default function AuthenticationType() {
 
@@ -13,12 +14,8 @@ export default function AuthenticationType() {
 
     return (
         <View style={styles.container}>
-            <ImageBackground
-                source={require('../assets/images/sanquin_gradient.png')}
-                style={styles.image}
-                resizeMode="stretch"
-            >
-                <View style={styles.inputContainer}>
+            <CommonBackground>
+                <CommonContainer>
                     <Text style={styles.label}>Sign in</Text>
                     <InputField
                         placeholder="Username"
@@ -33,10 +30,11 @@ export default function AuthenticationType() {
                         secureTextEntry={true}
                     />
 
-                    <AnimatedButton href="/authenticationtype" style={styles.loginButton}>
+                    <AnimatedButton
+                        href={"/main/home" as Href<string | object>} style={styles.loginButton}>
                         Log In
                     </AnimatedButton>
-                </View>
+                </CommonContainer>
 
                 <AnimatedButton
                     href="/authenticationtype"
@@ -46,7 +44,7 @@ export default function AuthenticationType() {
                     Register
                 </AnimatedButton>
 
-            </ImageBackground>
+            </CommonBackground>
         </View>
     );
 }
@@ -54,14 +52,6 @@ export default function AuthenticationType() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-    },
-
-    //Background Image
-    image: {
-        width: width,
-        height: height,
-        justifyContent: 'center',
-        alignItems: 'center',
     },
 
     //Button
@@ -80,16 +70,5 @@ const styles = StyleSheet.create({
         fontSize: 40,
         fontWeight: '700',
         marginBottom: 8,
-    },
-    inputContainer: {
-        width: '80%',
-        padding: 30,
-        backgroundColor: 'white',
-        borderRadius: 8,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
-        shadowRadius: 5,
-        elevation: 2,
     }
 });

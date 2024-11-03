@@ -2,6 +2,8 @@ import React, {useRef} from 'react';
 import { ImageBackground, StyleSheet, Text, View, Dimensions, TouchableWithoutFeedback, Animated } from 'react-native';
 import LogoSanquin from '../assets/svgs/logo_sanquin_black.svg';
 import { Link } from 'expo-router';
+import CommonBackground from "@/components/CommonBackground";
+import AnimatedButton from "@/components/AnimatedButton";
 
 const { width, height } = Dimensions.get('window');
 
@@ -25,25 +27,17 @@ export default function HomeScreen() {
 
     return (
         <View style={styles.container}>
-            <ImageBackground
-                source={require('../assets/images/sanquin_gradient.png')}
-                style={styles.image}
-                resizeMode="stretch"
-            >
+            <CommonBackground>
 
                 <View style={styles.logoContainer}>
                     <LogoSanquin width={400} height={400} />
                 </View>
 
-                <Link href="/authenticationtype" asChild>
-                    <TouchableWithoutFeedback onPressIn={onPressIn} onPressOut={onPressOut}>
-                        <Animated.View style={[styles.button, { transform: [{ scale: scaleValue }] }]}>
-                            <Text style={styles.buttonText}>Get Started!</Text>
-                        </Animated.View>
-                    </TouchableWithoutFeedback>
-                </Link>
+                <AnimatedButton href="/authenticationtype" style={styles.button}>
+                    Get Started!
+                </AnimatedButton>
 
-            </ImageBackground>
+            </CommonBackground>
         </View>
     );
 }
@@ -66,17 +60,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     button: {
-        backgroundColor: 'black',
         width: 200,
-        paddingVertical: 20,
-        paddingHorizontal: 40,
-        borderRadius: 10,
         marginTop: 400,
-    },
-    buttonText: {
-        color: 'white',
-        fontSize: 20,
-        fontWeight: 'bold',
-        textAlign: 'center',
-    },
+    }
 });
