@@ -8,11 +8,11 @@ type CustomTextProps = TextProps & {
 
 const CommonText: React.FC<CustomTextProps> = ({ children, style, ...props }) => {
     const [fontsLoaded] = useFonts({
-        'Aileron-Regular': require('../assets/fonts/Aileron-Regular.otf'), // Adjust the path as needed
+        'Aileron-Regular': require('../assets/fonts/Aileron-Regular.otf'),
     });
 
     if (!fontsLoaded) {
-        return <ActivityIndicator size="small" color="#0000ff" />; // Loading spinner while font is loading
+        return <ActivityIndicator size="small" color="#0000ff" />;
     }
 
     return (
