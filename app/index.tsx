@@ -27,7 +27,7 @@ export default function HomeScreen() {
 
     return (
         <View style={styles.container}>
-            <CommonBackground>
+            <CommonBackground style={styles.backgroundImage}>
 
                 <View style={styles.logoContainer}>
                     <LogoSanquin width={400} height={400} />
@@ -46,9 +46,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
     },
-    image: {
-        width: width,
-        height: height,
+    backgroundImage: {
         justifyContent: 'center',
         alignItems: 'center',
     },

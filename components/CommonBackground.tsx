@@ -23,7 +23,6 @@ const styles = StyleSheet.create({
     backgroundImage: {
         width: width,
         height: height,
-        justifyContent: 'center',
         alignItems: 'center',
     },
 });

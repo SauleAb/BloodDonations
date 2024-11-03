@@ -14,8 +14,8 @@ export default function AuthenticationType() {
 
     return (
         <View style={styles.container}>
-            <CommonBackground>
-                <CommonContainer>
+            <CommonBackground style={styles.backgroundImage}>
+                <CommonContainer style={styles.commonContainer}>
                     <Text style={styles.label}>Sign in</Text>
                     <InputField
                         placeholder="Username"
@@ -52,6 +52,15 @@ export default function AuthenticationType() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+    },
+    backgroundImage: {
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    commonContainer: {
+        padding: 30,
+        width: '80%',
+        alignItems: 'center',
     },
 
     //Button

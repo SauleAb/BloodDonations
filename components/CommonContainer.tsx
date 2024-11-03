@@ -12,8 +12,6 @@ const CommonContainer: React.FC<CommonContainerProps> = ({ children, style }) =>
 
 const styles = StyleSheet.create({
     container: {
-        width: '80%',
-        padding: 30,
         backgroundColor: 'white',
         borderRadius: 8,
         shadowColor: '#000',
@@ -21,7 +19,6 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.2,
         shadowRadius: 5,
         elevation: 2,
-        alignItems: 'center',
     },
 });
 
