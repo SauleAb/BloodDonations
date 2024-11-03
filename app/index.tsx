@@ -1,10 +1,28 @@
-import React from 'react';
-import { ImageBackground, StyleSheet, Text, View, Dimensions, TouchableWithoutFeedback } from 'react-native';
+import React, {useRef} from 'react';
+import { ImageBackground, StyleSheet, Text, View, Dimensions, TouchableWithoutFeedback, Animated } from 'react-native';
 import LogoSanquin from '../assets/svgs/logo_sanquin_black.svg';
+import { Link } from 'expo-router';
 
 const { width, height } = Dimensions.get('window');
 
 export default function HomeScreen() {
+
+    const scaleValue = useRef(new Animated.Value(1)).current;
+
+    const onPressIn = () => {
+        Animated.spring(scaleValue, {
+            toValue: 0.9,  // Shrink the button to 95% of its size
+            useNativeDriver: true,
+        }).start();
+    };
+
+    const onPressOut = () => {
+        Animated.spring(scaleValue, {
+            toValue: 1,  // Return to original size
+            useNativeDriver: true,
+        }).start();
+    };
+
     return (
         <View style={styles.container}>
             <ImageBackground
@@ -17,11 +35,13 @@ export default function HomeScreen() {
                     <LogoSanquin width={400} height={400} />
                 </View>
 
-                <TouchableWithoutFeedback>
-                    <View style={styles.button}>
-                        <Text style={styles.buttonText}>Get Started!</Text>
-                    </View>
-                </TouchableWithoutFeedback>
+                <Link href="/authenticationtype" asChild>
+                    <TouchableWithoutFeedback onPressIn={onPressIn} onPressOut={onPressOut}>
+                        <Animated.View style={[styles.button, { transform: [{ scale: scaleValue }] }]}>
+                            <Text style={styles.buttonText}>Get Started!</Text>
+                        </Animated.View>
+                    </TouchableWithoutFeedback>
+                </Link>
 
             </ImageBackground>
         </View>
@@ -47,10 +67,11 @@ const styles = StyleSheet.create({
     },
     button: {
         backgroundColor: 'black',
+        width: 200,
         paddingVertical: 20,
         paddingHorizontal: 40,
         borderRadius: 10,
-        transform: [{ translateY: 200 }]
+        marginTop: 400,
     },
     buttonText: {
         color: 'white',
