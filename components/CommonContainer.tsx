@@ -3,7 +3,7 @@ import { View, StyleSheet, ViewStyle } from 'react-native';
 
 type CommonContainerProps = {
     children: React.ReactNode;
-    style?: ViewStyle;
+    style?: ViewStyle | ViewStyle[];
 };
 
 const CommonContainer: React.FC<CommonContainerProps> = ({ children, style }) => {

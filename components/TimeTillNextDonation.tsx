@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { Text, View } from 'react-native';
-import CommonText from "@/components/CommonText";
+import {View, ViewStyle} from 'react-native';
+import CommonTextBold from "@/components/CommonTextBold";
 
 type TimeUntilProps = {
     targetDate: Date;
+    style?: ViewStyle;
 };
 
-const TimeTillNextDonation: React.FC<TimeUntilProps> = ({ targetDate }) => {
+const TimeTillNextDonation: React.FC<TimeUntilProps> = ({ targetDate, style }) => {
     const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0 });
 
     useEffect(() => {
@@ -35,9 +36,9 @@ const TimeTillNextDonation: React.FC<TimeUntilProps> = ({ targetDate }) => {
 
     return (
         <View>
-            <CommonText>
+            <CommonTextBold style={style}>
                 {timeLeft.days} days, {timeLeft.hours} hours, and {timeLeft.minutes} minutes left
-            </CommonText>
+            </CommonTextBold>
         </View>
     );
 };
