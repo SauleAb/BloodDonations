@@ -5,8 +5,9 @@ type CustomInputProps = {
     placeholder: string;
     value: string;
     onChangeText: (text: string) => void;
-    style?: TextStyle;      // Optional custom styles for the TextInput
-    secureTextEntry?: boolean;  // Optional for password fields
+    style?: TextStyle;           // Optional custom styles for the TextInput
+    secureTextEntry?: boolean;    // Optional for password fields
+    placeholderTextColor?: string; // Optional color for placeholder text
 };
 
 const CustomInput: React.FC<CustomInputProps> = ({
@@ -15,6 +16,7 @@ const CustomInput: React.FC<CustomInputProps> = ({
     onChangeText,
     style,
     secureTextEntry = false,
+    placeholderTextColor = '#888', // Default color if none is provided
 }) => {
     return (
         <TextInput
@@ -23,6 +25,7 @@ const CustomInput: React.FC<CustomInputProps> = ({
             value={value}
             onChangeText={onChangeText}
             secureTextEntry={secureTextEntry}
+            placeholderTextColor={placeholderTextColor} // Add this line
         />
     );
 };
