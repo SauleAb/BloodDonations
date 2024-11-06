@@ -11,8 +11,10 @@ export default function MainLayout() {
                     iconName = 'home';
                 } else if (route.name === 'profile') {
                     iconName = 'person';
+                } else if (route.name === 'community') {
+                    iconName = 'chatbubbles';
                 } else {
-                    iconName = 'help-circle'; // Default icon if route name doesn't match
+                    iconName = 'help-circle';
                 }
 
                 return {
@@ -26,6 +28,7 @@ export default function MainLayout() {
             }}
         >
             <Tabs.Screen name="home" options={{ title: 'Home' }} />
+            <Tabs.Screen name="community" options={{ title: 'Community' }} />
             <Tabs.Screen name="profile" options={{ title: 'Profile' }} />
         </Tabs>
     );

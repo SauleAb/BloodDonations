@@ -2,7 +2,6 @@ import React from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import CommonContainer from '@/components/CommonContainer';
 import CommonBackground from "@/components/CommonBackground";
-import TimeTillNextDonation from "@/components/TimeTillNextDonation";
 import { useFonts } from "expo-font";
 import CommonText from "@/components/CommonText";
 import CommonTextBold from "@/components/CommonTextBold";
