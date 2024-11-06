@@ -10,7 +10,7 @@ const { width, height } = Dimensions.get('window');
 export default function HomeScreen() {
 
     const scaleValue = useRef(new Animated.Value(1)).current;
-
+    
     const onPressIn = () => {
         Animated.spring(scaleValue, {
             toValue: 0.9,  // Shrink the button to 95% of its size

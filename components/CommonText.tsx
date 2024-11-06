@@ -26,6 +26,7 @@ const styles = StyleSheet.create({
     customFont: {
         fontFamily: 'Aileron-Regular',
         fontSize: 17,
+        lineHeight: 22,
     },
 });
 
