@@ -6,6 +6,7 @@ import AnimatedButton from "@/components/AnimatedButton";
 import CommonContainer from '@/components/CommonContainer';
 import InputField from '@/components/InputField'; // Make sure this is correctly imported
 import { useState } from 'react';
+import {Href} from "expo-router";
 
 const { width, height } = Dimensions.get('window');
 
@@ -42,6 +43,10 @@ export default function RegisterScreen() {
                         placeholderTextColor="#5a5959"
                     />
 
+                    <AnimatedButton
+                        href={"/authenticationtype" as Href<string | object>} style={styles.loginButton}>
+                        Register
+                    </AnimatedButton>
             </CommonContainer> 
         </CommonBackground>
     </View>
