@@ -3,11 +3,11 @@ import { Animated, TouchableWithoutFeedback, Text, StyleSheet, TextStyle, ViewSt
 import { Link, Href } from 'expo-router';
 
 type AnimatedButtonProps = {
-    href: Href<string | object>;
+    href?: Href<string | object>;
     onPress?: () => void;
     children: React.ReactNode;
-    style?: ViewStyle;
-    textStyle?: TextStyle;
+    style?: ViewStyle | ViewStyle[];
+    textStyle?: TextStyle | TextStyle[];
 };
 
 const AnimatedButton: React.FC<AnimatedButtonProps> = ({ href, onPress, children, style, textStyle }) => {
@@ -27,19 +27,19 @@ const AnimatedButton: React.FC<AnimatedButtonProps> = ({ href, onPress, children
         }).start();
     };
 
-    return (
-        <Link href={href} asChild>
-            <TouchableWithoutFeedback
-                onPressIn={onPressIn}
-                onPressOut={onPressOut}
-                onPress={onPress}
-            >
-                <Animated.View style={[styles.button, style, { transform: [{ scale: scaleValue }] }]}>
-                    <Text style={[styles.buttonText, textStyle]}>{children}</Text>
-                </Animated.View>
-            </TouchableWithoutFeedback>
-        </Link>
+    const ButtonContent = (
+        <TouchableWithoutFeedback
+            onPressIn={onPressIn}
+            onPressOut={onPressOut}
+            onPress={onPress}
+        >
+            <Animated.View style={[styles.button, style, { transform: [{ scale: scaleValue }] }]}>
+                <Text style={[styles.buttonText, textStyle]}>{children}</Text>
+            </Animated.View>
+        </TouchableWithoutFeedback>
     );
+
+    return href ? <Link href={href} asChild>{ButtonContent}</Link> : ButtonContent;
 };
 
 const styles = StyleSheet.create({
@@ -47,15 +47,15 @@ const styles = StyleSheet.create({
         backgroundColor: 'black',
         width: 270,
         paddingVertical: 20,
-        paddingHorizontal: 40,
         borderRadius: 10,
         marginTop: 20,
+        justifyContent: 'center',
+        flexDirection: 'row',
     } as ViewStyle,
     buttonText: {
         color: 'white',
         fontSize: 20,
         fontWeight: 'bold',
-        textAlign: 'center',
     } as TextStyle,
 });
 
