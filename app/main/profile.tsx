@@ -38,7 +38,6 @@ const styles = StyleSheet.create({
     commonContainer: {
         padding: 10,
         width: '90%',
-        marginTop: 20
     },
     bigTitleText: {
         fontSize: 30,

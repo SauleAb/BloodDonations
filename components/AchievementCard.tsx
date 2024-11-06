@@ -3,6 +3,7 @@ import { View, Image, StyleSheet } from 'react-native';
 import AnimatedButton from "@/components/AnimatedButton";
 import CommonText from "@/components/CommonText";
 import CommonTextBold from "@/components/CommonTextBold";
+import CommonContainer from "@/components/CommonContainer";
 
 type AchievementCardProps = {
     user: {
@@ -26,7 +27,7 @@ const AchievementCard: React.FC<AchievementCardProps> = ({ user, achievementText
     };
 
     return (
-        <View style={styles.card}>
+        <CommonContainer style={styles.card}>
             <View style={styles.userInfo}>
                 <View style={[styles.profileCircle, { backgroundColor: user.profileColor }]}>
                     <CommonText style={styles.profileInitial}>{user.name[0]}</CommonText>
@@ -64,14 +65,13 @@ const AchievementCard: React.FC<AchievementCardProps> = ({ user, achievementText
                     <CommonTextBold style={styles.celebrateCountText}>{celebrateCount}</CommonTextBold>
                 </View>
             </View>
-        </View>
+        </CommonContainer>
     );
 };
 
 const styles = StyleSheet.create({
     card: {
         backgroundColor: '#ffffff',
-        borderRadius: 10,
         padding: 16,
         width: '90%',
         marginTop: 40,

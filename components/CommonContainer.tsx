@@ -3,7 +3,7 @@ import { View, StyleSheet, ViewStyle } from 'react-native';
 
 type CommonContainerProps = {
     children: React.ReactNode;
-    style?: ViewStyle;
+    style?: ViewStyle | ViewStyle[];
 };
 
 const CommonContainer: React.FC<CommonContainerProps> = ({ children, style }) => {
@@ -19,6 +19,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.2,
         shadowRadius: 5,
         elevation: 2,
+        marginTop: 40,
     },
 });
 
