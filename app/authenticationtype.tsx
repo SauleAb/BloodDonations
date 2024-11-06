@@ -28,6 +28,7 @@ export default function AuthenticationType() {
                         value={password}
                         onChangeText={setPassword}
                         secureTextEntry={true}
+                        
                     />
 
                     <AnimatedButton
@@ -37,7 +38,7 @@ export default function AuthenticationType() {
                 </CommonContainer>
 
                 <AnimatedButton
-                    href="/authenticationtype"
+                    href="/register"
                     style={styles.registerButton}
                     textStyle={styles.registerButtonText}
                 >
