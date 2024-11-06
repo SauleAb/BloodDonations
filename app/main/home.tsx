@@ -49,8 +49,12 @@ export default function AuthenticationType() {
                     </CommonContainer>
 
                     <CommonContainer style={[styles.halfCommonContainer, styles.halfCommonContainerRight]}>
-                        <CommonText style={styles.titleText}>Blood Donated</CommonText>
-                        <CommonTextBold style={styles.contentText}>1.8 Liters!</CommonTextBold>
+                        <View style={styles.titleTextContainer}>
+                            <CommonText style={styles.titleText}>Blood Donated</CommonText>
+                        </View>
+                        <View style={styles.contentTextContainer}>
+                            <CommonTextBold style={styles.contentText}>1.8 Liters!</CommonTextBold>
+                        </View>
                     </CommonContainer>
                 </View>
 
@@ -67,18 +71,20 @@ const styles = StyleSheet.create({
     commonContainer: {
         padding: 10,
         width: '90%',
-        marginTop: 20
+        marginTop: 40,
     },
     twoCommonContainersContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
         paddingVertical:9,
+        width: '90%',
     },
 
     halfCommonContainer: {
         flex: 1,
         marginTop: 20,
+        height: '88%',
     },
     halfCommonContainerRight: {
         marginLeft: 9
@@ -88,15 +94,12 @@ const styles = StyleSheet.create({
     },
 
     titleTextContainer: {
-        flex: 1,
-        justifyContent: 'flex-start',
         borderTopEndRadius: 8,
         borderTopStartRadius: 8,
         backgroundColor: '#d4d4d4',
+        paddingVertical: 8,
     },
     contentTextContainer: {
-        flex: 1,
-        justifyContent: 'flex-start',
     },
     titleText: {
         fontSize: 20,
@@ -105,6 +108,5 @@ const styles = StyleSheet.create({
     contentText: {
         fontSize: 30,
         alignSelf: 'center',
-        paddingBottom: 10,
     },
 });

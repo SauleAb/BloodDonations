@@ -31,13 +31,4 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
     },
-    commonContainer: {
-        padding: 10,
-        width: '90%',
-        marginTop: 20
-    },
-    timeTillNextDonationText: {
-        fontSize: 30,
-        fontFamily: 'Aileron-Bold'
-    },
 });
