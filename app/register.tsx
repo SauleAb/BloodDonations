@@ -1,53 +1,53 @@
-import React, {useRef} from 'react';
-import { ImageBackground, StyleSheet, Text, View, Dimensions, TouchableWithoutFeedback, Animated } from 'react-native';
-import { Link } from 'expo-router';
+import React, {useState} from 'react';
+import {StyleSheet, View} from 'react-native';
+import {Href} from 'expo-router';
 import CommonBackground from "@/components/CommonBackground";
 import AnimatedButton from "@/components/AnimatedButton";
-import CommonContainer from '@/components/CommonContainer';
-import InputField from '@/components/InputField'; // Make sure this is correctly imported
-import { useState } from 'react';
-import {Href} from "expo-router";
-
-const { width, height } = Dimensions.get('window');
+import InputField from '@/components/InputField';
 
 export default function RegisterScreen() {
 
+    const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [sanquinCode, setSanquinCode] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
 
     return (
     <View style={styles.container}>
-        <CommonBackground style={styles.backgroundImage}>
-            <CommonContainer style={styles.commonContainer}>
-            <Text style={styles.label}>Register</Text>
-                    <InputField
-                        placeholder="Email"
-                        value={email}
-                        onChangeText={setEmail}
-                        secureTextEntry={false}
-                        placeholderTextColor="#5a5959"
-                    />
-                    <InputField
-                        placeholder="Password"
-                        value={password}
-                        onChangeText={setPassword}
-                        secureTextEntry={true}
-                        placeholderTextColor="#5a5959"
-                    />
-                    <InputField
-                        placeholder="Sanquin Code"
-                        value={sanquinCode}
-                        onChangeText={setSanquinCode}
-                        secureTextEntry={false}
-                        placeholderTextColor="#5a5959"
-                    />
+        <CommonBackground style={styles.backgroundImage} titleText={"Register"} logoVisible={true}>
+            <InputField
+                placeholder="Username"
+                value={username}
+                onChangeText={setUsername}
+                secureTextEntry={false}
+                placeholderTextColor="#5a5959"
+            />
+            <InputField
+                placeholder="Email"
+                value={email}
+                onChangeText={setEmail}
+                secureTextEntry={true}
+                placeholderTextColor="#5a5959"
+            />
+            <InputField
+                placeholder="Password"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry={false}
+                placeholderTextColor="#5a5959"
+            />
+            <InputField
+                placeholder="Confirm Password"
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
+                secureTextEntry={false}
+                placeholderTextColor="#5a5959"
+            />
 
-                    <AnimatedButton
-                        href={"/authenticationtype" as Href<string | object>} style={styles.loginButton}>
-                        Register
-                    </AnimatedButton>
-            </CommonContainer> 
+            <AnimatedButton
+                href={"/login" as Href<string | object>}>
+                Register
+            </AnimatedButton>
         </CommonBackground>
     </View>
   )

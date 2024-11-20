@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { Animated, TouchableWithoutFeedback, Text, StyleSheet, TextStyle, ViewStyle } from 'react-native';
+import {Animated, TouchableWithoutFeedback, Text, StyleSheet, TextStyle, ViewStyle, View} from 'react-native';
 import { Link, Href } from 'expo-router';
 
 type AnimatedButtonProps = {
@@ -44,19 +44,29 @@ const AnimatedButton: React.FC<AnimatedButtonProps> = ({ href, onPress, children
 
 const styles = StyleSheet.create({
     button: {
-        backgroundColor: 'black',
+        backgroundColor: 'rgb(223,223,223)',
         width: 270,
-        paddingVertical: 20,
+        paddingVertical: 5,
         borderRadius: 10,
         marginTop: 20,
         justifyContent: 'center',
         flexDirection: 'row',
     } as ViewStyle,
     buttonText: {
-        color: 'white',
-        fontSize: 20,
+        color: 'black',
+        fontSize: 28,
         fontWeight: 'bold',
     } as TextStyle,
+    shadow: {
+        elevation: 2,
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.1,
+        shadowRadius: 1,
+    },
 });
 
 export default AnimatedButton;

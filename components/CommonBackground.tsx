@@ -1,30 +1,92 @@
 import React from 'react';
-import {Dimensions, ImageBackground, StyleSheet, ViewStyle} from 'react-native';
+import { Dimensions, ImageBackground, StyleSheet, View, ViewStyle } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import CommonTextBold from "@/components/CommonTextBold";
+import LogoSanquin from "@/assets/svgs/logo_sanquin_black.svg";
+
 const { width, height } = Dimensions.get('window');
 
 type BackgroundImageProps = {
     children: React.ReactNode;
     source?: any;
     style?: ViewStyle;
+    backgroundHeight?: number;
+    titleText?: string;
+    logoVisible?: boolean;
 };
 
-const BackgroundImage: React.FC<BackgroundImageProps> = ({ children, source, style}) => {
+const TopBackground: React.FC<BackgroundImageProps> = ({ children, source, style, backgroundHeight, titleText, logoVisible }) => {
+    const calculatedHeight = backgroundHeight ? height * backgroundHeight : height * 0.35;
+
     return (
-        <ImageBackground
-            resizeMode="stretch"
-            source={source || require('../assets/images/sanquin_gradient.png')}
-            style={[styles.backgroundImage, style]}>
-            {children}
-        </ImageBackground>
+        <View style={styles.container}>
+            {logoVisible && (
+                <View style={styles.logoContainer}>
+                    <LogoSanquin style={styles.logo} width={130} />
+                    <CommonTextBold style={styles.logoText}>Sanquin</CommonTextBold>
+                </View>
+            )}
+            <ImageBackground
+                resizeMode="stretch"
+                source={source || require('../assets/images/sanquin_gradient.png')}
+                style={[styles.backgroundImage, { height: calculatedHeight }, style]}
+            >
+                <CommonTextBold style={styles.titleText}>{titleText}</CommonTextBold>
+            </ImageBackground>
+
+            <LinearGradient
+                colors={['rgba(0, 0, 0, 0.25)', 'rgba(0, 0, 0, 0)']}
+                start={{ x: 0.5, y: 0 }}
+                end={{ x: 0.5, y: 0.3 }}
+                style={[styles.gradientShadow, { top: calculatedHeight }]}
+            />
+            <View style={styles.contentWrapper}>
+                {children}
+            </View>
+        </View>
     );
 };
 
 const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        position: 'relative',
+    },
+    logoContainer: {
+        position: 'absolute',
+        top: 30,
+        left: 30,
+        zIndex: -1
+    },
+    logo: {
+
+    },
+    logoText: {
+        fontSize: 15,
+    },
     backgroundImage: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
         width: width,
-        height: height,
+        zIndex: -2,
+    },
+    gradientShadow: {
+        position: 'absolute',
+        left: 0,
+        width: width,
+        height: 30,
+        zIndex: -1,
+    },
+    contentWrapper: {
+        flex: 1,
+        justifyContent: 'center',
         alignItems: 'center',
     },
+    titleText: {
+        fontSize: 30,
+        lineHeight: 36
+    }
 });
 
-export default BackgroundImage;
+export default TopBackground;

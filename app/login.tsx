@@ -6,7 +6,7 @@ import CommonContainer from '@/components/CommonContainer';
 import CommonBackground from "@/components/CommonBackground";
 import {Href} from "expo-router";
 
-export default function AuthenticationType() {
+export default function Login() {
 
     //Input Field Functionality
     const [username, setUsername] = useState('');
@@ -14,9 +14,7 @@ export default function AuthenticationType() {
 
     return (
         <View style={styles.container}>
-            <CommonBackground style={styles.backgroundImage}>
-                <CommonContainer style={styles.commonContainer}>
-                    <Text style={styles.label}>Sign in</Text>
+            <CommonBackground style={styles.backgroundImage} titleText={"Welcome to Sanquin!"} logoVisible={true}>
                     <InputField
                         placeholder="Username"
                         value={username}
@@ -35,7 +33,6 @@ export default function AuthenticationType() {
                         href={"/main/home" as Href<string | object>} style={styles.loginButton}>
                         Log In
                     </AnimatedButton>
-                </CommonContainer>
 
                 <AnimatedButton
                     href="/register"
@@ -69,7 +66,7 @@ const styles = StyleSheet.create({
         marginTop: 30,
     },
     registerButton: {
-        backgroundColor: 'white',
+
     },
     registerButtonText: {
         color: 'black',

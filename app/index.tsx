@@ -1,40 +1,23 @@
-import React, {useRef} from 'react';
-import { ImageBackground, StyleSheet, Text, View, Dimensions, TouchableWithoutFeedback, Animated } from 'react-native';
+import React from 'react';
+import {StyleSheet, View} from 'react-native';
 import LogoSanquin from '../assets/svgs/logo_sanquin_black.svg';
-import { Link } from 'expo-router';
 import CommonBackground from "@/components/CommonBackground";
 import AnimatedButton from "@/components/AnimatedButton";
-
-const { width, height } = Dimensions.get('window');
+import CommonText from "@/components/CommonText";
 
 export default function HomeScreen() {
 
-    const scaleValue = useRef(new Animated.Value(1)).current;
-    
-    const onPressIn = () => {
-        Animated.spring(scaleValue, {
-            toValue: 0.9,  // Shrink the button to 95% of its size
-            useNativeDriver: true,
-        }).start();
-    };
-
-    const onPressOut = () => {
-        Animated.spring(scaleValue, {
-            toValue: 1,  // Return to original size
-            useNativeDriver: true,
-        }).start();
-    };
-
     return (
         <View style={styles.container}>
-            <CommonBackground style={styles.backgroundImage}>
+            <CommonBackground style={styles.backgroundImage} backgroundHeight={1}>
 
                 <View style={styles.logoContainer}>
                     <LogoSanquin width={400} height={400} />
                 </View>
 
-                <AnimatedButton href="/authenticationtype" style={styles.button}>
-                    Get Started!
+                <CommonText style={styles.welcomeText}>Welcome Aboard! Thank you for starting your donor adventure!</CommonText>
+                <AnimatedButton href="/login" style={styles.button}>
+                    Begin Your Journey
                 </AnimatedButton>
 
             </CommonBackground>
@@ -54,11 +37,19 @@ const styles = StyleSheet.create({
         position: 'absolute',
         top: 50,
         left: '50%',
-        transform: [{ translateX: -100 }], // (svg width / 4)
+        transform: [{ translateX: -100 }],
         alignItems: 'center',
     },
+    welcomeText: {
+        marginTop: 350,
+        textAlign: 'center',
+        width: '80%',
+        fontSize: 20
+    },
     button: {
-        width: 200,
-        marginTop: 400,
+        width: 320,
+        height: 70,
+        alignItems: 'center',
+        backgroundColor: 'white'
     }
 });
