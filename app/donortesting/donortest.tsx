@@ -22,7 +22,7 @@ export default function DonorTest() {
                     <TwoQuestions titleText={"Do you have a chronic or serious condition (or have you had one in the past)?"} onAnswerChange={() => {}}/>
                     <TwoQuestions titleText={"Have you received a preventive vaccine in the past 2 weeks to prevent hepatitis B?"} onAnswerChange={() => {}}/>
                     <CommonButton
-                        href={"/main/donortestresults" as Href<string | object>}>
+                        href={"/donortesting/donortestresults" as Href<string | object>}>
                         Check Results
                     </CommonButton>
                 </CommonScrollElement>

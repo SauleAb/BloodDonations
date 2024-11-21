@@ -26,7 +26,7 @@ export default function DonorTest() {
                                     Take me home!
                             </CommonButton>
                             <CommonText style={[styles.text, {marginTop: 20}]}>If you would like to see if you are still eligible as a donor, that can be done here</CommonText>
-                            <CommonButton href={"/main/donortest" as Href<string | object>}>
+                            <CommonButton href={"/donortesting/donortest" as Href<string | object>}>
                                 Take the test
                             </CommonButton>
                         </View>
@@ -35,7 +35,7 @@ export default function DonorTest() {
                     {donatedBeforeAnswer === 'no' && (
                         <View style={styles.content}>
                             <CommonText style={styles.text}>We then urge you to take a quick test to see if you are eligible to donate, it won't take more than a minute, promise!</CommonText>
-                            <CommonButton href={"/main/donortest" as Href<string | object>}>
+                            <CommonButton href={"/donortesting/donortest" as Href<string | object>}>
                                 Take the test
                             </CommonButton>
                         </View>
