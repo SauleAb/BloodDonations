@@ -1,10 +1,10 @@
 import React from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
-import CommonContainer from '@/components/CommonContainer';
-import CommonBackground from "@/components/CommonBackground";
+import CommonContainer from '@/components/Common/CommonContainer';
+import CommonBackground from "@/components/Common/CommonBackground";
 import { useFonts } from "expo-font";
-import CommonText from "@/components/CommonText";
-import CommonTextBold from "@/components/CommonTextBold";
+import CommonText from "@/components/Common/CommonText";
+import CommonTextBold from "@/components/Common/CommonTextBold";
 
 export default function AuthenticationType() {
 

@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { View, Image, StyleSheet } from 'react-native';
-import AnimatedButton from "@/components/AnimatedButton";
-import CommonText from "@/components/CommonText";
-import CommonTextBold from "@/components/CommonTextBold";
-import CommonContainer from "@/components/CommonContainer";
+import CommonButton from "@/components/Common/CommonButton";
+import CommonText from "@/components/Common/CommonText";
+import CommonTextBold from "@/components/Common/CommonTextBold";
+import CommonContainer from "@/components/Common/CommonContainer";
 
 type AchievementCardProps = {
     user: {
@@ -48,7 +48,7 @@ const AchievementCard: React.FC<AchievementCardProps> = ({ user, achievementText
             </View>
 
             <View style={styles.congratulateSection}>
-                <AnimatedButton
+                <CommonButton
                     onPress={handleCelebratePress}
                     style={[
                         styles.congratulateButton,
@@ -56,7 +56,7 @@ const AchievementCard: React.FC<AchievementCardProps> = ({ user, achievementText
                     ]}
                 >
                     {isCelebrated ? "Celebrated!" : "Celebrate"}
-                </AnimatedButton>
+                </CommonButton>
 
                 <View style={styles.celebrateCount}>
                     <View style={styles.celebrateImageContainer}>

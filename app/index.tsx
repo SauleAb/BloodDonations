@@ -1,24 +1,26 @@
 import React from 'react';
-import {StyleSheet, View} from 'react-native';
+import {Dimensions, StyleSheet, View} from 'react-native';
 import LogoSanquin from '../assets/svgs/logo_sanquin_black.svg';
-import CommonBackground from "@/components/CommonBackground";
-import AnimatedButton from "@/components/AnimatedButton";
-import CommonText from "@/components/CommonText";
+import CommonBackground from "@/components/Common/CommonBackground";
+import CommonButton from "@/components/Common/CommonButton";
+import CommonText from "@/components/Common/CommonText";
+
+const { height } = Dimensions.get('window');
 
 export default function HomeScreen() {
 
     return (
         <View style={styles.container}>
-            <CommonBackground style={styles.backgroundImage} backgroundHeight={1}>
+            <CommonBackground style={styles.backgroundImage} backgroundHeight={1} fullScreen={true}>
 
                 <View style={styles.logoContainer}>
                     <LogoSanquin width={400} height={400} />
                 </View>
 
-                <CommonText style={styles.welcomeText}>Welcome Aboard! Thank you for starting your donor adventure!</CommonText>
-                <AnimatedButton href="/login" style={styles.button}>
+                <CommonText style={[styles.welcomeText, {marginTop: height*0.7}]}>Welcome Aboard! Thank you for starting your donor adventure!</CommonText>
+                <CommonButton href="/login" style={styles.button}>
                     Begin Your Journey
-                </AnimatedButton>
+                </CommonButton>
 
             </CommonBackground>
         </View>
@@ -41,7 +43,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     welcomeText: {
-        marginTop: 350,
         textAlign: 'center',
         width: '80%',
         fontSize: 20

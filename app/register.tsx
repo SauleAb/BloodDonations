@@ -1,8 +1,8 @@
 import React, {useState} from 'react';
 import {StyleSheet, View} from 'react-native';
 import {Href} from 'expo-router';
-import CommonBackground from "@/components/CommonBackground";
-import AnimatedButton from "@/components/AnimatedButton";
+import CommonBackground from "@/components/Common/CommonBackground";
+import CommonButton from "@/components/Common/CommonButton";
 import InputField from '@/components/InputField';
 
 export default function RegisterScreen() {
@@ -44,10 +44,10 @@ export default function RegisterScreen() {
                 placeholderTextColor="#5a5959"
             />
 
-            <AnimatedButton
+            <CommonButton
                 href={"/login" as Href<string | object>}>
                 Register
-            </AnimatedButton>
+            </CommonButton>
         </CommonBackground>
     </View>
   )

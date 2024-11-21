@@ -1,5 +1,5 @@
 import {StyleSheet, View} from "react-native";
-import CommonBackground from "@/components/CommonBackground";
+import CommonBackground from "@/components/Common/CommonBackground";
 import React from "react";
 import AchievementCard from "@/components/AchievementCard";
 

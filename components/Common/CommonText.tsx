@@ -8,7 +8,7 @@ type CustomTextProps = TextProps & {
 
 const CommonText: React.FC<CustomTextProps> = ({ children, style, ...props }) => {
     const [fontsLoaded] = useFonts({
-        'Aileron-Regular': require('../assets/fonts/Aileron-Regular.otf'),
+        'Aileron-Regular': require('../../assets/fonts/Aileron-Regular.otf'),
     });
 
     if (!fontsLoaded) {

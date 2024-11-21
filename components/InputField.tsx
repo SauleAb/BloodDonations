@@ -38,8 +38,8 @@ const CustomInput: React.FC<CustomInputProps> = ({
 const styles = StyleSheet.create({
     container: {
         width: '87%',
-        marginTop: 20,
-        borderRadius: 10,
+        marginBottom: 20,
+        borderRadius: 0,
         overflow: 'hidden',
     },
     shadow: {

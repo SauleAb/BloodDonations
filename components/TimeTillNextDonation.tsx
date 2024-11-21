@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {View, ViewStyle} from 'react-native';
-import CommonTextBold from "@/components/CommonTextBold";
+import CommonTextBold from "@/components/Common/CommonTextBold";
 
 type TimeUntilProps = {
     targetDate: Date;
