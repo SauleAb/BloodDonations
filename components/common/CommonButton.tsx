@@ -10,7 +10,7 @@ type AnimatedButtonProps = {
     textStyle?: TextStyle | TextStyle[];
 };
 
-const AnimatedButton: React.FC<AnimatedButtonProps> = ({ href, onPress, children, style, textStyle }) => {
+const CommonButton: React.FC<AnimatedButtonProps> = ({ href, onPress, children, style, textStyle }) => {
     const scaleValue = useRef(new Animated.Value(1)).current;
 
     const onPressIn = () => {
@@ -44,10 +44,9 @@ const AnimatedButton: React.FC<AnimatedButtonProps> = ({ href, onPress, children
 
 const styles = StyleSheet.create({
     button: {
-        backgroundColor: 'rgb(223,223,223)',
+        backgroundColor: "#e3e3e3",
         width: 270,
         paddingVertical: 5,
-        borderRadius: 10,
         marginTop: 20,
         justifyContent: 'center',
         flexDirection: 'row',
@@ -69,4 +68,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default AnimatedButton;
+export default CommonButton;

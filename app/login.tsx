@@ -1,9 +1,9 @@
 import React, {useState} from 'react';
 import {ImageBackground, StyleSheet, Text, View, Dimensions, Animated} from 'react-native';
-import AnimatedButton from '@/components/AnimatedButton';
+import CommonButton from '@/components/common/CommonButton';
 import InputField from '@/components/InputField';
-import CommonContainer from '@/components/CommonContainer';
-import CommonBackground from "@/components/CommonBackground";
+import CommonContainer from '@/components/common/CommonContainer';
+import CommonBackground from "@/components/common/CommonBackground";
 import {Href} from "expo-router";
 
 export default function Login() {
@@ -15,32 +15,32 @@ export default function Login() {
     return (
         <View style={styles.container}>
             <CommonBackground style={styles.backgroundImage} titleText={"Welcome to Sanquin!"} logoVisible={true}>
-                    <InputField
-                        placeholder="Username"
-                        value={username}
-                        onChangeText={setUsername}
-                    />
+                <InputField
+                    placeholder="Username"
+                    value={username}
+                    onChangeText={setUsername}
+                />
 
-                    <InputField
-                        placeholder="Password"
-                        value={password}
-                        onChangeText={setPassword}
-                        secureTextEntry={true}
-                        
-                    />
+                <InputField
+                    placeholder="Password"
+                    value={password}
+                    onChangeText={setPassword}
+                    secureTextEntry={true}
 
-                    <AnimatedButton
-                        href={"/main/home" as Href<string | object>} style={styles.loginButton}>
-                        Log In
-                    </AnimatedButton>
+                />
 
-                <AnimatedButton
+                <CommonButton
+                    href={"/main/home" as Href<string | object>} style={styles.loginButton}>
+                    Log In
+                </CommonButton>
+
+                <CommonButton
                     href="/register"
                     style={styles.registerButton}
                     textStyle={styles.registerButtonText}
                 >
                     Register
-                </AnimatedButton>
+                </CommonButton>
 
             </CommonBackground>
         </View>
@@ -50,6 +50,7 @@ export default function Login() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: '#ffffff'
     },
     backgroundImage: {
         justifyContent: 'center',

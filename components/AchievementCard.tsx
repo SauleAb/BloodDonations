@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { View, Image, StyleSheet } from 'react-native';
-import AnimatedButton from "@/components/AnimatedButton";
-import CommonText from "@/components/CommonText";
-import CommonTextBold from "@/components/CommonTextBold";
-import CommonContainer from "@/components/CommonContainer";
+import CommonButton from "@/components/common/CommonButton";
+import CommonText from "@/components/common/CommonText";
+import CommonTextBold from "@/components/common/CommonTextBold";
+import CommonContainer from "@/components/common/CommonContainer";
 
 type AchievementCardProps = {
     user: {
@@ -48,15 +48,16 @@ const AchievementCard: React.FC<AchievementCardProps> = ({ user, achievementText
             </View>
 
             <View style={styles.congratulateSection}>
-                <AnimatedButton
+                <CommonButton
                     onPress={handleCelebratePress}
                     style={[
                         styles.congratulateButton,
                         isCelebrated ? styles.congratulateButtonPressed : {},
                     ]}
+                    textStyle={ isCelebrated ? styles.congratulateButtonPressedText : styles.congratulateButtonText}
                 >
                     {isCelebrated ? "Celebrated!" : "Celebrate"}
-                </AnimatedButton>
+                </CommonButton>
 
                 <View style={styles.celebrateCount}>
                     <View style={styles.celebrateImageContainer}>
@@ -73,8 +74,7 @@ const styles = StyleSheet.create({
     card: {
         backgroundColor: '#ffffff',
         padding: 16,
-        width: '90%',
-        marginTop: 40,
+        width: '90%'
     },
     userInfo: {
         flexDirection: 'row',
@@ -127,9 +127,19 @@ const styles = StyleSheet.create({
     congratulateButton: {
         width: '40%',
         marginTop: 0,
+        borderRadius: 8,
+    },
+    congratulateButtonText: {
+        fontSize: 20,
     },
     congratulateButtonPressed: {
-        backgroundColor: 'grey',
+        backgroundColor: 'white',
+        borderWidth: 1,
+        borderColor: 'black',
+    },
+    congratulateButtonPressedText: {
+        color: 'black',
+        fontSize: 20,
     },
     celebrateCount: {
         marginLeft: '40%',

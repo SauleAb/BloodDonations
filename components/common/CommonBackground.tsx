@@ -1,7 +1,7 @@
 import React from 'react';
 import { Dimensions, ImageBackground, StyleSheet, View, ViewStyle } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import CommonTextBold from "@/components/CommonTextBold";
+import CommonTextBold from "@/components/common/CommonTextBold";
 import LogoSanquin from "@/assets/svgs/logo_sanquin_black.svg";
 
 const { width, height } = Dimensions.get('window');
@@ -13,9 +13,11 @@ type BackgroundImageProps = {
     backgroundHeight?: number;
     titleText?: string;
     logoVisible?: boolean;
+    fullScreen?: boolean;
+    mainPage?: boolean;
 };
 
-const TopBackground: React.FC<BackgroundImageProps> = ({ children, source, style, backgroundHeight, titleText, logoVisible }) => {
+const CommonBackground: React.FC<BackgroundImageProps> = ({ children, source, style, backgroundHeight, titleText, logoVisible, fullScreen, mainPage }) => {
     const calculatedHeight = backgroundHeight ? height * backgroundHeight : height * 0.35;
 
     return (
@@ -28,7 +30,7 @@ const TopBackground: React.FC<BackgroundImageProps> = ({ children, source, style
             )}
             <ImageBackground
                 resizeMode="stretch"
-                source={source || require('../assets/images/sanquin_gradient.png')}
+                source={source || require('../../assets/images/sanquin_gradient.png')}
                 style={[styles.backgroundImage, { height: calculatedHeight }, style]}
             >
                 <CommonTextBold style={styles.titleText}>{titleText}</CommonTextBold>
@@ -40,9 +42,20 @@ const TopBackground: React.FC<BackgroundImageProps> = ({ children, source, style
                 end={{ x: 0.5, y: 0.3 }}
                 style={[styles.gradientShadow, { top: calculatedHeight }]}
             />
-            <View style={styles.contentWrapper}>
-                {children}
-            </View>
+
+            {fullScreen ? (
+                <View style={styles.contentWrapper}>
+                    {children}
+                </View>
+            ) : (
+                <View
+                    style={[
+                        styles.contentWrapper,
+                        {marginTop: mainPage ? calculatedHeight*0.4 : calculatedHeight-30} //30 = height of grey bar
+                    ]}>
+                    {children}
+                </View>
+            )}
         </View>
     );
 };
@@ -80,7 +93,7 @@ const styles = StyleSheet.create({
     },
     contentWrapper: {
         flex: 1,
-        justifyContent: 'center',
+        justifyContent: 'flex-start',
         alignItems: 'center',
     },
     titleText: {
@@ -89,4 +102,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default TopBackground;
+export default CommonBackground;
