@@ -24,7 +24,7 @@ export default function AuthenticationType() {
             <CommonBackground>
                 <CommonContainer style={styles.commonContainer}>
                     <CommonTextBold style={styles.bigTitleText}>Profile Name</CommonTextBold>
-                    <CommonText>John Doe</CommonText>
+                    <CommonText>Alex Smith</CommonText>
                 </CommonContainer>
             </CommonBackground>
         </View>
