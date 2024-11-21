@@ -1,11 +1,9 @@
 import React from 'react';
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
-import CommonContainer from '@/components/Common/CommonContainer';
+import {ActivityIndicator, StyleSheet, View} from 'react-native';
 import CommonBackground from "@/components/Common/CommonBackground";
-import TimeTillNextDonation from "@/components/TimeTillNextDonation";
-import { useFonts } from "expo-font";
-import CommonText from "@/components/Common/CommonText";
-import CommonTextBold from "@/components/Common/CommonTextBold";
+import {useFonts} from "expo-font";
+import CommonContent, {IconNames} from "@/components/Common/CommonContent";
+
 
 export default function AuthenticationType() {
 
@@ -23,42 +21,7 @@ export default function AuthenticationType() {
     return (
         <View style={styles.container}>
             <CommonBackground>
-                <CommonContainer style={styles.commonContainer}>
-                    <CommonText style={styles.titleText}>Time Till Next Donation</CommonText>
-                        <TimeTillNextDonation targetDate={targetDate} style={styles.contentText} />
-                </CommonContainer>
-
-                <CommonContainer style={styles.commonContainer}>
-                    <CommonText style={styles.titleText}>Next Reward</CommonText>
-                    <CommonTextBold style={styles.contentText}>2 Donations</CommonTextBold>
-                </CommonContainer>
-
-                <CommonContainer style={styles.commonContainer}>
-                    <CommonText style={styles.titleText}>Blood Donated</CommonText>
-                    <CommonTextBold style={styles.contentText}>1.8 Liters!</CommonTextBold>
-                </CommonContainer>
-
-                <View style={styles.twoCommonContainersContainer}>
-                    <CommonContainer style={[styles.halfCommonContainer, styles.halfCommonContainerLeft]}>
-                        <View style={styles.titleTextContainer}>
-                            <CommonText style={styles.titleText}>Blood Donated</CommonText>
-                        </View>
-                        <View style={styles.contentTextContainer}>
-                            <CommonTextBold style={styles.contentText}>1.8 Liters!</CommonTextBold>
-                        </View>
-                    </CommonContainer>
-
-                    <CommonContainer style={[styles.halfCommonContainer, styles.halfCommonContainerRight]}>
-                        <View style={styles.titleTextContainer}>
-                            <CommonText style={styles.titleText}>Blood Donated</CommonText>
-                        </View>
-                        <View style={styles.contentTextContainer}>
-                            <CommonTextBold style={styles.contentText}>1.8 Liters!</CommonTextBold>
-                        </View>
-                    </CommonContainer>
-                </View>
-
-
+                <CommonContent titleText={"awesome title"} contentText={"awesome content"} icon={IconNames.BloodDonated}/>
             </CommonBackground>
         </View>
     );
