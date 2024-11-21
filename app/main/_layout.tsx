@@ -16,7 +16,7 @@ export default function MainLayout() {
                 } else {
                     iconName = 'help-circle';
                 }
-
+                
                 return {
                     tabBarIcon: ({ color, size }) => (
                         <Ionicons name={iconName} size={size} color={color} />

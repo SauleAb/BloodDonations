@@ -1,9 +1,9 @@
 import React from 'react';
 import {Dimensions, StyleSheet, View} from 'react-native';
 import LogoSanquin from '../assets/svgs/logo_sanquin_black.svg';
-import CommonBackground from "@/components/Common/CommonBackground";
-import CommonButton from "@/components/Common/CommonButton";
-import CommonText from "@/components/Common/CommonText";
+import CommonBackground from "@/components/common/CommonBackground";
+import CommonButton from "@/components/common/CommonButton";
+import CommonText from "@/components/common/CommonText";
 
 const { height } = Dimensions.get('window');
 
@@ -30,6 +30,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: '#ffffff'
     },
     backgroundImage: {
         justifyContent: 'center',

@@ -1,7 +1,7 @@
 import React from 'react';
 import {StyleSheet, Text, TextStyle, View, Image} from 'react-native';
-import CommonText from "@/components/Common/CommonText";
-import CommonTextBold from "@/components/Common/CommonTextBold";
+import CommonText from "@/components/common/CommonText";
+import CommonTextBold from "@/components/common/CommonTextBold";
 
 export enum IconNames {
     BloodDrop = 'BloodDrop',
@@ -66,16 +66,16 @@ const styles = StyleSheet.create({
         height: 30,
         justifyContent: 'center',
         alignItems: 'flex-start',
-        paddingHorizontal: 10,
-        paddingVertical: 5,
+        paddingHorizontal: 20,
+        paddingVertical: 4,
     },
     label: {
-        fontSize: 14,
+        fontSize: 16,
         color: '#404040',
     },
     content: {
-        height: 60,
-        paddingHorizontal: 10,
+        paddingVertical: 15,
+        paddingHorizontal: 20,
         backgroundColor: 'rgba(255, 255, 255, 1)',
         justifyContent: 'center'
     },

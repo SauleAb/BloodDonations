@@ -1,7 +1,7 @@
 import React from 'react';
 import { Dimensions, ImageBackground, StyleSheet, View, ViewStyle } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import CommonTextBold from "@/components/Common/CommonTextBold";
+import CommonTextBold from "@/components/common/CommonTextBold";
 import LogoSanquin from "@/assets/svgs/logo_sanquin_black.svg";
 
 const { width, height } = Dimensions.get('window');
@@ -14,9 +14,10 @@ type BackgroundImageProps = {
     titleText?: string;
     logoVisible?: boolean;
     fullScreen?: boolean;
+    mainPage?: boolean;
 };
 
-const CommonBackground: React.FC<BackgroundImageProps> = ({ children, source, style, backgroundHeight, titleText, logoVisible, fullScreen }) => {
+const CommonBackground: React.FC<BackgroundImageProps> = ({ children, source, style, backgroundHeight, titleText, logoVisible, fullScreen, mainPage }) => {
     const calculatedHeight = backgroundHeight ? height * backgroundHeight : height * 0.35;
 
     return (
@@ -41,13 +42,20 @@ const CommonBackground: React.FC<BackgroundImageProps> = ({ children, source, st
                 end={{ x: 0.5, y: 0.3 }}
                 style={[styles.gradientShadow, { top: calculatedHeight }]}
             />
-            <View
-                style={[
-                    styles.contentWrapper,
-                    {marginTop: fullScreen ? 0 : calculatedHeight-30} //30 = height of grey bar
-                ]}>
-                {children}
-            </View>
+
+            {fullScreen ? (
+                <View style={styles.contentWrapper}>
+                    {children}
+                </View>
+            ) : (
+                <View
+                    style={[
+                        styles.contentWrapper,
+                        {marginTop: mainPage ? calculatedHeight*0.4 : calculatedHeight-30} //30 = height of grey bar
+                    ]}>
+                    {children}
+                </View>
+            )}
         </View>
     );
 };

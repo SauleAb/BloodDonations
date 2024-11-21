@@ -1,9 +1,9 @@
 import React, {useState} from 'react';
 import {ImageBackground, StyleSheet, Text, View, Dimensions, Animated} from 'react-native';
-import CommonButton from '@/components/Common/CommonButton';
+import CommonButton from '@/components/common/CommonButton';
 import InputField from '@/components/InputField';
-import CommonContainer from '@/components/Common/CommonContainer';
-import CommonBackground from "@/components/Common/CommonBackground";
+import CommonContainer from '@/components/common/CommonContainer';
+import CommonBackground from "@/components/common/CommonBackground";
 import {Href} from "expo-router";
 
 export default function Login() {
@@ -50,6 +50,7 @@ export default function Login() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: '#ffffff'
     },
     backgroundImage: {
         justifyContent: 'center',

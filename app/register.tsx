@@ -1,8 +1,8 @@
 import React, {useState} from 'react';
 import {StyleSheet, View} from 'react-native';
 import {Href} from 'expo-router';
-import CommonBackground from "@/components/Common/CommonBackground";
-import CommonButton from "@/components/Common/CommonButton";
+import CommonBackground from "@/components/common/CommonBackground";
+import CommonButton from "@/components/common/CommonButton";
 import InputField from '@/components/InputField';
 
 export default function RegisterScreen() {
@@ -58,6 +58,7 @@ export default function RegisterScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: '#ffffff'
     },
     backgroundImage: {
         justifyContent: 'center',

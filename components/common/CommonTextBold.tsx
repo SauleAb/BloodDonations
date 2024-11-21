@@ -26,6 +26,7 @@ const styles = StyleSheet.create({
     customFont: {
         fontFamily: 'Aileron-Bold',
         fontSize: 20,
+        lineHeight: 30,
     },
 });
 

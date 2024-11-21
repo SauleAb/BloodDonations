@@ -1,10 +1,10 @@
 import React from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
-import CommonContainer from '@/components/Common/CommonContainer';
-import CommonBackground from "@/components/Common/CommonBackground";
+import CommonContainer from '@/components/common/CommonContainer';
+import CommonBackground from "@/components/common/CommonBackground";
 import { useFonts } from "expo-font";
-import CommonText from "@/components/Common/CommonText";
-import CommonTextBold from "@/components/Common/CommonTextBold";
+import CommonText from "@/components/common/CommonText";
+import CommonTextBold from "@/components/common/CommonTextBold";
 
 export default function AuthenticationType() {
 
@@ -34,6 +34,7 @@ export default function AuthenticationType() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: '#ffffff'
     },
     commonContainer: {
         padding: 10,
