@@ -3,6 +3,7 @@ import { Dimensions, ImageBackground, StyleSheet, View, ViewStyle } from 'react-
 import { LinearGradient } from 'expo-linear-gradient';
 import CommonTextBold from "@/components/common/CommonTextBold";
 import LogoSanquin from "@/assets/svgs/logo_sanquin_black.svg";
+import CommonText from "@/components/common/CommonText";
 
 const { width, height } = Dimensions.get('window');
 
@@ -12,12 +13,13 @@ type BackgroundImageProps = {
     style?: ViewStyle;
     backgroundHeight?: number;
     titleText?: string;
+    titleSubText?: string;
     logoVisible?: boolean;
     fullScreen?: boolean;
     mainPage?: boolean;
 };
 
-const CommonBackground: React.FC<BackgroundImageProps> = ({ children, source, style, backgroundHeight, titleText, logoVisible, fullScreen, mainPage }) => {
+const CommonBackground: React.FC<BackgroundImageProps> = ({ children, source, style, backgroundHeight, titleText, titleSubText, logoVisible, fullScreen, mainPage }) => {
     const calculatedHeight = backgroundHeight ? height * backgroundHeight : height * 0.35;
 
     return (
@@ -34,6 +36,7 @@ const CommonBackground: React.FC<BackgroundImageProps> = ({ children, source, st
                 style={[styles.backgroundImage, { height: calculatedHeight }, style]}
             >
                 <CommonTextBold style={styles.titleText}>{titleText}</CommonTextBold>
+                {titleSubText && (<CommonText style={styles.titleSubText}>{titleSubText}</CommonText>)}
             </ImageBackground>
 
             <LinearGradient
@@ -99,6 +102,9 @@ const styles = StyleSheet.create({
     titleText: {
         fontSize: 30,
         lineHeight: 36
+    },
+    titleSubText: {
+        marginTop: 8,
     }
 });
 

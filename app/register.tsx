@@ -5,7 +5,7 @@ import CommonBackground from "@/components/common/CommonBackground";
 import CommonButton from "@/components/common/CommonButton";
 import InputField from '@/components/InputField';
 
-export default function RegisterScreen() {
+export default function Register() {
 
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
@@ -14,7 +14,7 @@ export default function RegisterScreen() {
 
     return (
     <View style={styles.container}>
-        <CommonBackground style={styles.backgroundImage} titleText={"Register"} logoVisible={true}>
+        <CommonBackground style={styles.backgroundImage} titleText={"Register"} titleSubText={"Fill in the fields to create your account"} logoVisible={true}>
             <InputField
                 placeholder="Username"
                 value={username}
@@ -45,7 +45,7 @@ export default function RegisterScreen() {
             />
 
             <CommonButton
-                href={"/login" as Href<string | object>}>
+                href={"/registerdonorinfo" as Href<string | object>}>
                 Register
             </CommonButton>
         </CommonBackground>
