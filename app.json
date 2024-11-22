@@ -1,5 +1,6 @@
 {
   "expo": {
+    "newArchEnabled": true,
     "name": "sanquinmobiletest",
     "slug": "sanquinmobiletest",
     "version": "1.0.0",
