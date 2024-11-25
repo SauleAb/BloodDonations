@@ -9,14 +9,26 @@ export enum IconNames {
     BloodSample = 'BloodSample',
     Notification = 'Notification',
     Reward = 'Reward',
+    AccountData = 'AccountData',
+    BloodData = 'BloodData',
+    DonationData = 'DonationData',
+    LocationData = 'LocationData',
+    Heart = 'Heart',
+    Time = 'Time'
 }
 
-const iconMap: Record<IconNames, any> = {
+export const iconMap: Record<IconNames, any> = {
     [IconNames.BloodDrop]: require('@/assets/icons/blood-drop-icon.png'),
     [IconNames.BloodDonated]: require('@/assets/icons/blood-donated-icon.png'),
     [IconNames.BloodSample]: require('@/assets/icons/blood-sample-icon.png'),
     [IconNames.Notification]: require('@/assets/icons/notification-icon.png'),
     [IconNames.Reward]: require('@/assets/icons/reward-icon.png'),
+    [IconNames.AccountData]: require('@/assets/icons/account-data.png'),
+    [IconNames.BloodData]: require('@/assets/icons/BloodData.png'),
+    [IconNames.DonationData]: require('@/assets/icons/BloodDonationsData.png'),
+    [IconNames.LocationData]: require('@/assets/icons/DonationsLocationsData.png'),
+    [IconNames.Heart]: require('@/assets/icons/heart.png'),
+    [IconNames.Time]: require('@/assets/icons/time.png')
 };
 
 type CommonContentProps = {
@@ -46,7 +58,7 @@ const CommonContent: React.FC<CommonContentProps> = ({ titleText, contentText, i
 
 const styles = StyleSheet.create({
     container: {
-        width: '87%',
+        width: '90%',
         marginBottom: 20,
         borderRadius: 0,
         overflow: 'hidden',
@@ -62,7 +74,7 @@ const styles = StyleSheet.create({
         shadowRadius: 1,
     },
     greyBar: {
-        backgroundColor: 'rgb(223,223,223)',
+        backgroundColor: 'rgba(223,223,223,0.5)',
         height: 30,
         justifyContent: 'center',
         alignItems: 'flex-start',
