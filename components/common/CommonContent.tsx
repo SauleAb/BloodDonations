@@ -1,6 +1,5 @@
 import React from 'react';
-import {StyleSheet, Text, TextStyle, View, Image} from 'react-native';
-import CommonText from "@/components/common/CommonText";
+import {StyleSheet, Text, View, Image} from 'react-native';
 import CommonTextBold from "@/components/common/CommonTextBold";
 
 export enum IconNames {
@@ -41,16 +40,17 @@ const CommonContent: React.FC<CommonContentProps> = ({ titleText, contentText, i
     const iconSource = icon ? iconMap[icon] : null;
 
     return (
-        <View style={[styles.container, styles.shadow]}>
+        <View style={styles.container}>
             <View style={styles.greyBar}>
                 <Text style={styles.label}>{titleText}</Text>
                 {iconSource && <Image source={iconSource} style={styles.icon} />}
             </View>
-
-            <View style={styles.content}>
-                <CommonTextBold style={styles.contentText}>
-                    {contentText}
-                </CommonTextBold>
+            <View style={[styles.contentWrapper, styles.shadow]}>
+                <View style={styles.content}>
+                    <CommonTextBold style={styles.contentText}>
+                        {contentText}
+                    </CommonTextBold>
+                </View>
             </View>
         </View>
     );
@@ -60,18 +60,6 @@ const styles = StyleSheet.create({
     container: {
         width: '90%',
         marginBottom: 20,
-        borderRadius: 0,
-        overflow: 'hidden',
-    },
-    shadow: {
-        elevation: 2,
-        shadowColor: '#000',
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.1,
-        shadowRadius: 1,
     },
     greyBar: {
         backgroundColor: 'rgba(223,223,223,0.5)',
@@ -85,11 +73,25 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: '#404040',
     },
+    contentWrapper: {
+        overflow: 'hidden',
+        backgroundColor: 'white',
+    },
+    shadow: {
+        elevation: 2,
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.1,
+        shadowRadius: 3,
+    },
     content: {
         paddingVertical: 15,
         paddingHorizontal: 20,
         backgroundColor: 'rgba(255, 255, 255, 1)',
-        justifyContent: 'center'
+        justifyContent: 'center',
     },
     contentText: {
         fontSize: 30,
