@@ -1,16 +1,45 @@
-import React, {useState} from 'react';
-import {ImageBackground, StyleSheet, Text, View, Dimensions, Animated} from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, View, Alert } from 'react-native';
+import { useRouter } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import CommonButton from '@/components/common/CommonButton';
 import InputField from '@/components/InputField';
-import CommonContainer from '@/components/common/CommonContainer';
 import CommonBackground from "@/components/common/CommonBackground";
-import {Href} from "expo-router";
 
 export default function Login() {
-
-    //Input Field Functionality
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const router = useRouter();
+
+    const handleLogin = async () => {
+        if (!username || !password) {
+            Alert.alert("Error", "All fields are required!");
+            return;
+        }
+
+        try {
+            const response = await fetch('https://sanquin-api.onrender.com/users/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ username, password }),
+            });
+
+            const responseText = await response.text();
+            if (response.ok) {
+                const data = JSON.parse(responseText);
+                console.log(data);
+                await AsyncStorage.setItem('userId', data.id.toString());
+                router.push('/main/home');
+            } else {
+                Alert.alert("Error", "Login failed!");
+                console.error(responseText);
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    };
 
     return (
         <View style={styles.container}>
@@ -20,20 +49,15 @@ export default function Login() {
                     value={username}
                     onChangeText={setUsername}
                 />
-
                 <InputField
                     placeholder="Password"
                     value={password}
                     onChangeText={setPassword}
                     secureTextEntry={true}
-
                 />
-
-                <CommonButton
-                    href={"/main/home" as Href<string | object>} style={styles.loginButton}>
+                <CommonButton onPress={handleLogin} style={styles.loginButton}>
                     Log In
                 </CommonButton>
-
                 <CommonButton
                     href="/register"
                     style={styles.registerButton}
@@ -41,7 +65,6 @@ export default function Login() {
                 >
                     Register
                 </CommonButton>
-
             </CommonBackground>
         </View>
     );
@@ -50,33 +73,17 @@ export default function Login() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#ffffff'
+        backgroundColor: '#ffffff',
     },
     backgroundImage: {
         justifyContent: 'center',
         alignItems: 'center',
     },
-    commonContainer: {
-        padding: 30,
-        width: '80%',
-        alignItems: 'center',
-    },
-
-    //Button
     loginButton: {
         marginTop: 30,
     },
-    registerButton: {
-
-    },
+    registerButton: {},
     registerButtonText: {
         color: 'black',
     },
-
-    //Input Field
-    label: {
-        fontSize: 40,
-        fontWeight: '700',
-        marginBottom: 8,
-    }
 });
