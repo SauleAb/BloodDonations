@@ -3,26 +3,37 @@ import CommonBackground from "@/components/common/CommonBackground";
 import React, { useState } from "react";
 import AchievementCard from "@/components/AchievementCard";
 import CommonScrollElement from "@/components/common/CommonScrollElement";
-import CommonContent, {IconNames} from "@/components/common/CommonContent";
+import CommonContent, { IconNames } from "@/components/common/CommonContent";
 import InputField from "@/components/InputField";
 
 export default function Community() {
     const [activeTab, setActiveTab] = useState<'feed' | 'friends'>('feed');
     const [search, setSearch] = useState('');
 
+    const friendsList = [
+        { name: "Henk de Boom" },
+        { name: "Ava van Kerkrade" },
+        { name: "Pieter Pietersen" },
+        { name: "Jacque Smit" },
+    ];
+
+    const filteredFriends = friendsList.filter((friend) =>
+        friend.name.toLowerCase().includes(search.toLowerCase())
+    );
+
     const renderContent = () => {
-        if (activeTab === 'feed') {
+        if (activeTab === "feed") {
             return (
                 <CommonScrollElement>
                     <AchievementCard
-                        user={{ name: 'Noah', profileColor: '#40b6ff' }}
+                        user={{ name: "Noah", profileColor: "#40b6ff" }}
                         achievementTime="2 days ago"
                         achievementText="Donated for the third time again!"
                         onCongratulate={() => console.log("Celebrated!")}
                         celebrates={5}
                     />
                     <AchievementCard
-                        user={{ name: 'Julius', profileColor: '#ff7940' }}
+                        user={{ name: "Julius", profileColor: "#ff7940" }}
                         achievementTime="3 days ago"
                         achievementText="Took a friend to their first time donating!"
                         onCongratulate={() => console.log("Celebrated!")}
@@ -30,20 +41,28 @@ export default function Community() {
                     />
                 </CommonScrollElement>
             );
-        } else if (activeTab === 'friends') {
+        } else if (activeTab === "friends") {
             return (
                 <CommonScrollElement>
                     <InputField
                         placeholder="Search..."
                         value={search}
                         onChangeText={setSearch}
-                        secureTextEntry={true}
-
                     />
-                    <CommonContent titleText={"Friend"} contentText={"Henk de Boom"} icon={IconNames.Notification} />
-                    <CommonContent titleText={"Friend"} contentText={"Ava van Kerkrade"} icon={IconNames.Notification} />
-                    <CommonContent titleText={"Friend"} contentText={"Pieter Pietersen"} icon={IconNames.Notification} />
-                    <CommonContent titleText={"Friend"} contentText={"Jacque Smit"} icon={IconNames.Notification} />
+                    {filteredFriends.length > 0 ? (
+                        filteredFriends.map((friend, index) => (
+                            <CommonContent
+                                key={index}
+                                titleText={"Friend"}
+                                contentText={friend.name}
+                                icon={IconNames.Notification}
+                            />
+                        ))
+                    ) : (
+                        <Text style={styles.noResultsText}>
+                            No friends found.
+                        </Text>
+                    )}
                 </CommonScrollElement>
             );
         }
@@ -58,18 +77,18 @@ export default function Community() {
                 <TouchableOpacity
                     style={[
                         styles.navButton,
-                        activeTab === 'feed' ? styles.activeTab : null,
+                        activeTab === "feed" ? styles.activeTab : null,
                     ]}
-                    onPress={() => setActiveTab('feed')}
+                    onPress={() => setActiveTab("feed")}
                 >
                     <Text style={styles.navText}>Feed</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={[
                         styles.navButton,
-                        activeTab === 'friends' ? styles.activeTab : null,
+                        activeTab === "friends" ? styles.activeTab : null,
                     ]}
-                    onPress={() => setActiveTab('friends')}
+                    onPress={() => setActiveTab("friends")}
                 >
                     <Text style={styles.navText}>Friends</Text>
                 </TouchableOpacity>
@@ -110,5 +129,11 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: "600",
         color: "black",
+    },
+    noResultsText: {
+        textAlign: "center",
+        marginVertical: 20,
+        color: "gray",
+        fontSize: 16,
     },
 });
