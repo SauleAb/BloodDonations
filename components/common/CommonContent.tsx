@@ -13,7 +13,8 @@ export enum IconNames {
     DonationData = 'DonationData',
     LocationData = 'LocationData',
     Heart = 'Heart',
-    Time = 'Time'
+    Time = 'Time',
+    Delete = 'Delete'
 }
 
 export const iconMap: Record<IconNames, any> = {
@@ -27,7 +28,8 @@ export const iconMap: Record<IconNames, any> = {
     [IconNames.DonationData]: require('@/assets/icons/BloodDonationsData.png'),
     [IconNames.LocationData]: require('@/assets/icons/DonationsLocationsData.png'),
     [IconNames.Heart]: require('@/assets/icons/heart.png'),
-    [IconNames.Time]: require('@/assets/icons/time.png')
+    [IconNames.Time]: require('@/assets/icons/time.png'),
+    [IconNames.Delete]: require('@/assets/icons/trash.png')
 };
 
 type CommonContentProps = {

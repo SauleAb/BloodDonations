@@ -1,10 +1,11 @@
-import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity, TextInput } from "react-native";
 import CommonBackground from "@/components/common/CommonBackground";
 import React, { useState } from "react";
 import AchievementCard from "@/components/AchievementCard";
 import CommonScrollElement from "@/components/common/CommonScrollElement";
 import CommonContent, { IconNames } from "@/components/common/CommonContent";
-import InputField from "@/components/InputField";
+import CommonTextBold from "@/components/common/CommonTextBold";
+import CommonText from "@/components/common/CommonText";
 
 export default function Community() {
     const [activeTab, setActiveTab] = useState<'feed' | 'friends'>('feed');
@@ -20,6 +21,11 @@ export default function Community() {
     const filteredFriends = friendsList.filter((friend) =>
         friend.name.toLowerCase().includes(search.toLowerCase())
     );
+
+    const handleAddFriend = () => {
+        console.log("Add Friend button pressed!");
+        // Add logic for adding friends here
+    };
 
     const renderContent = () => {
         if (activeTab === "feed") {
@@ -43,27 +49,37 @@ export default function Community() {
             );
         } else if (activeTab === "friends") {
             return (
-                <CommonScrollElement>
-                    <InputField
-                        placeholder="Search..."
-                        value={search}
-                        onChangeText={setSearch}
-                    />
-                    {filteredFriends.length > 0 ? (
-                        filteredFriends.map((friend, index) => (
-                            <CommonContent
-                                key={index}
-                                titleText={"Friend"}
-                                contentText={friend.name}
-                                icon={IconNames.Notification}
-                            />
-                        ))
-                    ) : (
-                        <Text style={styles.noResultsText}>
-                            No friends found.
-                        </Text>
-                    )}
-                </CommonScrollElement>
+                <>
+                    <CommonScrollElement>
+                        <TextInput
+                            style={styles.searchBar}
+                            placeholder="Search.."
+                            value={search}
+                            onChangeText={setSearch}
+                        />
+                        {filteredFriends.length > 0 ? (
+                            filteredFriends.map((friend, index) => (
+                                <CommonContent
+                                    key={index}
+                                    titleText={"Friend"}
+                                    contentText={friend.name}
+                                    icon={IconNames.Delete}
+                                />
+                            ))
+                        ) : (
+                            <Text style={styles.noResultsText}>
+                                No friends found.
+                            </Text>
+                        )}
+                    </CommonScrollElement>
+                    <TouchableOpacity
+                        style={styles.addFriendButton}
+                        onPress={handleAddFriend}
+                    >
+                        <CommonText>Add Friend</CommonText>
+                        <CommonTextBold>+</CommonTextBold>
+                    </TouchableOpacity>
+                </>
             );
         }
     };
@@ -102,11 +118,16 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: "#ffffff",
     },
-    text: {
-        textAlign: "center",
-        fontSize: 16,
-        margin: 10,
-        color: "gray",
+    searchBar: {
+        height: 40,
+        width: '90%',
+        borderColor: "#ccc",
+        borderWidth: 1,
+        borderRadius: 8,
+        paddingHorizontal: 10,
+        marginVertical: 10,
+        backgroundColor: "#f9f9f9",
+        alignSelf: 'center',
     },
     secondaryNavBar: {
         flexDirection: "row",
@@ -135,5 +156,22 @@ const styles = StyleSheet.create({
         marginVertical: 20,
         color: "gray",
         fontSize: 16,
+    },
+    addFriendButton: {
+        position: "absolute",
+        bottom: 20,
+        alignSelf: "center",
+        width: "90%",
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        paddingVertical: 12,
+        paddingHorizontal: 20,
+        borderRadius: 8,
+        borderWidth: 1, // Ensure the border is visible
+        borderColor: "#ccc",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.3,
+        shadowRadius: 3,
     },
 });
