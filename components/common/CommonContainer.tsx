@@ -1,13 +1,18 @@
 import React from 'react';
-import { View, StyleSheet, ViewStyle } from 'react-native';
+import { View, StyleSheet, ViewStyle, TouchableOpacity } from 'react-native';
 
 type CommonContainerProps = {
     children: React.ReactNode;
     style?: ViewStyle | ViewStyle[];
+    onPress?: () => void;
 };
 
-const CommonContainer: React.FC<CommonContainerProps> = ({ children, style }) => {
-    return <View style={[styles.container, style]}>{children}</View>;
+const CommonContainer: React.FC<CommonContainerProps> = ({ children, style, onPress }) => {
+    return (
+        <TouchableOpacity onPress={onPress} activeOpacity={0.8}>
+            <View style={[styles.container, style]}>{children}</View>
+        </TouchableOpacity>
+    );
 };
 
 const styles = StyleSheet.create({
@@ -19,7 +24,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.2,
         shadowRadius: 5,
         elevation: 2,
-        marginBottom: 40,
+        marginBottom: 20,
     },
 });
 
