@@ -1,5 +1,5 @@
 import React from 'react';
-import {StyleSheet, Text, View, Image} from 'react-native';
+import { StyleSheet, Text, View, Image } from 'react-native';
 import CommonTextBold from "@/components/common/CommonTextBold";
 
 export enum IconNames {
@@ -14,7 +14,8 @@ export enum IconNames {
     LocationData = 'LocationData',
     Heart = 'Heart',
     Time = 'Time',
-    Delete = 'Delete'
+    Delete = 'Delete',
+    Settings = "Settings"
 }
 
 export const iconMap: Record<IconNames, any> = {
@@ -29,17 +30,29 @@ export const iconMap: Record<IconNames, any> = {
     [IconNames.LocationData]: require('@/assets/icons/DonationsLocationsData.png'),
     [IconNames.Heart]: require('@/assets/icons/heart.png'),
     [IconNames.Time]: require('@/assets/icons/time.png'),
-    [IconNames.Delete]: require('@/assets/icons/trash.png')
+    [IconNames.Delete]: require('@/assets/icons/trash.png'),
+    [IconNames.Settings]: require('@/assets/icons/setting.png')
 };
 
 type CommonContentProps = {
     titleText: string;
     contentText: string;
     icon?: IconNames;
+    contentTextSize?: 'small' | 'large';
+    leftText?: string; // New prop for left-side text
+    rightText?: string; // New prop for right-side text
 };
 
-const CommonContent: React.FC<CommonContentProps> = ({ titleText, contentText, icon }) => {
+const CommonContent: React.FC<CommonContentProps> = ({
+    titleText,
+    contentText,
+    icon,
+    contentTextSize = 'large',
+    leftText,
+    rightText
+}) => {
     const iconSource = icon ? iconMap[icon] : null;
+    const contentTextStyle = contentTextSize === 'small' ? styles.contentTextSmall : styles.contentTextLarge;
 
     return (
         <View style={styles.container}>
@@ -49,9 +62,11 @@ const CommonContent: React.FC<CommonContentProps> = ({ titleText, contentText, i
             </View>
             <View style={[styles.contentWrapper, styles.shadow]}>
                 <View style={styles.content}>
-                    <CommonTextBold style={styles.contentText}>
+                    {leftText && <Text style={styles.leftText}>{leftText}</Text>}
+                    <CommonTextBold style={contentTextStyle}>
                         {contentText}
                     </CommonTextBold>
+                    {rightText && <Text style={styles.rightText}>{rightText}</Text>}
                 </View>
             </View>
         </View>
@@ -74,6 +89,7 @@ const styles = StyleSheet.create({
     label: {
         fontSize: 16,
         color: '#404040',
+        fontFamily: 'Instrument-Sans'
     },
     contentWrapper: {
         overflow: 'hidden',
@@ -93,11 +109,34 @@ const styles = StyleSheet.create({
         paddingVertical: 15,
         paddingHorizontal: 20,
         backgroundColor: 'rgba(255, 255, 255, 1)',
-        justifyContent: 'center',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
     },
-    contentText: {
+    contentTextLarge: {
         fontSize: 30,
         lineHeight: 30,
+        fontFamily: 'Instrument-Sans',
+        fontWeight: "bold"
+    },
+    contentTextSmall: {
+        fontSize: 16,
+        lineHeight: 20,
+        fontFamily: 'Instrument-Sans',
+        fontWeight: "bold",
+    },
+    leftText: {
+        fontSize: 16,
+        color: '#404040',
+        marginRight: 10,
+        fontFamily: 'Instrument-Sans',
+        fontWeight: "bold"
+    },
+    rightText: {
+        fontSize: 16,
+        color: '#404040',
+        marginLeft: 10,
+        fontFamily: 'Instrument-Sans'
     },
     icon: {
         position: 'absolute',
@@ -105,7 +144,7 @@ const styles = StyleSheet.create({
         top: 5,
         width: 20,
         height: 20,
-    }
+    },
 });
 
 export default CommonContent;
