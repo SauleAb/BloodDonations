@@ -1,25 +1,33 @@
 import { Tabs } from 'expo-router';
-import Ionicons from '@expo/vector-icons/Ionicons';
+import { Image, StyleSheet } from 'react-native';
+import { IconNames, iconMap } from '@/components/common/CommonContent';
 
 export default function MainLayout() {
     return (
         <Tabs
             screenOptions={({ route }) => {
-                let iconName: keyof typeof Ionicons.glyphMap;
+                const iconSource = 
+                    route.name === 'home'
+                        ? iconMap[IconNames.Home]
+                        : route.name === 'rewards'
+                        ? iconMap[IconNames.Reward]
+                        : route.name === 'donate'
+                        ? iconMap[IconNames.Blood]
+                        : route.name === 'community'
+                        ? iconMap[IconNames.Community]
+                        : route.name === 'profile'
+                        ? iconMap[IconNames.AccountData]
+                        : iconMap[IconNames.AccountData]; // Default fallback icon
 
-                if (route.name === 'home') {
-                    iconName = 'home';
-                } else if (route.name === 'profile') {
-                    iconName = 'person';
-                } else if (route.name === 'community') {
-                    iconName = 'chatbubbles';
-                } else {
-                    iconName = 'help-circle';
-                }
-                
                 return {
-                    tabBarIcon: ({ color, size }) => (
-                        <Ionicons name={iconName} size={size} color={color} />
+                    tabBarIcon: ({ focused }) => (
+                        <Image
+                            source={iconSource}
+                            style={[
+                                styles.icon,
+                                { tintColor: focused ? 'black' : 'gray' },
+                            ]}
+                        />
                     ),
                     tabBarActiveTintColor: 'black',
                     tabBarInactiveTintColor: 'gray',
@@ -28,8 +36,18 @@ export default function MainLayout() {
             }}
         >
             <Tabs.Screen name="home" options={{ title: 'Home' }} />
+            <Tabs.Screen name="rewards" options={{ title: 'Rewards' }} />
+            <Tabs.Screen name="donate" options={{ title: 'Donate' }} />
             <Tabs.Screen name="community" options={{ title: 'Community' }} />
             <Tabs.Screen name="profile" options={{ title: 'Profile' }} />
         </Tabs>
     );
 }
+
+const styles = StyleSheet.create({
+    icon: {
+        width: 30,
+        height: 30,
+        resizeMode: 'contain',
+    },
+});
