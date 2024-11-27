@@ -7,8 +7,6 @@ import CommonScrollElement from '@/components/common/CommonScrollElement';
 import CommonTitleWithIcon from '@/components/common/CommonTitleWithIcon';
 
 export default function AuthenticationType() {
-    
-
     return (
         <View style={styles.container}>
             <CommonBackground logoVisible={true} mainPage={true}>
@@ -24,7 +22,7 @@ export default function AuthenticationType() {
                         contentTextSize="small"
                         rightText={"View Details\nView Details\nView Details"}
                     />
-                    <CommonTitleWithIcon titleText={"Settings"} icon={IconNames.Notification}></CommonTitleWithIcon>
+                    <CommonTitleWithIcon titleText={"Settings"} icon={IconNames.Settings}></CommonTitleWithIcon>
                 </CommonScrollElement>
             </CommonBackground>
         </View>
