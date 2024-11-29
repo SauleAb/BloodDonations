@@ -8,8 +8,6 @@ import CommonScrollElement from "@/components/common/CommonScrollElement";
 import CommonRewardBox from '@/components/common/CommonRewardBox';
 
 export default function Rewards() {
-
-    const targetDate = new Date('2024-12-31T23:59:59');
     return (
         <View style={styles.container}>
             <CommonBackground logoVisible={true} mainPage={true}>
