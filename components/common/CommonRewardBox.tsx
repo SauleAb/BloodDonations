@@ -6,7 +6,7 @@ import { IconNames, iconMap } from "@/components/common/CommonContent";
 type CommonRewardBoxProps = {
     titleText: string;
     amountText: string;
-    icon: IconNames; // We expect an icon in the content part
+    icon: IconNames;
 };
 
 const CommonRewardBox: React.FC<CommonRewardBoxProps> = ({ titleText, icon, amountText }) => {

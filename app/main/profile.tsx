@@ -6,7 +6,7 @@ import CommonContent, { IconNames } from '@/components/common/CommonContent';
 import CommonScrollElement from '@/components/common/CommonScrollElement';
 import CommonTitleWithIcon from '@/components/common/CommonTitleWithIcon';
 
-export default function AuthenticationType() {
+export default function Profile() {
     return (
         <View style={styles.container}>
             <CommonBackground logoVisible={true} mainPage={true}>
