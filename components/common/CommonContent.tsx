@@ -1,5 +1,5 @@
-import React from 'react';
-import { StyleSheet, Text, View, Image } from 'react-native';
+import React, {useState} from 'react';
+import {StyleSheet, Text, View, Image, TextInput} from 'react-native';
 import CommonTextBold from "@/components/common/CommonTextBold";
 import {useFonts} from "expo-font";
 import CommonText from "@/components/common/CommonText";
@@ -60,11 +60,12 @@ type CommonContentProps = {
     contentText: string;
     icon?: IconNames;
     contentTextSize?: 'small' | 'large';
-    leftText?: string; // New prop for left-side text
-    rightText?: string; // New prop for right-side text
+    leftText?: string;
+    rightText?: string;
+    search?: boolean;
 };
 
-
+const [searchText, setSearchText] = useState('');
 
 const CommonContent: React.FC<CommonContentProps> = ({
     titleText,
@@ -72,7 +73,8 @@ const CommonContent: React.FC<CommonContentProps> = ({
     icon,
     contentTextSize = 'large',
     leftText,
-    rightText
+    rightText,
+    search = false
 }) => {
     const iconSource = icon ? iconMap[icon] : null;
     const contentTextStyle = contentTextSize === 'small' ? styles.contentTextSmall : styles.contentTextLarge;
@@ -90,6 +92,15 @@ const CommonContent: React.FC<CommonContentProps> = ({
                         {contentText}
                     </CommonTextBold>
                     {rightText && <CommonText style={styles.rightText}>{rightText}</CommonText>}
+                    {/*{search &&*/}
+                    {/*    <TextInput*/}
+                    {/*        style={[styles.input, style]}*/}
+                    {/*        value={searchText}*/}
+                    {/*        onChangeText={setSearchText}*/}
+                    {/*        secureTextEntry={secureTextEntry}*/}
+                    {/*        placeholderTextColor={placeholderTextColor}*/}
+                    {/*    />*/}
+                    {/*}*/}
                 </View>
             </View>
         </View>
