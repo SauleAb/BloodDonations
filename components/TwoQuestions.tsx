@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import CommonTextBold from "@/components/common/CommonTextBold";
+import CommonText from "@/components/common/CommonText";
 
 type TwoQuestionsProps = {
     titleText: string;
@@ -18,7 +19,7 @@ const TwoQuestions: React.FC<TwoQuestionsProps> = ({ titleText, onAnswerChange }
     return (
         <View style={[styles.container, styles.shadow]}>
             <View style={styles.greyBar}>
-                <Text style={styles.label}>{titleText}</Text>
+                <CommonText style={styles.label}>{titleText}</CommonText>
             </View>
 
             <View style={styles.content}>

@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
 import {Animated, TouchableWithoutFeedback, Text, StyleSheet, TextStyle, ViewStyle, View} from 'react-native';
 import { Link, Href } from 'expo-router';
+import CommonText from "@/components/common/CommonText";
 
 type AnimatedButtonProps = {
     href?: Href<string | object>;
@@ -34,7 +35,7 @@ const CommonButton: React.FC<AnimatedButtonProps> = ({ href, onPress, children, 
             onPress={onPress}
         >
             <Animated.View style={[styles.button, style, { transform: [{ scale: scaleValue }] }]}>
-                <Text style={[styles.buttonText, textStyle]}>{children}</Text>
+                <CommonText style={[styles.buttonText, textStyle]}>{children}</CommonText>
             </Animated.View>
         </TouchableWithoutFeedback>
     );
@@ -55,6 +56,7 @@ const styles = StyleSheet.create({
         color: 'black',
         fontSize: 28,
         fontWeight: 'bold',
+        lineHeight: 35,
     } as TextStyle,
     shadow: {
         elevation: 2,

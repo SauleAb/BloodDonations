@@ -1,6 +1,8 @@
 import React from 'react';
 import { StyleSheet, Text, View, Image } from 'react-native';
 import CommonTextBold from "@/components/common/CommonTextBold";
+import {useFonts} from "expo-font";
+import CommonText from "@/components/common/CommonText";
 
 export enum IconNames {
     BloodDrop = 'BloodDrop',
@@ -62,6 +64,8 @@ type CommonContentProps = {
     rightText?: string; // New prop for right-side text
 };
 
+
+
 const CommonContent: React.FC<CommonContentProps> = ({
     titleText,
     contentText,
@@ -76,16 +80,16 @@ const CommonContent: React.FC<CommonContentProps> = ({
     return (
         <View style={styles.container}>
             <View style={styles.greyBar}>
-                <Text style={styles.label}>{titleText}</Text>
+                <CommonText style={styles.label}>{titleText}</CommonText>
                 {iconSource && <Image source={iconSource} style={styles.icon} />}
             </View>
             <View style={[styles.contentWrapper, styles.shadow]}>
                 <View style={styles.content}>
-                    {leftText && <Text style={styles.leftText}>{leftText}</Text>}
+                    {leftText && <CommonText style={styles.leftText}>{leftText}</CommonText>}
                     <CommonTextBold style={contentTextStyle}>
                         {contentText}
                     </CommonTextBold>
-                    {rightText && <Text style={styles.rightText}>{rightText}</Text>}
+                    {rightText && <CommonText style={styles.rightText}>{rightText}</CommonText>}
                 </View>
             </View>
         </View>
@@ -108,7 +112,6 @@ const styles = StyleSheet.create({
     label: {
         fontSize: 16,
         color: '#404040',
-        fontFamily: 'Instrument-Sans'
     },
     contentWrapper: {
         overflow: 'hidden',
@@ -135,27 +138,23 @@ const styles = StyleSheet.create({
     contentTextLarge: {
         fontSize: 30,
         lineHeight: 30,
-        fontFamily: 'Instrument-Sans',
         fontWeight: "bold"
     },
     contentTextSmall: {
         fontSize: 16,
         lineHeight: 20,
-        fontFamily: 'Instrument-Sans',
         fontWeight: "bold",
     },
     leftText: {
         fontSize: 16,
         color: '#404040',
         marginRight: 10,
-        fontFamily: 'Instrument-Sans',
         fontWeight: "bold"
     },
     rightText: {
         fontSize: 16,
         color: '#404040',
         marginLeft: 10,
-        fontFamily: 'Instrument-Sans'
     },
     icon: {
         position: 'absolute',

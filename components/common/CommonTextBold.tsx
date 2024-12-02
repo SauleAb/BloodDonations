@@ -8,7 +8,7 @@ type CustomTextProps = TextProps & {
 
 const CommonTextBold: React.FC<CustomTextProps> = ({ children, style, ...props }) => {
     const [fontsLoaded] = useFonts({
-        'InstrumentSans': require('../../assets/fonts/InstrumentSans.ttf'),
+        'Instrument-Sans': require('../../assets/fonts/InstrumentSans.ttf'),
     });
 
     if (!fontsLoaded) {

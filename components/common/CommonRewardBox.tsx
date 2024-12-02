@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View, Image } from 'react-native';
 import CommonTextBold from "@/components/common/CommonTextBold";
 import { IconNames, iconMap } from "@/components/common/CommonContent";
+import CommonText from "@/components/common/CommonText";
 
 type CommonRewardBoxProps = {
     titleText: string;
@@ -16,7 +17,7 @@ const CommonRewardBox: React.FC<CommonRewardBoxProps> = ({ titleText, icon, amou
         <View style={styles.container}>
             <View style={styles.greyBar}>
                 <CommonTextBold style={styles.label}>{titleText}</CommonTextBold>
-                <Text style={styles.label}>{amountText}</Text>
+                <CommonText style={styles.label}>{amountText}</CommonText>
             </View>
             <View style={[styles.contentWrapper, styles.shadow]}>
                 <View style={styles.content}>
@@ -44,7 +45,6 @@ const styles = StyleSheet.create({
     label: {
         fontSize: 16,
         color: '#404040',
-        fontFamily: 'Instrument-Sans',
         textAlign: 'center', // Ensure the text itself is centered
     },
     contentWrapper: {

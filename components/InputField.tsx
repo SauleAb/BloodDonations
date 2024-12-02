@@ -1,5 +1,6 @@
 import React from 'react';
 import { Text, TextInput, StyleSheet, TextStyle, View } from 'react-native';
+import CommonText from "@/components/common/CommonText";
 
 type CustomInputProps = {
     placeholder: string;
@@ -21,7 +22,7 @@ const CustomInput: React.FC<CustomInputProps> = ({
     return (
         <View style={[styles.container, styles.shadow]}>
             <View style={styles.greyBar}>
-                <Text style={styles.label}>{placeholder}</Text>
+                <CommonText style={styles.label}>{placeholder}</CommonText>
             </View>
 
             <TextInput

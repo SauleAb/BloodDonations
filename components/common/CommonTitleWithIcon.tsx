@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View, Image } from 'react-native';
 import { iconMap, IconNames } from './CommonContent';
 import { useFonts } from 'expo-font';
+import CommonText from "@/components/common/CommonText";
 
 export type CommonTitleWithIconProps = {
     titleText: string;
@@ -13,7 +14,7 @@ const CommonTitleWithIcon: React.FC<CommonTitleWithIconProps> = ({ titleText, ic
 
     return (
         <View style={styles.container}>
-                <Text style={styles.label}>{titleText}</Text>
+                <CommonText style={styles.label}>{titleText}</CommonText>
                 {iconSource && <Image source={iconSource} style={styles.icon} />}
         </View>
     );
@@ -33,7 +34,6 @@ const styles = StyleSheet.create({
     label: {
         fontSize: 16,
         color: '#404040',
-        fontFamily: 'Instrument-Sans',
     },
 
     titleText: {

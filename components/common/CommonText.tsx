@@ -8,7 +8,7 @@ type CustomTextProps = TextProps & {
 
 const CommonText: React.FC<CustomTextProps> = ({ children, style, ...props }) => {
     const [fontsLoaded] = useFonts({
-        'Aileron-Regular': require('../../assets/fonts/Aileron-Regular.otf'),
+        'Instrument-Sans': require('../../assets/fonts/InstrumentSans.ttf'),
     });
 
     if (!fontsLoaded) {
@@ -24,7 +24,7 @@ const CommonText: React.FC<CustomTextProps> = ({ children, style, ...props }) =>
 
 const styles = StyleSheet.create({
     customFont: {
-        fontFamily: 'Aileron-Regular',
+        fontFamily: 'Instrument-Sans',
         fontSize: 17,
         lineHeight: 22,
     },

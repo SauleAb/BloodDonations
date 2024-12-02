@@ -67,9 +67,9 @@ export default function Community() {
                                 />
                             ))
                         ) : (
-                            <Text style={styles.noResultsText}>
+                            <CommonText style={styles.noResultsText}>
                                 No friends found.
-                            </Text>
+                            </CommonText>
                         )}
                     </CommonScrollElement>
                     <TouchableOpacity
@@ -97,7 +97,7 @@ export default function Community() {
                     ]}
                     onPress={() => setActiveTab("feed")}
                 >
-                    <Text style={styles.navText}>Feed</Text>
+                    <CommonText style={styles.navText}>Feed</CommonText>
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={[
@@ -106,7 +106,7 @@ export default function Community() {
                     ]}
                     onPress={() => setActiveTab("friends")}
                 >
-                    <Text style={styles.navText}>Friends</Text>
+                    <CommonText style={styles.navText}>Friends</CommonText>
                 </TouchableOpacity>
             </View>
         </View>
