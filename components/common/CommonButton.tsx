@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import {Animated, TouchableWithoutFeedback, Text, StyleSheet, TextStyle, ViewStyle, View} from 'react-native';
+import { Animated, TouchableWithoutFeedback, StyleSheet, TextStyle, ViewStyle, View } from 'react-native';
 import { Link, Href } from 'expo-router';
 import CommonText from "@/components/common/CommonText";
 
@@ -9,9 +9,10 @@ type AnimatedButtonProps = {
     children: React.ReactNode;
     style?: ViewStyle | ViewStyle[];
     textStyle?: TextStyle | TextStyle[];
+    size?: 'small' | 'big'; // New prop to determine button size
 };
 
-const CommonButton: React.FC<AnimatedButtonProps> = ({ href, onPress, children, style, textStyle }) => {
+const CommonButton: React.FC<AnimatedButtonProps> = ({ href, onPress, children, style, textStyle, size = 'big' }) => {
     const scaleValue = useRef(new Animated.Value(1)).current;
 
     const onPressIn = () => {
@@ -28,14 +29,21 @@ const CommonButton: React.FC<AnimatedButtonProps> = ({ href, onPress, children, 
         }).start();
     };
 
+    // Determine button width, font size, height, and padding based on size prop
+    const buttonWidth = size === 'big' ? '70%' : '24%';
+    const buttonFontSize = size === 'big' ? 28 : 10; // Adjust font size for small button
+    const buttonHeight = size === 'big' ? 50 : 35; // Adjust height for small button to fit text
+
     const ButtonContent = (
         <TouchableWithoutFeedback
             onPressIn={onPressIn}
             onPressOut={onPressOut}
             onPress={onPress}
         >
-            <Animated.View style={[styles.button, style, { transform: [{ scale: scaleValue }] }]}>
-                <CommonText style={[styles.buttonText, textStyle]}>{children}</CommonText>
+            <Animated.View style={[styles.button, style, { width: buttonWidth, height: buttonHeight, transform: [{ scale: scaleValue }] }]}>
+                <CommonText style={[styles.buttonText, textStyle, { fontSize: buttonFontSize, lineHeight: buttonFontSize * 1.3 }]}>
+                    {children}
+                </CommonText>
             </Animated.View>
         </TouchableWithoutFeedback>
     );
@@ -46,17 +54,15 @@ const CommonButton: React.FC<AnimatedButtonProps> = ({ href, onPress, children, 
 const styles = StyleSheet.create({
     button: {
         backgroundColor: "#e3e3e3",
-        width: 270,
         paddingVertical: 5,
-        marginTop: 20,
         justifyContent: 'center',
+        alignItems: 'center',
         flexDirection: 'row',
     } as ViewStyle,
     buttonText: {
         color: 'black',
-        fontSize: 28,
         fontWeight: 'bold',
-        lineHeight: 35,
+        textAlign: 'center',
     } as TextStyle,
     shadow: {
         elevation: 2,
