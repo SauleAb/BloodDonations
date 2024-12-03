@@ -38,7 +38,7 @@ const CustomInput: React.FC<CustomInputProps> = ({
 
 const styles = StyleSheet.create({
     container: {
-        width: '87%',
+        width: '90%',
         marginBottom: 20,
         borderRadius: 0,
         overflow: 'hidden',
@@ -58,18 +58,19 @@ const styles = StyleSheet.create({
         height: 30,
         justifyContent: 'center',
         alignItems: 'flex-start',
-        paddingHorizontal: 10,
+        paddingHorizontal: 20,
         paddingVertical: 5,
     },
     label: {
-        fontSize: 14,
+        fontSize: 16,
         color: '#404040',
     },
     input: {
-        height: 60,
-        width: '100%',
-        paddingHorizontal: 10,
-        fontSize: 16,
+        fontSize: 30,
+        lineHeight: 30,
+        paddingVertical: 5,
+        paddingHorizontal: 20,
+        fontWeight: "bold",
         backgroundColor: 'rgba(255, 255, 255, 1)',
     },
 });

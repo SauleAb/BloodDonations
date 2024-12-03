@@ -52,6 +52,9 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#ffffff'
     },
+    margin: {
+        marginTop: 20
+    },
     backgroundImage: {
         justifyContent: 'center',
         alignItems: 'center',
@@ -67,7 +70,7 @@ const styles = StyleSheet.create({
         marginTop: 30,
     },
     registerButton: {
-
+        marginTop: 30,
     },
     registerButtonText: {
         color: 'black',
