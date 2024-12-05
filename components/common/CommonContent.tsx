@@ -88,19 +88,21 @@ const CommonContent: React.FC<CommonContentProps> = ({
             <View style={[styles.contentWrapper, styles.shadow]}>
                 <View style={styles.content}>
                     {leftText && <CommonText style={styles.leftText}>{leftText}</CommonText>}
-                    <CommonTextBold style={contentTextStyle}>
-                        {contentText}
-                    </CommonTextBold>
+
                     {rightText && <CommonText style={styles.rightText}>{rightText}</CommonText>}
-                    {/*{search &&*/}
-                    {/*    <TextInput*/}
-                    {/*        style={[styles.input, style]}*/}
-                    {/*        value={searchText}*/}
-                    {/*        onChangeText={setSearchText}*/}
-                    {/*        secureTextEntry={secureTextEntry}*/}
-                    {/*        placeholderTextColor={placeholderTextColor}*/}
-                    {/*    />*/}
-                    {/*}*/}
+                    {search ? (
+                        <TextInput
+                            style={[styles.input]}
+                            value={searchText}
+                            onChangeText={setSearchText}
+                            secureTextEntry={false}
+                            placeholderTextColor={"#5a5959"}
+                        />
+                    ) : (
+                        <CommonTextBold style={contentTextStyle}>
+                            {contentText}
+                        </CommonTextBold>
+                    )}
                 </View>
             </View>
         </View>
@@ -119,6 +121,9 @@ const styles = StyleSheet.create({
         alignItems: 'flex-start',
         paddingHorizontal: 20,
         paddingVertical: 4,
+    },
+    input: {
+
     },
     label: {
         fontSize: 16,
@@ -174,6 +179,7 @@ const styles = StyleSheet.create({
         width: 20,
         height: 20,
     },
+
 });
 
 export default CommonContent;

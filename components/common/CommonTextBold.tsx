@@ -24,7 +24,7 @@ const CommonTextBold: React.FC<CustomTextProps> = ({ children, style, ...props }
 
 const styles = StyleSheet.create({
     customFont: {
-        fontFamily: 'InstrumentSans',
+        fontFamily: 'Instrument-Sans',
         fontSize: 20,
         fontWeight: 'bold',
         lineHeight: 30,

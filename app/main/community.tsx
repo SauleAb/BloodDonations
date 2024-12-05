@@ -59,6 +59,7 @@ export default function Community() {
                                     titleText={"Friend"}
                                     contentText={friend.name}
                                     icon={IconNames.Delete}
+                                    search={false}
                                 />
                             ))
                         ) : (
@@ -156,7 +157,7 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         paddingHorizontal: 20,
         borderRadius: 8,
-        borderWidth: 1, // Ensure the border is visible
+        borderWidth: 1,
         borderColor: "#ccc",
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.3,
