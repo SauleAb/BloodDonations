@@ -56,11 +56,12 @@ export const iconMap: Record<IconNames, any> = {
 
 type CommonContentProps = {
     titleText: string;
-    contentText: string;
+    contentText?: string; 
     icon?: IconNames;
     contentTextSize?: 'small' | 'large';
-    leftText?: string; // New prop for left-side text
-    rightText?: string; // New prop for right-side text
+    leftText?: string;
+    rightText?: string;
+    children?: React.ReactNode;
 };
 
 
@@ -71,7 +72,8 @@ const CommonContent: React.FC<CommonContentProps> = ({
     icon,
     contentTextSize = 'large',
     leftText,
-    rightText
+    rightText,
+    children, // Access the children prop
 }) => {
     const iconSource = icon ? iconMap[icon] : null;
     const contentTextStyle = contentTextSize === 'small' ? styles.contentTextSmall : styles.contentTextLarge;
@@ -85,9 +87,13 @@ const CommonContent: React.FC<CommonContentProps> = ({
             <View style={[styles.contentWrapper, styles.shadow]}>
                 <View style={styles.content}>
                     {leftText && <CommonText style={styles.leftText}>{leftText}</CommonText>}
-                    <CommonText bold style={contentTextStyle}>
-                        {contentText}
-                    </CommonText>
+                    {contentText ? (
+                        <CommonText bold style={contentTextStyle}>
+                            {contentText}
+                        </CommonText>
+                    ) : (
+                        children
+                    )}
                     {rightText && <CommonText style={styles.rightText}>{rightText}</CommonText>}
                 </View>
             </View>

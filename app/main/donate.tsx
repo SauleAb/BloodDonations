@@ -19,6 +19,14 @@ export default function Donate() {
     const nextDonationAvailable = moment().add(7, "days").startOf("day");
     const nextDonationText = `${moment.duration(nextDonationAvailable.diff(moment())).humanize()} away`;
 
+    const resetFields = () => {
+        setSelectedDate("");
+        setSelectedCity("");
+        setSelectedRadius("");
+        setSelectedTime("");
+        setSelectedHospital(null);
+    };
+
     const generateDisabledDates = (): Record<string, { disabled: boolean }> => {
         const today = moment();
         const disabledDates: Record<string, { disabled: boolean }> = {};
@@ -48,7 +56,7 @@ export default function Donate() {
     ];
 
     const handleSetAppointment = (hospitalName: string) => {
-        setSelectedHospital(hospitalName);  // Set the selected hospital when clicked
+        setSelectedHospital(hospitalName); 
     };
 
     return (
@@ -75,106 +83,103 @@ export default function Donate() {
                         />
                     )}
 
-                    {isCityAndRadiusFilled && (
-                        <View style={styles.calendarContainer}>
-                            <View style={styles.greyBar}>
-                                <CommonText style={styles.greyBarText}>
-                                    Select a Donation Date
-                                </CommonText>
-                            </View>
-                            <View style={styles.whiteBackground}>
-                                <Calendar
-                                    onDayPress={(day: { dateString: string }) =>
-                                        setSelectedDate(day.dateString)
-                                    }
-                                    markedDates={{
-                                        ...disabledDates,
-                                        [selectedDate]: {
-                                            selected: true,
-                                            marked: true,
-                                            selectedColor: "#00BFFF",
-                                        },
-                                    }}
-                                    theme={{
-                                        backgroundColor: "#ffffff",
-                                        calendarBackground: "#ffffff",
-                                        textSectionTitleColor: "#b6c1cd",
-                                        selectedDayBackgroundColor: "#00BFFF",
-                                        selectedDayTextColor: "#ffffff",
-                                        todayTextColor: "#00BFFF",
-                                        dayTextColor: "#2d4150",
-                                        arrowColor: "#00BFFF",
-                                        disabledArrowColor: "#d9e1e8",
-                                        textDisabledColor: "#d9e1e8",
-                                    }}
-                                    minDate={moment().format("YYYY-MM-DD")}
-                                    disableAllTouchEventsForDisabledDays={true}
-                                />
-                                {selectedDate && (
-                                    <View>
-                                        <CommonText bold style={styles.selectedDateText}>
-                                            {selectedDate}
+{isCityAndRadiusFilled && (
+    <CommonContent titleText="Select a Donation Date">
+        <View style={styles.calendarWrapper}>
+            <Calendar
+                onDayPress={(day: { dateString: string }) =>
+                    setSelectedDate(day.dateString)
+                }
+                markedDates={{
+                    ...disabledDates,
+                    [selectedDate]: {
+                        selected: true,
+                        marked: true,
+                        selectedColor: "#00BFFF",
+                    },
+                }}
+                theme={{
+                    backgroundColor: "#ffffff",
+                    calendarBackground: "#ffffff",
+                    textSectionTitleColor: "#b6c1cd",
+                    selectedDayBackgroundColor: "#00BFFF",
+                    selectedDayTextColor: "#ffffff",
+                    todayTextColor: "#00BFFF",
+                    dayTextColor: "#2d4150",
+                    arrowColor: "#00BFFF",
+                    disabledArrowColor: "#d9e1e8",
+                    textDisabledColor: "#d9e1e8",
+                }}
+                minDate={moment().format("YYYY-MM-DD")}
+                disableAllTouchEventsForDisabledDays={true}
+                scrollEnabled={true}
+                enableSwipeMonths={true} 
+            />
+            {selectedDate && (
+                <View>
+                    <CommonText bold style={styles.selectedDateText}>
+                        {selectedDate}
+                    </CommonText>
+                    <View style={styles.row}>
+                        <CommonText style={styles.friend}>
+                            Henk de Bloom is donating at Medisch Centrum Eindhoven
+                        </CommonText>
+                        <CommonButton size="small">Join!</CommonButton>
+                    </View>
+                    <CommonText bold style={styles.title}>Available locations</CommonText>
+
+                    {availableLocations.map((location, index) => (
+                        <View style={styles.row} key={index}>
+                            <CommonText style={styles.friend}>
+                                {location.name}{'\n'}{location.hours}
+                            </CommonText>
+                            <CommonButton
+                                size="small"
+                                onPress={() => handleSetAppointment(location.name)}
+                            >
+                                Set{'\n'}Appointment
+                            </CommonButton>
+                        </View>
+                    ))}
+
+                    {selectedHospital && (
+                        <View>
+                            <CommonText bold style={styles.title}>{selectedHospital}</CommonText>
+                            {availableLocations
+                                .filter((loc) => loc.name === selectedHospital)
+                                .map((loc, index) => (
+                                    <View key={index}>
+                                        <CommonText style={styles.friend}>
+                                            {loc.address}{'\n'}{loc.hours}
                                         </CommonText>
-                                        <View style={styles.row}>
-                                            <CommonText style={styles.friend}>
-                                                Henk de Bloom is donating at Medisch Centrum Eindhoven
-                                            </CommonText>
-                                            <CommonButton size="small">Join!</CommonButton>
-                                        </View>
-                                        <CommonText bold style={styles.title}>Available locations</CommonText>
-
-                                        {availableLocations.map((location, index) => (
-                                            <View style={styles.row} key={index}>
-                                                <CommonText style={styles.friend}>
-                                                    {location.name}{'\n'}{location.hours}
-                                                </CommonText>
+                                        <View style={styles.rowStart}>
+                                            {timeSlots.map((time) => (
                                                 <CommonButton
+                                                    key={time}
                                                     size="small"
-                                                    onPress={() => handleSetAppointment(location.name)}  // Set appointment for this location
+                                                    onPress={() => setSelectedTime(time)}
+                                                    style={[
+                                                        selectedTime === time ? styles.selectedTime : {},
+                                                        styles.timeButton,
+                                                    ]}
                                                 >
-                                                    Set{'\n'}Appointment
+                                                    {time}
                                                 </CommonButton>
-                                            </View>
-                                        ))}
-
-                                        {selectedHospital && (
-                                            <View>
-                                                <CommonText bold style={styles.title}>{selectedHospital}</CommonText>
-                                                {availableLocations
-                                                    .filter((loc) => loc.name === selectedHospital)
-                                                    .map((loc, index) => (
-                                                        <View key={index}>
-                                                            <CommonText style={styles.friend}>
-                                                                {loc.address}{'\n'}{loc.hours}
-                                                            </CommonText>
-                                                            <View style={styles.rowStart}>
-                                                                {timeSlots.map((time) => (
-                                                                    <CommonButton
-                                                                        key={time}
-                                                                        size="small"
-                                                                        onPress={() => setSelectedTime(time)}
-                                                                        style={[
-                                                                            selectedTime === time ? styles.selectedTime : {},
-                                                                            styles.timeButton,
-                                                                        ]}
-                                                                    >
-                                                                        {time}
-                                                                    </CommonButton>
-                                                                ))}
-                                                            </View>
-                                                            {isTimeSelected && (  // Show button only if a time is selected
-                                                                <CommonButton style={styles.center} size="small">
-                                                                    Request {'\n'}Appointment
-                                                                </CommonButton>
-                                                            )}
-                                                        </View>
-                                                    ))}
-                                            </View>
+                                            ))}
+                                        </View>
+                                        {isTimeSelected && (
+                                            <CommonButton style={styles.center} size="small" onPress={resetFields}>
+                                                Request {'\n'}Appointment
+                                            </CommonButton>
                                         )}
                                     </View>
-                                )}
-                            </View>
+                                ))}
                         </View>
+                    )}
+                </View>
+            )}
+        </View>
+    </CommonContent>
                     )}
                 </CommonScrollElement>
             </CommonBackground>
@@ -190,6 +195,13 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 30,
         fontWeight: "bold"
+    },
+    calendarWrapper: {
+        flex: 1,
+        width: "100%",
+        alignSelf: "center",
+        justifyContent: "center",
+        paddingHorizontal: 10,
     },
     timeButton: {
         margin: 1
