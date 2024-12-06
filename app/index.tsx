@@ -52,6 +52,7 @@ const styles = StyleSheet.create({
         width: 320,
         height: 70,
         alignItems: 'center',
-        backgroundColor: 'white'
+        backgroundColor: 'white',
+        marginTop: 20
     }
 });
