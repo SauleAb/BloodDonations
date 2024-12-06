@@ -1,6 +1,7 @@
 import React from 'react';
 import { Text, TextInput, StyleSheet, TextStyle, View } from 'react-native';
 import CommonText from "@/components/common/CommonText";
+import CommonContent from "@/components/common/CommonContent";
 
 type CustomInputProps = {
     placeholder: string;

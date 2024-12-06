@@ -6,6 +6,7 @@ import CommonScrollElement from "@/components/common/CommonScrollElement";
 import CommonContent, { IconNames } from "@/components/common/CommonContent";
 import CommonTextBold from "@/components/common/CommonTextBold";
 import CommonText from "@/components/common/CommonText";
+import InputField from "@/components/InputField";
 
 export default function Community() {
     const [activeTab, setActiveTab] = useState<'feed' | 'friends'>('feed');
@@ -24,7 +25,6 @@ export default function Community() {
 
     const handleAddFriend = () => {
         console.log("Add Friend button pressed!");
-        // Add logic for adding friends here
     };
 
     const renderContent = () => {
@@ -51,12 +51,7 @@ export default function Community() {
             return (
                 <>
                     <CommonScrollElement>
-                        <TextInput
-                            style={styles.searchBar}
-                            placeholder="Search.."
-                            value={search}
-                            onChangeText={setSearch}
-                        />
+                        <CommonContent titleText={"Search Bar"} contentText={"Click here to search"} search={true} icon={IconNames.BloodData}/>
                         {filteredFriends.length > 0 ? (
                             filteredFriends.map((friend, index) => (
                                 <CommonContent
@@ -64,6 +59,7 @@ export default function Community() {
                                     titleText={"Friend"}
                                     contentText={friend.name}
                                     icon={IconNames.Delete}
+                                    search={false}
                                 />
                             ))
                         ) : (
@@ -72,13 +68,6 @@ export default function Community() {
                             </CommonText>
                         )}
                     </CommonScrollElement>
-                    <TouchableOpacity
-                        style={styles.addFriendButton}
-                        onPress={handleAddFriend}
-                    >
-                        <CommonText>Add Friend</CommonText>
-                        <CommonTextBold>+</CommonTextBold>
-                    </TouchableOpacity>
                 </>
             );
         }
@@ -168,7 +157,7 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         paddingHorizontal: 20,
         borderRadius: 8,
-        borderWidth: 1, // Ensure the border is visible
+        borderWidth: 1,
         borderColor: "#ccc",
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.3,

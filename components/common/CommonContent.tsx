@@ -1,5 +1,5 @@
-import React from 'react';
-import { StyleSheet, Text, View, Image } from 'react-native';
+import React, {useState} from 'react';
+import {StyleSheet, Text, View, Image, TextInput} from 'react-native';
 import CommonTextBold from "@/components/common/CommonTextBold";
 import {useFonts} from "expo-font";
 import CommonText from "@/components/common/CommonText";
@@ -60,11 +60,12 @@ type CommonContentProps = {
     contentText: string;
     icon?: IconNames;
     contentTextSize?: 'small' | 'large';
-    leftText?: string; // New prop for left-side text
-    rightText?: string; // New prop for right-side text
+    leftText?: string;
+    rightText?: string;
+    search?: boolean;
 };
 
-
+const [searchText, setSearchText] = useState('');
 
 const CommonContent: React.FC<CommonContentProps> = ({
     titleText,
@@ -72,7 +73,8 @@ const CommonContent: React.FC<CommonContentProps> = ({
     icon,
     contentTextSize = 'large',
     leftText,
-    rightText
+    rightText,
+    search = false
 }) => {
     const iconSource = icon ? iconMap[icon] : null;
     const contentTextStyle = contentTextSize === 'small' ? styles.contentTextSmall : styles.contentTextLarge;
@@ -86,10 +88,21 @@ const CommonContent: React.FC<CommonContentProps> = ({
             <View style={[styles.contentWrapper, styles.shadow]}>
                 <View style={styles.content}>
                     {leftText && <CommonText style={styles.leftText}>{leftText}</CommonText>}
-                    <CommonTextBold style={contentTextStyle}>
-                        {contentText}
-                    </CommonTextBold>
+
                     {rightText && <CommonText style={styles.rightText}>{rightText}</CommonText>}
+                    {search ? (
+                        <TextInput
+                            style={[styles.input]}
+                            value={searchText}
+                            onChangeText={setSearchText}
+                            secureTextEntry={false}
+                            placeholderTextColor={"#5a5959"}
+                        />
+                    ) : (
+                        <CommonTextBold style={contentTextStyle}>
+                            {contentText}
+                        </CommonTextBold>
+                    )}
                 </View>
             </View>
         </View>
@@ -108,6 +121,9 @@ const styles = StyleSheet.create({
         alignItems: 'flex-start',
         paddingHorizontal: 20,
         paddingVertical: 4,
+    },
+    input: {
+
     },
     label: {
         fontSize: 16,
@@ -163,6 +179,7 @@ const styles = StyleSheet.create({
         width: 20,
         height: 20,
     },
+
 });
 
 export default CommonContent;
