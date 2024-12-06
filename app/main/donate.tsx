@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import CommonBackground from "@/components/common/CommonBackground";
 import CommonContent, { IconNames } from "@/components/common/CommonContent";
 import CommonScrollElement from "@/components/common/CommonScrollElement";
@@ -12,6 +12,7 @@ import { TIME_SLOTS, AVAILABLE_LOCATIONS } from "@/constants/DonateData";
 import styles from "@/app/styles/DonateStyle";
 import { useDonationForm } from "@/hooks/useDonationForm";
 import { getNextDonationDetails } from "@/utils/donationUtils";
+import calendarStyles from "@/app/styles/CalendarStyle";
 
 export default function Donate() {
     const {
@@ -87,18 +88,7 @@ export default function Donate() {
                                             selectedColor: "#00BFFF",
                                         },
                                     }}
-                                    theme={{
-                                        backgroundColor: "#ffffff",
-                                        calendarBackground: "#ffffff",
-                                        textSectionTitleColor: "#b6c1cd",
-                                        selectedDayBackgroundColor: "#00BFFF",
-                                        selectedDayTextColor: "#ffffff",
-                                        todayTextColor: "#00BFFF",
-                                        dayTextColor: "#2d4150",
-                                        arrowColor: "#00BFFF",
-                                        disabledArrowColor: "#d9e1e8",
-                                        textDisabledColor: "#d9e1e8",
-                                    }}
+                                    theme={calendarStyles.calendar}  // Apply the calendar-specific styles here
                                     minDate={moment().format("YYYY-MM-DD")}
                                     disableAllTouchEventsForDisabledDays={true}
                                     scrollEnabled={true}
