@@ -12,10 +12,10 @@ const HomeScreenBottom = () => {
             <CommonText style={styles.textAdvice}>
                 Customize your home screen or take a test to see if you can donate
             </CommonText>
-            <CommonButton href="/main/home" style={styles.button}>
+            <CommonButton style={styles.margin} href="/main/home">
                 Customize
             </CommonButton>
-            <CommonButton href="/main/home" style={styles.button}>
+            <CommonButton href="/main/home">
                 Take Test
             </CommonButton>
         </View>
@@ -28,8 +28,8 @@ const styles = StyleSheet.create({
         alignItems: "center",
         marginTop: 200
     },
-    button: {
-
+    margin: {
+        margin: 15
     },
     textAdvice: {
         textAlign: "center",

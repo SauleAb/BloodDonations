@@ -112,7 +112,7 @@ export default function Donate() {
                                 />
                                 {selectedDate && (
                                     <View>
-                                        <CommonText style={styles.selectedDateText}>
+                                        <CommonText bold style={styles.selectedDateText}>
                                             {selectedDate}
                                         </CommonText>
                                         <View style={styles.row}>
@@ -121,7 +121,7 @@ export default function Donate() {
                                             </CommonText>
                                             <CommonButton size="small">Join!</CommonButton>
                                         </View>
-                                        <CommonText style={styles.title}>Available locations</CommonText>
+                                        <CommonText bold style={styles.title}>Available locations</CommonText>
 
                                         {availableLocations.map((location, index) => (
                                             <View style={styles.row} key={index}>
@@ -139,7 +139,7 @@ export default function Donate() {
 
                                         {selectedHospital && (
                                             <View>
-                                                <CommonText style={styles.title}>{selectedHospital}</CommonText>
+                                                <CommonText bold style={styles.title}>{selectedHospital}</CommonText>
                                                 {availableLocations
                                                     .filter((loc) => loc.name === selectedHospital)
                                                     .map((loc, index) => (

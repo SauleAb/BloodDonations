@@ -53,6 +53,7 @@ const AchievementCard: React.FC<AchievementCardProps> = ({ user, achievementText
                         styles.congratulateButton,
                         isCelebrated ? styles.congratulateButtonPressed : {},
                     ]}
+                    size='small'
                     textStyle={ isCelebrated ? styles.congratulateButtonPressedText : styles.congratulateButtonText}
                 >
                     {isCelebrated ? "Celebrated!" : "Celebrate"}
