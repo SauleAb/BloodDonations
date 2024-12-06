@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { View, Image, StyleSheet } from 'react-native';
 import CommonButton from "@/components/common/CommonButton";
 import CommonText from "@/components/common/CommonText";
-import CommonTextBold from "@/components/common/CommonTextBold";
 import CommonContainer from "@/components/common/CommonContainer";
 
 type AchievementCardProps = {
@@ -63,7 +62,7 @@ const AchievementCard: React.FC<AchievementCardProps> = ({ user, achievementText
                     <View style={styles.celebrateImageContainer}>
                         <Image source={require('../assets/images/celebrate_emoji.png')} style={styles.celebrateImage} />
                     </View>
-                    <CommonTextBold style={styles.celebrateCountText}>{celebrateCount}</CommonTextBold>
+                    <CommonText bold style={styles.celebrateCountText}>{celebrateCount}</CommonText>
                 </View>
             </View>
         </CommonContainer>

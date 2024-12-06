@@ -1,6 +1,5 @@
 import React from 'react';
 import { StyleSheet, Text, View, Image } from 'react-native';
-import CommonTextBold from "@/components/common/CommonTextBold";
 import {useFonts} from "expo-font";
 import CommonText from "@/components/common/CommonText";
 
@@ -86,9 +85,9 @@ const CommonContent: React.FC<CommonContentProps> = ({
             <View style={[styles.contentWrapper, styles.shadow]}>
                 <View style={styles.content}>
                     {leftText && <CommonText style={styles.leftText}>{leftText}</CommonText>}
-                    <CommonTextBold style={contentTextStyle}>
+                    <CommonText bold style={contentTextStyle}>
                         {contentText}
-                    </CommonTextBold>
+                    </CommonText>
                     {rightText && <CommonText style={styles.rightText}>{rightText}</CommonText>}
                 </View>
             </View>

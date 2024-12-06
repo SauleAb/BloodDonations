@@ -7,6 +7,7 @@ import { Calendar } from "react-native-calendars";
 import InputField from "@/components/InputField";
 import moment from "moment";
 import CommonButton from "@/components/common/CommonButton";
+import CommonText from "@/components/common/CommonText";
 
 export default function Donate() {
     const [selectedDate, setSelectedDate] = useState<string>("");
@@ -77,9 +78,9 @@ export default function Donate() {
                     {isCityAndRadiusFilled && (
                         <View style={styles.calendarContainer}>
                             <View style={styles.greyBar}>
-                                <Text style={styles.greyBarText}>
+                                <CommonText style={styles.greyBarText}>
                                     Select a Donation Date
-                                </Text>
+                                </CommonText>
                             </View>
                             <View style={styles.whiteBackground}>
                                 <Calendar
@@ -111,22 +112,22 @@ export default function Donate() {
                                 />
                                 {selectedDate && (
                                     <View>
-                                        <Text style={styles.selectedDateText}>
+                                        <CommonText style={styles.selectedDateText}>
                                             {selectedDate}
-                                        </Text>
+                                        </CommonText>
                                         <View style={styles.row}>
-                                            <Text style={styles.friend}>
+                                            <CommonText style={styles.friend}>
                                                 Henk de Bloom is donating at Medisch Centrum Eindhoven
-                                            </Text>
+                                            </CommonText>
                                             <CommonButton size="small">Join!</CommonButton>
                                         </View>
-                                        <Text style={styles.title}>Available locations</Text>
+                                        <CommonText style={styles.title}>Available locations</CommonText>
 
                                         {availableLocations.map((location, index) => (
                                             <View style={styles.row} key={index}>
-                                                <Text style={styles.friend}>
+                                                <CommonText style={styles.friend}>
                                                     {location.name}{'\n'}{location.hours}
-                                                </Text>
+                                                </CommonText>
                                                 <CommonButton
                                                     size="small"
                                                     onPress={() => handleSetAppointment(location.name)}  // Set appointment for this location
@@ -138,14 +139,14 @@ export default function Donate() {
 
                                         {selectedHospital && (
                                             <View>
-                                                <Text style={styles.title}>{selectedHospital}</Text>
+                                                <CommonText style={styles.title}>{selectedHospital}</CommonText>
                                                 {availableLocations
                                                     .filter((loc) => loc.name === selectedHospital)
                                                     .map((loc, index) => (
                                                         <View key={index}>
-                                                            <Text style={styles.friend}>
+                                                            <CommonText style={styles.friend}>
                                                                 {loc.address}{'\n'}{loc.hours}
-                                                            </Text>
+                                                            </CommonText>
                                                             <View style={styles.rowStart}>
                                                                 {timeSlots.map((time) => (
                                                                     <CommonButton

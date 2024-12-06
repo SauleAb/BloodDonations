@@ -4,8 +4,8 @@ import React, { useState } from "react";
 import AchievementCard from "@/components/AchievementCard";
 import CommonScrollElement from "@/components/common/CommonScrollElement";
 import CommonContent, { IconNames } from "@/components/common/CommonContent";
-import CommonTextBold from "@/components/common/CommonTextBold";
 import CommonText from "@/components/common/CommonText";
+import InputField from "@/components/InputField";
 
 export default function Community() {
     const [activeTab, setActiveTab] = useState<'feed' | 'friends'>('feed');
@@ -24,7 +24,6 @@ export default function Community() {
 
     const handleAddFriend = () => {
         console.log("Add Friend button pressed!");
-        // Add logic for adding friends here
     };
 
     const renderContent = () => {
@@ -51,12 +50,11 @@ export default function Community() {
             return (
                 <>
                     <CommonScrollElement>
-                        <TextInput
-                            style={styles.searchBar}
-                            placeholder="Search.."
-                            value={search}
-                            onChangeText={setSearch}
-                        />
+                    <InputField
+                        placeholder="Search..."
+                        value={search}
+                        onChangeText={setSearch}
+                    />
                         {filteredFriends.length > 0 ? (
                             filteredFriends.map((friend, index) => (
                                 <CommonContent
@@ -77,7 +75,7 @@ export default function Community() {
                         onPress={handleAddFriend}
                     >
                         <CommonText>Add Friend</CommonText>
-                        <CommonTextBold>+</CommonTextBold>
+                        <CommonText bold>+</CommonText>
                     </TouchableOpacity>
                 </>
             );
