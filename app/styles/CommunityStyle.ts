@@ -1,10 +1,6 @@
 import { StyleSheet } from "react-native";
 
-export const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: "#ffffff",
-    },
+const communityStyles = StyleSheet.create({
     searchBar: {
         height: 40,
         width: "90%",
@@ -63,4 +59,4 @@ export const styles = StyleSheet.create({
     },
 });
 
-export default styles;
+export default communityStyles;

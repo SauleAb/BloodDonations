@@ -7,8 +7,8 @@ import CommonContent, { IconNames } from "@/components/common/CommonContent";
 import CommonText from "@/components/common/CommonText";
 import InputField from "@/components/InputField";
 import { friendsList, achievements } from "@/constants/CommunityData"; 
-import { communityStyles } from "@/app/styles/CommunityStyle";
 import commonStyles from "@/app/styles/CommonStyles";
+import communityStyles from "../styles/CommunityStyle";
 
 export default function Community() {
     const [activeTab, setActiveTab] = useState<'feed' | 'friends'>('feed');
