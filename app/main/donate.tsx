@@ -13,6 +13,7 @@ import styles from "@/app/styles/DonateStyle";
 import { useDonationForm } from "@/hooks/useDonationForm";
 import { getNextDonationDetails } from "@/utils/donationUtils";
 import calendarStyles from "@/app/styles/CalendarStyle";
+import commonStyles from "@/app/styles/CommonStyles";
 
 export default function Donate() {
     const {
@@ -50,7 +51,7 @@ export default function Donate() {
     };
 
     return (
-        <View style={styles.container}>
+        <View style={commonStyles.container}>
             <CommonBackground logoVisible={true} mainPage={true}>
                 <CommonScrollElement>
                     <CommonContent

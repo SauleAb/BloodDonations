@@ -8,6 +8,7 @@ import CommonText from "@/components/common/CommonText";
 import InputField from "@/components/InputField";
 import { friendsList, achievements } from "@/constants/CommunityData"; 
 import { styles } from "@/app/styles/CommunityStyle";
+import commonStyles from "@/app/styles/CommonStyles";
 
 export default function Community() {
     const [activeTab, setActiveTab] = useState<'feed' | 'friends'>('feed');
@@ -74,7 +75,7 @@ export default function Community() {
     };
 
     return (
-        <View style={styles.container}>
+        <View style={commonStyles.container}>
             <CommonBackground logoVisible={true} mainPage={true}>
                 {renderContent()}
             </CommonBackground>
