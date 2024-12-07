@@ -8,8 +8,6 @@ import commonStyles from './styles/CommonStyles';
 import loginStyles from './styles/LoginStyle';
 
 export default function Login() {
-
-    //Input Field Functionality
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
