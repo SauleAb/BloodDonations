@@ -1,10 +1,10 @@
 import React from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import CommonBackground from "@/components/common/CommonBackground";
-import { useFonts } from "expo-font";
 import CommonContent, { IconNames } from '@/components/common/CommonContent';
 import CommonScrollElement from '@/components/common/CommonScrollElement';
 import CommonTitleWithIcon from '@/components/common/CommonTitleWithIcon';
+
 
 export default function Profile() {
     return (
@@ -22,7 +22,7 @@ export default function Profile() {
                         contentTextSize="small"
                         rightText={"View Details\nView Details\nView Details"}
                     />
-                    <CommonTitleWithIcon titleText={"Settings"} icon={IconNames.Settings}></CommonTitleWithIcon>
+                    <CommonContent showContent={false} titleText={"Settings"} icon={IconNames.Settings}></CommonContent>
                 </CommonScrollElement>
             </CommonBackground>
         </View>

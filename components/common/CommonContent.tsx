@@ -62,6 +62,7 @@ type CommonContentProps = {
     leftText?: string;
     rightText?: string;
     children?: React.ReactNode;
+    showContent?: boolean;
 };
 
 
@@ -73,7 +74,8 @@ const CommonContent: React.FC<CommonContentProps> = ({
     contentTextSize = 'large',
     leftText,
     rightText,
-    children, // Access the children prop
+    children,
+    showContent = true
 }) => {
     const iconSource = icon ? iconMap[icon] : null;
     const contentTextStyle = contentTextSize === 'small' ? styles.contentTextSmall : styles.contentTextLarge;
@@ -84,6 +86,7 @@ const CommonContent: React.FC<CommonContentProps> = ({
                 <CommonText style={styles.label}>{titleText}</CommonText>
                 {iconSource && <Image source={iconSource} style={styles.icon} />}
             </View>
+            {showContent && (
             <View style={[styles.contentWrapper, styles.shadow]}>
                 <View style={styles.content}>
                     {leftText && <CommonText style={styles.leftText}>{leftText}</CommonText>}
@@ -97,6 +100,7 @@ const CommonContent: React.FC<CommonContentProps> = ({
                     {rightText && <CommonText style={styles.rightText}>{rightText}</CommonText>}
                 </View>
             </View>
+            )}
         </View>
     );
 };
