@@ -88,7 +88,7 @@ export default function Donate() {
                                             selectedColor: "#00BFFF",
                                         },
                                     }}
-                                    theme={calendarStyles.calendar}  // Apply the calendar-specific styles here
+                                    theme={calendarStyles.calendar} 
                                     minDate={moment().format("YYYY-MM-DD")}
                                     disableAllTouchEventsForDisabledDays={true}
                                     scrollEnabled={true}
