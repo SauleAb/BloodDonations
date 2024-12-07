@@ -1,6 +1,7 @@
 import { Tabs } from 'expo-router';
 import { Image, StyleSheet } from 'react-native';
 import { IconNames, iconMap } from '@/components/common/CommonContent';
+import mainLayoutStyles from '../styles/MainLayoutStyle';
 
 export default function MainLayout() {
     return (
@@ -24,7 +25,7 @@ export default function MainLayout() {
                         <Image
                             source={iconSource}
                             style={[
-                                styles.icon,
+                                mainLayoutStyles.icon,
                                 { tintColor: focused ? 'black' : 'gray' },
                             ]}
                         />
@@ -44,10 +45,3 @@ export default function MainLayout() {
     );
 }
 
-const styles = StyleSheet.create({
-    icon: {
-        width: 30,
-        height: 30,
-        resizeMode: 'contain',
-    },
-});

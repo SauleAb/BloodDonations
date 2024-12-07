@@ -1,7 +1,6 @@
 import React from 'react';
 import { Dimensions, ImageBackground, StyleSheet, View, ViewStyle } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import CommonTextBold from "@/components/common/CommonTextBold";
 import LogoSanquin from "@/assets/svgs/logo_sanquin_black.svg";
 import CommonText from "@/components/common/CommonText";
 
@@ -27,7 +26,7 @@ const CommonBackground: React.FC<BackgroundImageProps> = ({ children, source, st
             {logoVisible && (
                 <View style={styles.logoContainer}>
                     <LogoSanquin style={styles.logo} width={130} />
-                    <CommonTextBold style={styles.logoText}>Sanquin</CommonTextBold>
+                    <CommonText bold style={styles.logoText}>Sanquin</CommonText>
                 </View>
             )}
             <ImageBackground
@@ -35,7 +34,7 @@ const CommonBackground: React.FC<BackgroundImageProps> = ({ children, source, st
                 source={source || require('../../assets/images/sanquin_gradient.png')}
                 style={[styles.backgroundImage, { height: calculatedHeight }, style]}
             >
-                <CommonTextBold style={styles.titleText}>{titleText}</CommonTextBold>
+                <CommonText bold style={styles.titleText}>{titleText}</CommonText>
                 {titleSubText && (<CommonText style={styles.titleSubText}>{titleSubText}</CommonText>)}
             </ImageBackground>
 
