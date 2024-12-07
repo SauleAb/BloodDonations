@@ -1,5 +1,5 @@
 import React from 'react';
-import {Dimensions, StyleSheet, View} from 'react-native';
+import {Dimensions, View} from 'react-native';
 import LogoSanquin from '../assets/svgs/logo_sanquin_black.svg';
 import CommonBackground from "@/components/common/CommonBackground";
 import CommonButton from "@/components/common/CommonButton";
@@ -16,7 +16,7 @@ export default function HomeScreen() {
             <CommonBackground style={indexStyles.backgroundImage} backgroundHeight={1} fullScreen={true}>
 
                 <View style={indexStyles.logoContainer}>
-                    <LogoSanquin width={400} height={400} />
+                    <LogoSanquin style={indexStyles.logo}/>
                 </View>
 
                 <CommonText style={[indexStyles.welcomeText, {marginTop: height*0.7}]}>Welcome Aboard! Thank you for starting your donor adventure!</CommonText>

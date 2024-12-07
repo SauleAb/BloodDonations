@@ -7,7 +7,7 @@ import CommonContent, { IconNames } from "@/components/common/CommonContent";
 import CommonText from "@/components/common/CommonText";
 import InputField from "@/components/InputField";
 import { friendsList, achievements } from "@/constants/CommunityData"; 
-import { styles } from "@/app/styles/CommunityStyle";
+import { communityStyles } from "@/app/styles/CommunityStyle";
 import commonStyles from "@/app/styles/CommonStyles";
 
 export default function Community() {
@@ -57,13 +57,13 @@ export default function Community() {
                                 />
                             ))
                         ) : (
-                            <CommonText style={styles.noResultsText}>
+                            <CommonText style={communityStyles.noResultsText}>
                                 No friends found.
                             </CommonText>
                         )}
                     </CommonScrollElement>
                     <TouchableOpacity
-                        style={styles.addFriendButton}
+                        style={communityStyles.addFriendButton}
                         onPress={handleAddFriend}
                     >
                         <CommonText>Add Friend</CommonText>
@@ -79,24 +79,24 @@ export default function Community() {
             <CommonBackground logoVisible={true} mainPage={true}>
                 {renderContent()}
             </CommonBackground>
-            <View style={styles.secondaryNavBar}>
+            <View style={communityStyles.secondaryNavBar}>
                 <TouchableOpacity
                     style={[
-                        styles.navButton,
-                        activeTab === "feed" ? styles.activeTab : null,
+                        communityStyles.navButton,
+                        activeTab === "feed" ? communityStyles.activeTab : null,
                     ]}
                     onPress={() => setActiveTab("feed")}
                 >
-                    <CommonText style={styles.navText}>Feed</CommonText>
+                    <CommonText style={communityStyles.navText}>Feed</CommonText>
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={[
-                        styles.navButton,
-                        activeTab === "friends" ? styles.activeTab : null,
+                        communityStyles.navButton,
+                        activeTab === "friends" ? communityStyles.activeTab : null,
                     ]}
                     onPress={() => setActiveTab("friends")}
                 >
-                    <CommonText style={styles.navText}>Friends</CommonText>
+                    <CommonText style={communityStyles.navText}>Friends</CommonText>
                 </TouchableOpacity>
             </View>
         </View>

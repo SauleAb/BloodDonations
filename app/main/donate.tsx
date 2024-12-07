@@ -9,9 +9,10 @@ import moment from "moment";
 import CommonButton from "@/components/common/CommonButton";
 import CommonText from "@/components/common/CommonText";
 import { TIME_SLOTS, AVAILABLE_LOCATIONS } from "@/constants/DonateData";
-import styles from "@/app/styles/DonateStyle";
+import donateStyles from "@/app/styles/DonateStyle";
 import { useDonationForm } from "@/hooks/useDonationForm";
-import { getNextDonationDetails } from "@/utils/donationUtils";
+import { getNextDonationDetails } from "@/utils/donationUtils"; 
+import { generateDisabledDates } from "@/utils/calendarUtils"; 
 import calendarStyles from "@/app/styles/CalendarStyle";
 import commonStyles from "@/app/styles/CommonStyles";
 
@@ -32,17 +33,8 @@ export default function Donate() {
 
     const { nextDonationAvailable, nextDonationText } = getNextDonationDetails();
 
-    const generateDisabledDates = (): Record<string, { disabled: boolean }> => {
-        const today = moment();
-        const disabledDates: Record<string, { disabled: boolean }> = {};
-        while (today.isBefore(nextDonationAvailable)) {
-            disabledDates[today.format("YYYY-MM-DD")] = { disabled: true };
-            today.add(1, "day");
-        }
-        return disabledDates;
-    };
+    const disabledDates = generateDisabledDates(nextDonationAvailable);
 
-    const disabledDates = generateDisabledDates();
     const isCityAndRadiusFilled = selectedCity.trim() && selectedRadius.trim();
     const isTimeSelected = selectedTime !== "";
 
@@ -76,7 +68,7 @@ export default function Donate() {
 
                     {isCityAndRadiusFilled && (
                         <CommonContent titleText="Select a Donation Date">
-                            <View style={styles.calendarWrapper}>
+                            <View style={donateStyles.calendarWrapper}>
                                 <Calendar
                                     onDayPress={(day: { dateString: string }) =>
                                         setSelectedDate(day.dateString)
@@ -98,14 +90,14 @@ export default function Donate() {
 
                                 {selectedDate && (
                                     <View>
-                                        <CommonText bold style={styles.selectedDateText}>
+                                        <CommonText bold style={donateStyles.selectedDateText}>
                                             {selectedDate}
                                         </CommonText>
-                                        <CommonText bold style={styles.title}>Available locations</CommonText>
+                                        <CommonText bold style={donateStyles.title}>Available locations</CommonText>
 
                                         {AVAILABLE_LOCATIONS.map((location, index) => (
-                                            <View style={styles.row} key={index}>
-                                                <CommonText style={styles.friend}>
+                                            <View style={donateStyles.row} key={index}>
+                                                <CommonText style={donateStyles.friend}>
                                                     {location.name}{'\n'}{location.hours}
                                                 </CommonText>
                                                 <CommonButton
@@ -119,23 +111,23 @@ export default function Donate() {
 
                                         {selectedHospital && (
                                             <View>
-                                                <CommonText bold style={styles.title}>{selectedHospital}</CommonText>
+                                                <CommonText bold style={donateStyles.title}>{selectedHospital}</CommonText>
                                                 {AVAILABLE_LOCATIONS
                                                     .filter((loc) => loc.name === selectedHospital)
                                                     .map((loc, index) => (
                                                         <View key={index}>
-                                                            <CommonText style={styles.friend}>
+                                                            <CommonText style={donateStyles.friend}>
                                                                 {loc.address}{'\n'}{loc.hours}
                                                             </CommonText>
-                                                            <View style={styles.rowStart}>
+                                                            <View style={donateStyles.rowStart}>
                                                                 {TIME_SLOTS.map((time) => (
                                                                     <CommonButton
                                                                         key={time}
                                                                         size="small"
                                                                         onPress={() => setSelectedTime(time)}
                                                                         style={[
-                                                                            selectedTime === time ? styles.selectedTime : {},
-                                                                            styles.timeButton,
+                                                                            selectedTime === time ? donateStyles.selectedTime : {},
+                                                                            donateStyles.timeButton,
                                                                         ]}
                                                                     >
                                                                         {time}
@@ -144,7 +136,7 @@ export default function Donate() {
                                                             </View>
                                                             {isTimeSelected && (
                                                                 <CommonButton
-                                                                    style={styles.center}
+                                                                    style={donateStyles.center}
                                                                     size="small"
                                                                     onPress={resetFields}
                                                                 >

@@ -4,15 +4,13 @@ import CommonBackground from "@/components/common/CommonBackground";
 import CommonContent, { IconNames } from "@/components/common/CommonContent";
 import CommonScrollElement from "@/components/common/CommonScrollElement";
 import CommonRewardBox from "@/components/common/CommonRewardBox";
-import { rewards, rewardPoints } from "@/constants/RewardsData";
+import { rewardPoints } from "@/constants/RewardsData";
 import { rewardsStyles } from "../styles/RewardsStyle";
 import commonStyles from "../styles/CommonStyles";
+import { rewardPairs } from "@/utils/rewardsUtils";
 
 export default function Rewards() {
-    const rewardPairs = [];
-    for (let i = 0; i < rewards.length; i += 2) {
-        rewardPairs.push(rewards.slice(i, i + 2));
-    }
+    const rewardPairsList = rewardPairs(); 
 
     return (
         <View style={commonStyles.container}>
@@ -24,7 +22,7 @@ export default function Rewards() {
                             icon={IconNames.Notification}
                             contentText={rewardPoints}
                         />
-                        {rewardPairs.map((pair, index) => (
+                        {rewardPairsList.map((pair, index) => (
                             <View style={rewardsStyles.row} key={index}>
                                 <CommonRewardBox
                                     titleText={pair[0].titleText}
