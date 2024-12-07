@@ -1,6 +1,5 @@
 import React from 'react';
 import { StyleSheet, Text, View, Image } from 'react-native';
-import {useFonts} from "expo-font";
 import CommonText from "@/components/common/CommonText";
 
 export enum IconNames {
