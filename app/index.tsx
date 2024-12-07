@@ -16,7 +16,7 @@ export default function HomeScreen() {
             <CommonBackground style={indexStyles.backgroundImage} backgroundHeight={1} fullScreen={true}>
 
                 <View style={indexStyles.logoContainer}>
-                    <LogoSanquin style={indexStyles.logo}/>
+                    <LogoSanquin width={400} height={400} />
                 </View>
 
                 <CommonText style={[indexStyles.welcomeText, {marginTop: height*0.7}]}>Welcome Aboard! Thank you for starting your donor adventure!</CommonText>
