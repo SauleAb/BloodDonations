@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
-import CommonTextBold from "@/components/common/CommonTextBold";
 import CommonText from "@/components/common/CommonText";
 
 type TwoQuestionsProps = {
@@ -30,9 +29,9 @@ const TwoQuestions: React.FC<TwoQuestionsProps> = ({ titleText, onAnswerChange }
                     ]}
                     onPress={() => handlePress('yes')}
                 >
-                    <CommonTextBold style={styles.buttonText}>
+                    <CommonText bold style={styles.buttonText}>
                         Yes
-                    </CommonTextBold>
+                    </CommonText>
                 </TouchableOpacity>
 
                 <TouchableOpacity
@@ -42,9 +41,9 @@ const TwoQuestions: React.FC<TwoQuestionsProps> = ({ titleText, onAnswerChange }
                     ]}
                     onPress={() => handlePress('no')}
                 >
-                    <CommonTextBold style={styles.buttonText}>
+                    <CommonText bold style={styles.buttonText}>
                         No
-                    </CommonTextBold>
+                    </CommonText>
                 </TouchableOpacity>
             </View>
         </View>

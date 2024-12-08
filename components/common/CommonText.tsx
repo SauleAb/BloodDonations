@@ -4,9 +4,10 @@ import { useFonts } from 'expo-font';
 
 type CustomTextProps = TextProps & {
     children: React.ReactNode;
+    bold?: boolean; // Add bold as an optional prop
 };
 
-const CommonText: React.FC<CustomTextProps> = ({ children, style, ...props }) => {
+const CommonText: React.FC<CustomTextProps> = ({ children, style, bold = false, ...props }) => {
     const [fontsLoaded] = useFonts({
         'Instrument-Sans': require('../../assets/fonts/InstrumentSans.ttf'),
     });
@@ -16,8 +17,15 @@ const CommonText: React.FC<CustomTextProps> = ({ children, style, ...props }) =>
     }
 
     return (
-        <Text {...props} style={[styles.customFont, style]}>
-        {children}
+        <Text
+            {...props}
+            style={[
+                styles.customFont,
+                bold && styles.boldFont,
+                style,
+            ]}
+        >
+            {children}
         </Text>
     );
 };
@@ -27,6 +35,12 @@ const styles = StyleSheet.create({
         fontFamily: 'Instrument-Sans',
         fontSize: 17,
         lineHeight: 22,
+    },
+    boldFont: {
+        fontFamily: 'Instrument-Sans',
+        fontSize: 20,
+        fontWeight: 'bold',
+        lineHeight: 30,
     },
 });
 

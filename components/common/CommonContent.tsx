@@ -1,7 +1,5 @@
 import React from 'react';
 import { StyleSheet, Text, View, Image } from 'react-native';
-import CommonTextBold from "@/components/common/CommonTextBold";
-import {useFonts} from "expo-font";
 import CommonText from "@/components/common/CommonText";
 
 export enum IconNames {
@@ -57,11 +55,13 @@ export const iconMap: Record<IconNames, any> = {
 
 type CommonContentProps = {
     titleText: string;
-    contentText: string;
+    contentText?: string; 
     icon?: IconNames;
     contentTextSize?: 'small' | 'large';
-    leftText?: string; // New prop for left-side text
-    rightText?: string; // New prop for right-side text
+    leftText?: string;
+    rightText?: string;
+    children?: React.ReactNode;
+    showContent?: boolean;
 };
 
 
@@ -72,7 +72,9 @@ const CommonContent: React.FC<CommonContentProps> = ({
     icon,
     contentTextSize = 'large',
     leftText,
-    rightText
+    rightText,
+    children,
+    showContent = true
 }) => {
     const iconSource = icon ? iconMap[icon] : null;
     const contentTextStyle = contentTextSize === 'small' ? styles.contentTextSmall : styles.contentTextLarge;
@@ -83,15 +85,21 @@ const CommonContent: React.FC<CommonContentProps> = ({
                 <CommonText style={styles.label}>{titleText}</CommonText>
                 {iconSource && <Image source={iconSource} style={styles.icon} />}
             </View>
+            {showContent && (
             <View style={[styles.contentWrapper, styles.shadow]}>
                 <View style={styles.content}>
                     {leftText && <CommonText style={styles.leftText}>{leftText}</CommonText>}
-                    <CommonTextBold style={contentTextStyle}>
-                        {contentText}
-                    </CommonTextBold>
+                    {contentText ? (
+                        <CommonText bold style={contentTextStyle}>
+                            {contentText}
+                        </CommonText>
+                    ) : (
+                        children
+                    )}
                     {rightText && <CommonText style={styles.rightText}>{rightText}</CommonText>}
                 </View>
             </View>
+            )}
         </View>
     );
 };
