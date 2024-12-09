@@ -9,7 +9,7 @@ type AnimatedButtonProps = {
     children: React.ReactNode;
     style?: ViewStyle | ViewStyle[];
     textStyle?: TextStyle | TextStyle[];
-    size?: 'small' | 'big'; // New prop to determine button size
+    size?: 'small' | 'big';
 };
 
 const CommonButton: React.FC<AnimatedButtonProps> = ({ href, onPress, children, style, textStyle, size = 'big' }) => {
@@ -29,10 +29,9 @@ const CommonButton: React.FC<AnimatedButtonProps> = ({ href, onPress, children, 
         }).start();
     };
 
-    // Determine button width, font size, height, and padding based on size prop
-    const buttonWidth = size === 'big' ? '70%' : '24%';
-    const buttonFontSize = size === 'big' ? 28 : 10; // Adjust font size for small button
-    const buttonHeight = size === 'big' ? 50 : 35; // Adjust height for small button to fit text
+    const buttonWidth = size === 'big' ? 270 : '24%';
+    const buttonFontSize = size === 'big' ? 28 : 10;
+    const buttonHeight = size === 'big' ? 50 : 35;
 
     const ButtonContent = (
         <TouchableWithoutFeedback
@@ -56,7 +55,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#e3e3e3",
         paddingVertical: 5,
         justifyContent: 'center',
-        alignItems: 'center',
+        alignItems: 'center', 
         flexDirection: 'row',
     } as ViewStyle,
     buttonText: {

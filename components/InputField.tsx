@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
         paddingVertical: 5,
         paddingHorizontal: 20,
         fontWeight: "bold",
-        backgroundColor: 'rgba(255, 255, 255, 1)',
+        backgroundColor: 'rgb(255, 255, 255)',
     },
 });
 

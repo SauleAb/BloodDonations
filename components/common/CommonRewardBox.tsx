@@ -1,6 +1,5 @@
 import React from 'react';
 import { StyleSheet, Text, View, Image } from 'react-native';
-import CommonTextBold from "@/components/common/CommonTextBold";
 import { IconNames, iconMap } from "@/components/common/CommonContent";
 import CommonText from "@/components/common/CommonText";
 
@@ -16,7 +15,7 @@ const CommonRewardBox: React.FC<CommonRewardBoxProps> = ({ titleText, icon, amou
     return (
         <View style={styles.container}>
             <View style={styles.greyBar}>
-                <CommonTextBold style={styles.label}>{titleText}</CommonTextBold>
+                <CommonText bold style={styles.label}>{titleText}</CommonText>
                 <CommonText style={styles.label}>{amountText}</CommonText>
             </View>
             <View style={[styles.contentWrapper, styles.shadow]}>

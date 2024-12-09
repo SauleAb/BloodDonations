@@ -1,22 +1,21 @@
 import {StyleSheet, View} from "react-native";
 import CommonButton from "@/components/common/CommonButton";
 import React from "react";
-import CommonTextBold from "@/components/common/CommonTextBold";
 import CommonText from "@/components/common/CommonText";
 
 const HomeScreenBottom = () => {
     return (
         <View style={styles.container}>
-            <CommonTextBold>
+            <CommonText bold>
                 Nothing more to see
-            </CommonTextBold>
+            </CommonText>
             <CommonText style={styles.textAdvice}>
                 Customize your home screen or take a test to see if you can donate
             </CommonText>
-            <CommonButton href="/main/home" style={styles.button}>
+            <CommonButton style={styles.margin} href="/main/home">
                 Customize
             </CommonButton>
-            <CommonButton href="/main/home" style={styles.button}>
+            <CommonButton href="/main/home">
                 Take Test
             </CommonButton>
         </View>
@@ -29,8 +28,8 @@ const styles = StyleSheet.create({
         alignItems: "center",
         marginTop: 200
     },
-    button: {
-
+    margin: {
+        margin: 15
     },
     textAdvice: {
         textAlign: "center",

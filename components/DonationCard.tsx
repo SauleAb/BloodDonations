@@ -1,6 +1,5 @@
 import React from 'react';
 import { StyleSheet, View, Image } from 'react-native';
-import CommonTextBold from '@/components/common/CommonTextBold';
 import CommonText from '@/components/common/CommonText';
 import { IconNames, iconMap } from '@/components/common/CommonContent';
 
@@ -17,7 +16,7 @@ export default function DonationDataCard({ title, value, icon }: DonationDataCar
         <View style={styles.container}>
             <Image source={iconSource} style={styles.icon} />
             <View style={styles.textContainer}>
-                <CommonTextBold style={styles.title}>{title}</CommonTextBold>
+                <CommonText bold style={styles.title}>{title}</CommonText>
                 <CommonText style={styles.value}>{value}</CommonText>
             </View>
         </View>

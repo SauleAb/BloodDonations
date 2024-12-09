@@ -1,20 +1,19 @@
 import React, {useState} from 'react';
-import {ImageBackground, StyleSheet, Text, View, Dimensions, Animated} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import CommonButton from '@/components/common/CommonButton';
 import InputField from '@/components/InputField';
-import CommonContainer from '@/components/common/CommonContainer';
 import CommonBackground from "@/components/common/CommonBackground";
 import {Href} from "expo-router";
+import commonStyles from './styles/CommonStyles';
+import loginStyles from './styles/LoginStyle';
 
 export default function Login() {
-
-    //Input Field Functionality
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
     return (
-        <View style={styles.container}>
-            <CommonBackground style={styles.backgroundImage} titleText={"Welcome to Sanquin!"} logoVisible={true}>
+        <View style={commonStyles.container}>
+            <CommonBackground style={loginStyles.backgroundImage} titleText={"Welcome to Sanquin!"} logoVisible={true}>
                 <InputField
                     placeholder="Username"
                     value={username}
@@ -30,14 +29,14 @@ export default function Login() {
                 />
 
                 <CommonButton
-                    href={"/main/home" as Href<string | object>} style={styles.loginButton}>
+                    href={"/main/home" as Href<string | object>} style={loginStyles.loginButton}>
                     Log In
                 </CommonButton>
 
                 <CommonButton
                     href="/register"
-                    style={styles.registerButton}
-                    textStyle={styles.registerButtonText}
+                    style={loginStyles.registerButton}
+                    textStyle={loginStyles.registerButtonText}
                 >
                     Register
                 </CommonButton>
@@ -47,39 +46,3 @@ export default function Login() {
     );
 }
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#ffffff'
-    },
-    margin: {
-        marginTop: 20
-    },
-    backgroundImage: {
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    commonContainer: {
-        padding: 30,
-        width: '80%',
-        alignItems: 'center',
-    },
-
-    //Button
-    loginButton: {
-        marginTop: 30,
-    },
-    registerButton: {
-        marginTop: 30,
-    },
-    registerButtonText: {
-        color: 'black',
-    },
-
-    //Input Field
-    label: {
-        fontSize: 40,
-        fontWeight: '700',
-        marginBottom: 8,
-    }
-});
