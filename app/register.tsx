@@ -20,7 +20,6 @@ export default function Register() {
             return;
         }
 
-        // Navigate to the next screen
         router.push('/next');
     };
 

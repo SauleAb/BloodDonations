@@ -1,16 +1,21 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, Switch, ImageBackground } from 'react-native';
+import { View, Text, TextInput, StyleSheet, Switch, Button, ImageBackground } from 'react-native';
+import { useRouter } from 'expo-router';
 import LogoSanquin from '../assets/svgs/logo_sanquin_black.svg';
 
 export default function NextScreen() {
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
-    const [isPlasmaDonor, setIsPlasmaDonor] = useState(false);
+    const [isPlasmaDonor, setIsPlasmaDonor] = useState(true);
     const [hasDonatedBefore, setHasDonatedBefore] = useState(false);
+    const router = useRouter();
+
+    const handleProceed = () => {
+        router.push('../main/home'); 
+    };
 
     return (
         <View style={styles.container}>
-            {/* Top Section with Background Image */}
             <ImageBackground
                 source={require('../assets/images/sanquin_gradient.png')}
                 style={styles.backgroundImage}
@@ -22,9 +27,8 @@ export default function NextScreen() {
                 </View>
             </ImageBackground>
 
-            {/* Rest of the Content */}
             <View style={styles.content}>
-                <Text style={styles.header}>We need more information from you...</Text>
+                <Text style={styles.header}>We need some more information from you...</Text>
 
                 <TextInput
                     style={styles.input}
@@ -44,21 +48,21 @@ export default function NextScreen() {
                     <Text>Plasma Donor</Text>
                     <Switch
                         value={isPlasmaDonor}
-                        onValueChange={(value) => setIsPlasmaDonor(value)}
+                        onValueChange={() => setIsPlasmaDonor(!isPlasmaDonor)}
                     />
                     <Text>Blood Donor</Text>
-                    <Switch
-                        value={!isPlasmaDonor}
-                        onValueChange={(value) => setIsPlasmaDonor(!value)}
-                    />
                 </View>
 
                 <View style={styles.switchContainer}>
-                    <Text>Have Donated Before</Text>
+                    <Text>I Have Donated Before</Text>
                     <Switch
                         value={hasDonatedBefore}
                         onValueChange={(value) => setHasDonatedBefore(value)}
                     />
+                </View>
+
+                <View style={styles.buttonContainer}>
+                    <Button title="Proceed to Home" onPress={handleProceed} />
                 </View>
             </View>
         </View>
@@ -73,17 +77,17 @@ const styles = StyleSheet.create({
     backgroundImage: {
         width: '100%',
         height: 200,
-        justifyContent: 'center', // Align children vertically in the middle of the background
-        alignItems: 'center',    // Center children horizontally
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     topContent: {
-        alignItems: 'center', // Center content (logo and title) horizontally
+        alignItems: 'center',
     },
     title: {
         fontSize: 24,
         fontWeight: 'bold',
-        color: '#000', // Black text for "Sanquin"
-        marginTop: 5,  // Space between the logo and title
+        color: '#000',
+        marginTop: 5,
     },
     content: {
         flex: 1,
@@ -107,8 +111,11 @@ const styles = StyleSheet.create({
     switchContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'space-between',
-        width: '100%',
+        justifyContent: 'center',
         marginVertical: 10,
+        gap: 10,
+    },
+    buttonContainer: {
+        marginTop: 20,
     },
 });
