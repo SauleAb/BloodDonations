@@ -4,6 +4,7 @@ const user = {
     lastName: '',
     email: '',
     password: '',
+    profilePicture: String,
     rewardPoints: 0,
     friendsList: [],
     posts: [],
