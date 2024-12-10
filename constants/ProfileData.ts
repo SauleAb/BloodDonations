@@ -17,11 +17,6 @@ export const profileContent = [
         icon: IconNames.BloodDonated,
     },
     {
-        titleText: "Iron Levels",
-        contentText: "41 ng/ml",
-        icon: IconNames.BloodData,
-    },
-    {
         titleText: "Donation History",
         contentText: "26th September, 2024\n16th July, 2024\n3rd June, 2024",
         icon: IconNames.Time,
