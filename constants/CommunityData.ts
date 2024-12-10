@@ -9,7 +9,7 @@ export const achievements = [
     {
         user: { name: "Noah", profileColor: "#40b6ff" },
         achievementTime: "2 days ago",
-        achievementText: "Donated for the third time again!",
+        achievementText: "Donated for the third time!",
         celebrates: 5,
     },
     {
