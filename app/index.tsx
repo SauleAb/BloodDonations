@@ -22,7 +22,6 @@ export default function HomeScreen() {
     useEffect(() => {
         registerForPushNotificationsAsync().then(token => {
             console.log("Push notification token:", token);
-            // Optionally send this token to your backend
         });
 
         const notificationListener = Notifications.addNotificationReceivedListener(notification => {
@@ -54,7 +53,6 @@ export default function HomeScreen() {
 async function registerForPushNotificationsAsync() {
     let token;
 
-    // Set notification channel for Android
     if (Platform.OS === 'android') {
         await Notifications.setNotificationChannelAsync('default', {
             name: 'default',
@@ -64,7 +62,7 @@ async function registerForPushNotificationsAsync() {
         });
     }
 
-    // Get the push token for this device
+    // Push token for this device
     const { status } = await Notifications.getPermissionsAsync();
     if (status !== 'granted') {
         const { status: newStatus } = await Notifications.requestPermissionsAsync();
