@@ -3,21 +3,16 @@ import { StyleSheet } from "react-native";
 export const registerStyles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#ffffff',
-    },
-    backgroundImage: {
+        padding: 20,
         justifyContent: 'center',
-        alignItems: 'center',
+        backgroundColor: '#fff',
     },
-    commonContainer: {
-        padding: 30,
-        width: '80%',
-        alignItems: 'center',
-    },
-    label: {
-        fontSize: 40,
-        fontWeight: '700',
-        marginBottom: 8,
+    input: {
+        borderWidth: 1,
+        borderColor: '#ccc',
+        padding: 10,
+        marginBottom: 10,
+        borderRadius: 5,
     },
 });
 

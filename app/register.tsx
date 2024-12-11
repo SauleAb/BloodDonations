@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, TextInput, Button, Alert } from 'react-native';
 import { useRouter } from "expo-router";
+import registerStyles from './styles/RegisterStyle';
 
 
 export default function Register() {
@@ -24,23 +25,23 @@ export default function Register() {
     };
 
     return (
-        <View style={styles.container}>
+        <View style={registerStyles.container}>
             <TextInput
-                style={styles.input}
+                style={registerStyles.input}
                 placeholder="Email"
                 value={email}
                 onChangeText={setEmail}
                 keyboardType="email-address"
             />
             <TextInput
-                style={styles.input}
+                style={registerStyles.input}
                 placeholder="Password"
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry={true}
             />
             <TextInput
-                style={styles.input}
+                style={registerStyles.input}
                 placeholder="Confirm Password"
                 value={confirmPassword}
                 onChangeText={setConfirmPassword}
@@ -50,19 +51,3 @@ export default function Register() {
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 20,
-        justifyContent: 'center',
-        backgroundColor: '#fff',
-    },
-    input: {
-        borderWidth: 1,
-        borderColor: '#ccc',
-        padding: 10,
-        marginBottom: 10,
-        borderRadius: 5,
-    },
-});
