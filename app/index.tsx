@@ -1,20 +1,16 @@
 import React, { useEffect } from 'react';
-import { View, Dimensions, Platform } from 'react-native';
-import * as Notifications from 'expo-notifications';
+import { View, Dimensions } from 'react-native';
 import LogoSanquin from '../assets/svgs/logo_sanquin_black.svg';
 import CommonBackground from "@/components/common/CommonBackground";
 import CommonButton from "@/components/common/CommonButton";
 import CommonText from "@/components/common/CommonText";
 import indexStyles from './styles/IndexStyle';
 import commonStyles from './styles/CommonStyles';
-
-Notifications.setNotificationHandler({
-    handleNotification: async () => ({
-        shouldShowAlert: true,
-        shouldPlaySound: true,
-        shouldSetBadge: true,
-    }),
-});
+import { 
+    registerForPushNotificationsAsync, 
+    addNotificationReceivedListener, 
+    removeNotificationListener 
+} from '@/utils/notificationUtils';
 
 const { height } = Dimensions.get('window');
 
@@ -24,12 +20,12 @@ export default function HomeScreen() {
             console.log("Push notification token:", token);
         });
 
-        const notificationListener = Notifications.addNotificationReceivedListener(notification => {
+        const notificationListener = addNotificationReceivedListener((notification) => {
             console.log("Notification received:", notification);
         });
 
         return () => {
-            Notifications.removeNotificationSubscription(notificationListener);
+            removeNotificationListener(notificationListener);
         };
     }, []);
 
@@ -48,31 +44,4 @@ export default function HomeScreen() {
             </CommonBackground>
         </View>
     );
-}
-
-async function registerForPushNotificationsAsync() {
-    let token;
-
-    if (Platform.OS === 'android') {
-        await Notifications.setNotificationChannelAsync('default', {
-            name: 'default',
-            importance: Notifications.AndroidImportance.MAX,
-            vibrationPattern: [0, 250, 250, 250],
-            lightColor: '#FF231F7C',
-        });
-    }
-
-    // Push token for this device
-    const { status } = await Notifications.getPermissionsAsync();
-    if (status !== 'granted') {
-        const { status: newStatus } = await Notifications.requestPermissionsAsync();
-        if (newStatus !== 'granted') {
-            alert('Permission to receive notifications was denied.');
-            return;
-        }
-    }
-
-    token = (await Notifications.getExpoPushTokenAsync()).data;
-
-    return token;
 }
