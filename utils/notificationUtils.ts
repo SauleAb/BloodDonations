@@ -1,5 +1,6 @@
 import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
+import Constants from 'expo-constants';
 
 // Set the notification handler
 Notifications.setNotificationHandler({
@@ -32,10 +33,18 @@ export async function registerForPushNotificationsAsync() {
         }
     }
 
+    const projectId = Constants.expoConfig?.extra?.eas?.projectId;
+    if (!projectId) {
+        console.error("Missing projectId. Configure your app with EAS.");
+        return;
+    }
+
     token = (await Notifications.getExpoPushTokenAsync()).data;
 
     return token;
 }
+
+
 
 // Function to listen for incoming notifications
 export function addNotificationReceivedListener(
