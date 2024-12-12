@@ -6,6 +6,12 @@ const donateStyles = StyleSheet.create({
         fontWeight: "bold",
         marginTop: 20
     },
+    locationItem: {
+        padding: 10,
+        backgroundColor: "#f8f8f8",
+        borderBottomWidth: 1,
+        borderBottomColor: "#ddd",
+    },
     calendarWrapper: {
         flex: 1,
         width: "100%",
