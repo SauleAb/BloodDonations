@@ -1,36 +1,43 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet } from 'react-native';
 
 const loginStyles = StyleSheet.create({
-    margin: {
-        marginTop: 20
+    container: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 20,
+        backgroundColor: '#f9f9f9',
     },
-    backgroundImage: {
+    title: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        marginBottom: 20,
+        color: '#333',
+    },
+    input: {
+        width: '100%',
+        height: 50,
+        backgroundColor: '#fff',
+        borderRadius: 8,
+        paddingHorizontal: 15,
+        fontSize: 16,
+        marginBottom: 15,
+        borderColor: '#ccc',
+        borderWidth: 1,
+    },
+    button: {
+        width: '100%',
+        height: 50,
+        backgroundColor: '#007BFF',
+        borderRadius: 8,
         justifyContent: 'center',
         alignItems: 'center',
     },
-    commonContainer: {
-        padding: 30,
-        width: '80%',
-        alignItems: 'center',
+    buttonText: {
+        color: '#fff',
+        fontSize: 16,
+        fontWeight: 'bold',
     },
-
-    //Button
-    loginButton: {
-        marginTop: 30,
-    },
-    registerButton: {
-        marginTop: 30,
-    },
-    registerButtonText: {
-        color: 'black',
-    },
-
-    //Input Field
-    label: {
-        fontSize: 40,
-        fontWeight: '700',
-        marginBottom: 8,
-    }
 });
 
 export default loginStyles;

@@ -1,50 +1,52 @@
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useState, useContext, useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Create User Context
 const UserContext = createContext();
 
 // User Provider Component
 export const UserProvider = ({ children }) => {
-    const [user, setUser] = useState({
-        // Basic Info
-        firstName: 'Eitvidas',
-        lastName: 'Semenko',
-        email: 'WaterSandwich@blet.co.uk',
-        password: 'onetwothree',
-        profilePicture: 'https://www.google.com/imgres?q=circular%20profile%20pic&imgurl=https%3A%2F%2Fa.storyblok.com%2Ff%2F191576%2F1200x800%2F215e59568f%2Fround_profil_picture_after_.webp&imgrefurl=https%3A%2F%2Fwww.photoroom.com%2Ftools%2Fround-profile-picture&docid=IjCqey4zpl0BJM&tbnid=0Dcuta4WXRYMgM&vet=12ahUKEwj7x-Pl8ZyKAxUa_QIHHR_iA0gQM3oECHoQAA..i&w=1200&h=800&hcb=2&ved=2ahUKEwj7x-Pl8ZyKAxUa_QIHHR_iA0gQM3oECHoQAA',
-        rewardPoints: 0,
-        friendsList: [],
-        posts: [],
-    
-        // Plasma Specific Info
-        plasmaDonor: false,
-        nextPlasmaDonation: Date,
-    
-        // Blood Specific Info
-        bloodDonor: false,
-        nextBloodDonation: Date,
-        totalBloodDonated: 0,
-    
-        // Donation Info
-        donationHistory: [],
-        timesDonated: 0,
-        lastDonation: '',
-    
-        // Other
-        ironLevels: 0,
-    
-        // Prefferences (this is where all the settings should go)
-        darkModeEnabled: false,
-    
-        
-    });
+    const [user, setUser] = useState(null); // `null` when not authenticated
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const loadUserData = async () => {
+            try {
+                const storedUser = await AsyncStorage.getItem('user');
+                if (storedUser) {
+                    setUser(JSON.parse(storedUser));
+                }
+            } catch (error) {
+                console.error('Error loading user data', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        loadUserData();
+    }, []);
+
+    const login = async (userData) => {
+        setUser(userData);
+        await AsyncStorage.setItem('user', JSON.stringify(userData));
+    };
+
+    const logout = async () => {
+        setUser(null);
+        await AsyncStorage.removeItem('user');
+    };
 
     return (
-        <UserContext.Provider value={{ user, setUser }}>
+        <UserContext.Provider value={{ user, loading, login, logout }}>
             {children}
         </UserContext.Provider>
     );
 };
 
 // Hook for using User Context
-export const useUser = () => useContext(UserContext);
+export const useUser = () => {
+    const context = useContext(UserContext);
+    if (!context) {
+        throw new Error('useUser must be used within a UserProvider');
+    }
+    return context;
+};
