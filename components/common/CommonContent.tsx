@@ -1,6 +1,7 @@
 import React from 'react';
-import { StyleSheet, Text, View, Image } from 'react-native';
+import { StyleSheet, Switch, View, Image } from 'react-native';
 import CommonText from "@/components/common/CommonText";
+import CommonContentSwitch from "@/components/common/CommonContentSwitch";
 
 export enum IconNames {
     BloodDrop = 'BloodDrop',
@@ -53,31 +54,53 @@ export const iconMap: Record<IconNames, any> = {
 
 };
 
+export type RightTextItem = string | { type: 'switch'; switchValue: boolean; onToggle: () => void };
+
 type CommonContentProps = {
     titleText: string;
-    contentText?: string; 
+    contentText?: string | React.ReactNode;
     icon?: IconNames;
     contentTextSize?: 'small' | 'large';
     leftText?: string;
-    rightText?: string;
+    rightText?: RightTextItem | RightTextItem[];
     children?: React.ReactNode;
     showContent?: boolean;
 };
-
-
 
 const CommonContent: React.FC<CommonContentProps> = ({
     titleText,
     contentText,
     icon,
     contentTextSize = 'large',
-    leftText,
     rightText,
-    children,
-    showContent = true
+    showContent = true,
 }) => {
     const iconSource = icon ? iconMap[icon] : null;
-    const contentTextStyle = contentTextSize === 'small' ? styles.contentTextSmall : styles.contentTextLarge;
+    const contentTextStyle =
+        contentTextSize === 'small' ? styles.contentTextSmall : styles.contentTextLarge;
+
+    const renderTextOrSwitch = (item: RightTextItem | undefined) => {
+        if (!item) return null;
+
+        if (typeof item === 'string') {
+            return <CommonText style={styles.rightText}>{item}</CommonText>;
+        }
+
+        if (item.type === 'switch') {
+            return (
+                <CommonContentSwitch
+                    initialValue={item.switchValue}
+                    onToggle={item.onToggle}
+                />
+            );
+        }
+
+        return null;
+    };
+
+    const leftTextLines =
+    typeof contentText === 'string' ? contentText.split('\n') : [];
+    const rightTextItems = Array.isArray(rightText) ? rightText : [];
 
     return (
         <View style={styles.container}>
@@ -86,19 +109,26 @@ const CommonContent: React.FC<CommonContentProps> = ({
                 {iconSource && <Image source={iconSource} style={styles.icon} />}
             </View>
             {showContent && (
-            <View style={[styles.contentWrapper, styles.shadow]}>
-                <View style={styles.content}>
-                    {leftText && <CommonText style={styles.leftText}>{leftText}</CommonText>}
-                    {contentText ? (
-                        <CommonText bold style={contentTextStyle}>
-                            {contentText}
-                        </CommonText>
+                <View style={[styles.contentWrapper, styles.shadow]}>
+                    {leftTextLines.length > 0 && rightTextItems.length > 0 ? (
+                        //Render left right content
+                        leftTextLines.map((leftText: string, index: number) => (
+                            <View key={index} style={styles.row}>
+                                <CommonText style={styles.leftText}>{leftText}</CommonText>
+                                {renderTextOrSwitch(rightTextItems[index])}
+                            </View>
+                        ))
                     ) : (
-                        children
+                        // Render normal contentText
+                        <View style={styles.singleContent}>
+                            {contentText && (
+                                <CommonText style={contentTextStyle}>
+                                    {contentText}
+                                </CommonText>
+                            )}
+                        </View>
                     )}
-                    {rightText && <CommonText style={styles.rightText}>{rightText}</CommonText>}
                 </View>
-            </View>
             )}
         </View>
     );
@@ -156,13 +186,15 @@ const styles = StyleSheet.create({
     leftText: {
         fontSize: 16,
         color: '#404040',
+        fontWeight: "bold",
         marginRight: 10,
-        fontWeight: "bold"
+        marginLeft: 20,
     },
     rightText: {
         fontSize: 16,
         color: '#404040',
         marginLeft: 10,
+        marginRight: 11,
     },
     icon: {
         position: 'absolute',
@@ -171,6 +203,16 @@ const styles = StyleSheet.create({
         width: 20,
         height: 20,
     },
+    row: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginVertical: 4,
+    },
+    singleContent: {
+        paddingVertical: 15,
+        paddingHorizontal: 18,
+    }
 });
 
 export default CommonContent;

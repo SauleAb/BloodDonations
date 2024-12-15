@@ -4,7 +4,7 @@ import CommonBackground from "@/components/common/CommonBackground";
 import CommonContent from "@/components/common/CommonContent";
 import CommonScrollElement from "@/components/common/CommonScrollElement";
 import { profileContent } from "@/constants/ProfileData";
-import { profileBloodData } from "@/constants/ProfileBloodData";
+import { profileHealthData } from "@/constants/ProfileHealthData";
 import { commonStyles } from "@/app/styles/CommonStyles";
 import SecondaryNavBar from "@/components/common/CommonSecondaryNavBar";
 
@@ -13,7 +13,7 @@ const validateTextSize = (size: any): "small" | "large" | undefined => {
 };
 
 export default function Profile() {
-    const [activeTab, setActiveTab] = useState<'profile' | 'blood data'>('profile');
+    const [activeTab, setActiveTab] = useState<'profile' | 'health'>('profile');
 
     const renderContent = () => {
         if (activeTab === "profile") {
@@ -36,7 +36,7 @@ export default function Profile() {
         else {
             return (
                 <CommonScrollElement>
-                    {profileBloodData.map((item, index) => (
+                    {profileHealthData.map((item, index) => (
                         <CommonContent
                             key={index}
                             titleText={item.titleText}
@@ -44,7 +44,6 @@ export default function Profile() {
                             icon={item.icon}
                             contentTextSize={validateTextSize(item.contentTextSize)}
                             rightText={item.rightText}
-                            showContent={item.showContent}
                         />
                     ))}
                 </CommonScrollElement>
@@ -59,7 +58,7 @@ export default function Profile() {
             <SecondaryNavBar
                 tabs={[
                     { key: "profile", label: "Profile" },
-                    { key: "blood data", label: "Blood Data" },
+                    { key: "health", label: "Health" },
                 ]}
                 activeTab={activeTab}
                 onTabChange={setActiveTab}

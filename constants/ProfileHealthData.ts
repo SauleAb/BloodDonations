@@ -1,0 +1,36 @@
+import { IconNames } from "@/components/common/CommonContent";
+
+export const profileHealthData = [
+    {
+        titleText: "Last Donation",
+        contentText: "26th September, 2024",
+        icon: IconNames.Time,
+    },
+    {
+        titleText: "Times Donated",
+        contentText: "9",
+        icon: IconNames.Time,
+    },
+
+    {
+        titleText: "Amount Donated",
+        contentText: "14 units of plasma",
+        icon: IconNames.BloodDonated,
+    },
+    {
+        titleText: "Iron Levels",
+        contentText: "41 ng/ml",
+        icon: IconNames.BloodData,
+    },
+    {
+        titleText: "Donation History",
+        contentText: "26th September, 2024\n16th July, 2024\n3rd June, 2024",
+        icon: IconNames.Time,
+        contentTextSize: "small",
+        rightText: [
+            "View Details",
+            "View Details",
+            "View Details",
+        ],
+    },
+];
