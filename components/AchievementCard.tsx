@@ -3,6 +3,7 @@ import { View, Image, StyleSheet } from 'react-native';
 import CommonButton from "@/components/common/CommonButton";
 import CommonText from "@/components/common/CommonText";
 import CommonContainer from "@/components/common/CommonContainer";
+import * as Notifications from 'expo-notifications';
 
 type AchievementCardProps = {
     user: {
@@ -20,9 +21,17 @@ const AchievementCard: React.FC<AchievementCardProps> = ({ user, achievementText
     const [celebrateCount, setCelebrateCount] = useState(celebrates);
     const [isCelebrated, setIsCelebrated] = useState(false);
 
-    const handleCelebratePress = () => {
+    const handleCelebratePress = async () => {
         setIsCelebrated(!isCelebrated);
         setCelebrateCount(prevCount => prevCount + (isCelebrated ? -1 : 1));
+
+        await Notifications.scheduleNotificationAsync({
+            content: {
+                title: isCelebrated ? "Uncelebrated!" : "Celebrated!",
+                body: `${user.name} has ${isCelebrated ? "removed their celebration" : "celebrated this achievement!"}`,
+            },
+            trigger: null,
+        });
     };
 
     return (
