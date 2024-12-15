@@ -24,13 +24,31 @@ export const profileHealthData = [
     },
     {
         titleText: "Donation History",
-        contentText: "26th September, 2024\n16th July, 2024\n3rd June, 2024",
-        icon: IconNames.Time,
+        contentText: "16th July, 2024\n26th September, 2024\nNext Donation",
+        icon: IconNames.Notification,
         contentTextSize: "small",
         rightText: [
-            "View Details",
-            "View Details",
-            "View Details",
-        ],
-    },
+            {
+                type: "expandableContent",
+                title: "View Details",
+                details: [
+                    { left: "Location", right: "Medisch Centrum Veldhoven" },
+                    { left: "Type", right: "Blood" },
+                    { left: "Amount", right: "0.9 Units" },
+                    { left: "Date", right: "2024/07/16" },
+                ],
+            },
+            {
+                type: "expandableContent",
+                title: "View Details",
+                details: [
+                    { left: "Location", right: "Medisch Centrum Veldhoven" },
+                    { left: "Type", right: "Blood" },
+                    { left: "Amount", right: "0.8 Units" },
+                    { left: "Date", right: "2024/09/26" },
+                ],
+            },
+            "30th of October, 2024",
+        ]
+    }
 ];
