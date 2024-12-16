@@ -64,7 +64,6 @@ export default function Login() {
                     ironLevels: 0,
                     darkModeEnabled: false,
                 };
-                AsyncStorage.setItem('user', JSON.stringify(user));
                 login(user)
                 router.replace('/main/home');
             })
