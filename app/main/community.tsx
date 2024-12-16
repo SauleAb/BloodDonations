@@ -18,9 +18,6 @@ export default function Community() {
         friend.name.toLowerCase().includes(search.toLowerCase())
     );
 
-    const handleAddFriend = () => {
-        console.log("Add Friend button pressed!");
-    };
 
     const renderContent = () => {
         if (activeTab === "feed") {
@@ -62,13 +59,6 @@ export default function Community() {
                             </CommonText>
                         )}
                     </CommonScrollElement>
-                    <TouchableOpacity
-                        style={communityStyles.addFriendButton}
-                        onPress={handleAddFriend}
-                    >
-                        <CommonText>Add Friend</CommonText>
-                        <CommonText bold>+</CommonText>
-                    </TouchableOpacity>
                 </>
             );
         }
