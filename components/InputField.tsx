@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, TextInput, StyleSheet, TextStyle, View } from 'react-native';
+import { TextInput, StyleSheet, TextStyle, View, FlatList, TouchableOpacity } from 'react-native';
 import CommonText from "@/components/common/CommonText";
 
 type CustomInputProps = {
@@ -9,16 +9,20 @@ type CustomInputProps = {
     style?: TextStyle;
     secureTextEntry?: boolean;
     placeholderTextColor?: string;
+    suggestions?: string[];  // Optional suggestions list
+    onSuggestionSelect?: (suggestion: string) => void; // Optional callback when suggestion is selected
 };
 
 const CustomInput: React.FC<CustomInputProps> = ({
-                                                     placeholder,
-                                                     value,
-                                                     onChangeText,
-                                                     style,
-                                                     secureTextEntry = false,
-                                                     placeholderTextColor = '#888',
-                                                 }) => {
+    placeholder,
+    value,
+    onChangeText,
+    style,
+    secureTextEntry = false,
+    placeholderTextColor = '#888',
+    suggestions = [],  // Default to an empty array if no suggestions are passed
+    onSuggestionSelect,
+}) => {
     return (
         <View style={[styles.container, styles.shadow]}>
             <View style={styles.greyBar}>
@@ -32,6 +36,22 @@ const CustomInput: React.FC<CustomInputProps> = ({
                 secureTextEntry={secureTextEntry}
                 placeholderTextColor={placeholderTextColor}
             />
+
+            {/* Render FlatList if suggestions are provided */}
+            {suggestions.length > 0 && (
+                <FlatList
+                    data={suggestions}
+                    renderItem={({ item }) => (
+                        <TouchableOpacity onPress={() => onSuggestionSelect && onSuggestionSelect(item)}>
+                            <View style={styles.suggestionItem}>
+                                <CommonText style={styles.suggestionText}>{item}</CommonText>
+                            </View>
+                        </TouchableOpacity>
+                    )}
+                    keyExtractor={(item, index) => index.toString()}
+                    style={styles.suggestionsContainer}
+                />
+            )}
         </View>
     );
 };
@@ -72,6 +92,22 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         fontWeight: "bold",
         backgroundColor: 'rgb(255, 255, 255)',
+    },
+    suggestionsContainer: {
+        maxHeight: 150,
+        marginTop: 5,
+        backgroundColor: '#fff',
+        borderRadius: 5,
+        borderWidth: 1,
+        borderColor: '#ddd',
+        paddingHorizontal: 10,
+    },
+    suggestionItem: {
+        paddingVertical: 10,
+    },
+    suggestionText: {
+        fontSize: 16,
+        color: '#333',
     },
 });
 
