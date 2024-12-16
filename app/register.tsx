@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { TextInput, Button, Alert } from 'react-native';
+import { TextInput, Button, Alert, Text } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import registerStyles from './styles/RegisterStyle';
 import CommonBackground from "@/components/common/CommonBackground";
+import InputField from '@/components/InputField';
+import CommonButton from '@/components/common/CommonButton';
 
 export default function Register() {
     const [email, setEmail] = useState('');
@@ -43,29 +45,29 @@ export default function Register() {
     };
 
     return (
-        <CommonBackground logoVisible titleText="Register">
-            <TextInput
-                style={registerStyles.input}
+        <CommonBackground style={registerStyles.backgroundImage} titleText={"Register"} logoVisible={true}>
+            <InputField
                 placeholder="Email"
                 value={email}
                 onChangeText={setEmail}
-                keyboardType="email-address"
             />
-            <TextInput
-                style={registerStyles.input}
+            <InputField
                 placeholder="Password"
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry
             />
-            <TextInput
-                style={registerStyles.input}
+            <InputField
                 placeholder="Confirm Password"
                 value={confirmPassword}
                 onChangeText={setConfirmPassword}
                 secureTextEntry
             />
-            <Button title="Register" onPress={handleRegister} />
+            <CommonButton
+            style={registerStyles.registerButton} 
+            onPress={handleRegister} >
+            <Text> Register </Text>
+            </CommonButton>
         </CommonBackground>
     );
 }

@@ -6,6 +6,9 @@ import { useUser } from '@/components/UserContext';
 import loginStyles from './styles/LoginStyle';
 import CommonBackground from "@/components/common/CommonBackground";
 import commonStyles from "@/app/styles/CommonStyles";
+import InputField from '@/components/InputField';
+import CommonButton from '@/components/common/CommonButton';
+
 
 interface User {
     firstName: string;
@@ -43,30 +46,27 @@ export default function Login() {
 
     return (
         <View style={commonStyles.container}>
-            <CommonBackground logoVisible titleText="Log In">
-            <TextInput
-                style={loginStyles.input}
+        <CommonBackground style={loginStyles.backgroundImage} titleText={"Welcome to Sanquin!"} logoVisible={true}>
+            <InputField
                 placeholder="Email"
                 value={email}
                 onChangeText={setEmail}
-                keyboardType="email-address"
             />
-            <TextInput
-                style={loginStyles.input}
+            <InputField
                 placeholder="Password"
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry
             />
-            <TouchableOpacity style={loginStyles.button} onPress={handleLogin}>
-                <Text style={loginStyles.buttonText}>Log In</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-                style={loginStyles.button}
+            <CommonButton onPress={handleLogin} style={loginStyles.loginButton}>
+                <Text>Log In</Text>
+            </CommonButton>
+            <CommonButton
+                style={loginStyles.registerButton}
                 onPress={() => router.push('/register')}
             >
-                <Text style={loginStyles.buttonText}>Register</Text>
-            </TouchableOpacity>
+                <Text>Register</Text>
+            </CommonButton>
         </CommonBackground>
         </View>
 

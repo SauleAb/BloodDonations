@@ -17,70 +17,11 @@ export default function Rewards() {
     const { user, login } = useUser(); // Access user and login function from UserContext
     const rewardPairsList = rewardPairs();
 
-    const handleDecrementPoints = async () => {
-        if (user.rewardPoints >= 10) {
-            const updatedUser = { ...user, rewardPoints: user.rewardPoints - 10 };
-
-            try {
-                // Retrieve existing users
-                const usersJSON = await AsyncStorage.getItem('users');
-                const users: User[] = usersJSON ? JSON.parse(usersJSON) : [];
-
-                // Update the specific user in the users list
-                const updatedUsers = users.map((u: User) =>
-                    u.email === user.email ? updatedUser : u
-                );
-
-                // Save the updated users list and current user
-                await AsyncStorage.setItem('users', JSON.stringify(updatedUsers));
-                await AsyncStorage.setItem('user', JSON.stringify(updatedUser));
-
-                // Update the UserContext state
-                login(updatedUser); // Update UserContext with the updated user
-            } catch (error) {
-                console.error('Error updating user reward points:', error);
-                Alert.alert('Error', 'Failed to update reward points.');
-            }
-        } else {
-            Alert.alert('Not enough points', 'You do not have enough reward points to perform this action.');
-        }
-    };
-
-    const handleIncrementPoints = async () => {
-        const updatedUser = { ...user, rewardPoints: user.rewardPoints + 10 };
-
-        try {
-            // Retrieve existing users
-            const usersJSON = await AsyncStorage.getItem('users');
-            const users: User[] = usersJSON ? JSON.parse(usersJSON) : [];
-
-            // Update the specific user in the users list
-            const updatedUsers = users.map((u: User) =>
-                u.email === user.email ? updatedUser : u
-            );
-
-            // Save the updated users list and current user
-            await AsyncStorage.setItem('users', JSON.stringify(updatedUsers));
-            await AsyncStorage.setItem('user', JSON.stringify(updatedUser));
-
-            // Update the UserContext state
-            login(updatedUser); // Update UserContext with the updated user
-        } catch (error) {
-            console.error('Error updating user reward points:', error);
-            Alert.alert('Error', 'Failed to update reward points.');
-        }
-    };
 
     return (
         <View style={commonStyles.container}>
             <CommonBackground logoVisible={true} mainPage={true}>
                 <View style={rewardsStyles.margin}>
-                    <TouchableOpacity onPress={handleDecrementPoints} style={rewardsStyles.button}>
-                        <Text style={rewardsStyles.buttonText}>-10</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={handleIncrementPoints} style={rewardsStyles.button}>
-                        <Text style={rewardsStyles.buttonText}>+10</Text>
-                    </TouchableOpacity>
                     <CommonScrollElement>
                         <CommonContent
                             titleText="Reward Points"

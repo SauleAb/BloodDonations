@@ -8,7 +8,6 @@ import { useUser } from '@/components/UserContext';
 export default function MainLayout() {
     return (
         <View style={mainLayoutStyles.container}>
-            <LoggedInUserBanner />
             <Tabs
                 screenOptions={({ route }) => {
                     const iconSource =
@@ -49,20 +48,4 @@ export default function MainLayout() {
         </View>
     );
 }
-
-const LoggedInUserBanner = () => {
-    const { user } = useUser();
-
-    return (
-        <View style={mainLayoutStyles.banner}>
-            {user ? (
-                <Text style={mainLayoutStyles.bannerText}>
-                    Currently logged in user: {user.firstName} {user.lastName}
-                </Text>
-            ) : (
-                <Text style={mainLayoutStyles.bannerText}>No user logged in</Text>
-            )}
-        </View>
-    );
-};
 

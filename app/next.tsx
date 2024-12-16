@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { TextInput, Button, Alert } from 'react-native';
+import { TextInput, Button, Alert, Text } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import nextStyles from './styles/NextStyle';
 import CommonBackground from "@/components/common/CommonBackground";
 import { useUser } from '@/components/UserContext';
 import defaultUser from '@/components/user'; // Import the default user structure
+import InputField from '@/components/InputField';
+import CommonButton from '@/components/common/CommonButton';
 
 export default function NextScreen() {
     const { email, password } = useLocalSearchParams(); // Get params from the previous screen
@@ -53,20 +55,20 @@ export default function NextScreen() {
     };
 
     return (
-        <CommonBackground logoVisible titleText="Complete Your Profile">
-            <TextInput
-                style={nextStyles.input}
+        <CommonBackground style={nextStyles.backgroundImage} titleText={"Complete Your Profile"} logoVisible={true}>
+            <InputField
                 placeholder="First Name"
                 value={firstName}
                 onChangeText={setFirstName}
             />
-            <TextInput
-                style={nextStyles.input}
+            <InputField
                 placeholder="Last Name"
                 value={lastName}
                 onChangeText={setLastName}
             />
-            <Button title="Finish" onPress={handleFinish} />
+            <CommonButton onPress={handleFinish} style={nextStyles.registerButton}> 
+                <Text>Register</Text>
+            </CommonButton>
         </CommonBackground>
     );
 }
