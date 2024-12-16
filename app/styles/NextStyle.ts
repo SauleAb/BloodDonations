@@ -1,54 +1,50 @@
 import { StyleSheet } from 'react-native';
 
-const NextStyle = StyleSheet.create({
+const nextStyles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#fff',
     },
-    backgroundImage: {
-        width: '100%',
-        height: 200,
-        justifyContent: 'center',
-        alignItems: 'center',
+    background: {
+        paddingHorizontal: 20,
     },
-    topContent: {
+    formContainer: {
+        marginTop: 120,
         alignItems: 'center',
+        paddingHorizontal: 20,
     },
     title: {
         fontSize: 24,
         fontWeight: 'bold',
-        color: '#000',
-        marginTop: 5,
-    },
-    content: {
-        flex: 1,
-        padding: 20,
-        backgroundColor: '#fff',
-    },
-    header: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        textAlign: 'center',
         marginBottom: 20,
+        color: '#555',
+        textAlign: 'center',
     },
     input: {
+        width: '100%',
+        padding: 12,
         borderWidth: 1,
         borderColor: '#ccc',
-        padding: 10,
+        borderRadius: 8,
+        marginBottom: 15,
+        fontSize: 16,
+        color: '#333',
+    },
+    placeholderColor: {
+        color: '#aaa',
+    },
+    button: {
         width: '100%',
-        borderRadius: 5,
-        marginBottom: 10,
-    },
-    switchContainer: {
-        flexDirection: 'row',
+        padding: 12,
+        backgroundColor: '#007bff',
+        borderRadius: 8,
         alignItems: 'center',
-        justifyContent: 'center',
-        marginVertical: 10,
-        gap: 10,
+        marginTop: 15,
     },
-    buttonContainer: {
-        marginTop: 20,
-    }
+    buttonText: {
+        color: '#fff',
+        fontWeight: 'bold',
+        fontSize: 16,
+    },
 });
 
-export default NextStyle;
+export default nextStyles;

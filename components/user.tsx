@@ -5,7 +5,7 @@ const user = {
     email: '',
     password: '',
     profilePicture: String,
-    rewardPoints: 0,
+    rewardPoints: 200,
     friendsList: [],
     posts: [],
 

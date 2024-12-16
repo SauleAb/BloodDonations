@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { Text, TextInput, TouchableOpacity, Alert, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import { useUser } from '@/components/UserContext';
 import loginStyles from './styles/LoginStyle';
+import CommonBackground from "@/components/common/CommonBackground";
+import commonStyles from "@/app/styles/CommonStyles";
 
 interface User {
     firstName: string;
@@ -40,8 +42,8 @@ export default function Login() {
     };
 
     return (
-        <View style={loginStyles.container}>
-            <Text style={loginStyles.title}>Log In</Text>
+        <View style={commonStyles.container}>
+            <CommonBackground logoVisible titleText="Log In">
             <TextInput
                 style={loginStyles.input}
                 placeholder="Email"
@@ -59,13 +61,14 @@ export default function Login() {
             <TouchableOpacity style={loginStyles.button} onPress={handleLogin}>
                 <Text style={loginStyles.buttonText}>Log In</Text>
             </TouchableOpacity>
-
             <TouchableOpacity
                 style={loginStyles.button}
                 onPress={() => router.push('/register')}
             >
                 <Text style={loginStyles.buttonText}>Register</Text>
             </TouchableOpacity>
+        </CommonBackground>
         </View>
+
     );
 }
