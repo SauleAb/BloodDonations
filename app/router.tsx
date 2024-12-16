@@ -4,8 +4,8 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { useUser } from '@/components/UserContext';
 
-import Register from '../register';
-import NextScreen from '../next';
+import Register from './register';
+import NextScreen from './next';
 import MainLayout from './_layout'; // Tabs for authenticated users
 
 const Stack = createStackNavigator();
