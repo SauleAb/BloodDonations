@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
 
-const registerStyles = StyleSheet.create({
+const nextStyles = StyleSheet.create({
     margin: {
         marginTop: 20
     },
@@ -33,4 +33,4 @@ const registerStyles = StyleSheet.create({
     }
 });
 
-export default registerStyles;
+export default nextStyles;
