@@ -236,6 +236,9 @@ const styles = StyleSheet.create({
         backgroundColor: '#ffffff',
         paddingLeft: 20,
         paddingRight: 12,
+        borderBottomColor: '#b4b4b4',
+        borderBottomWidth: 1,
+        marginBottom: 5,
     },
     detailRow: {
         flexDirection: 'row',
