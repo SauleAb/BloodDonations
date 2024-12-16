@@ -1,8 +1,9 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet } from "react-native";
 
-const registerStyles = StyleSheet.create({
-    margin: {
-        marginTop: 20
+export const registerStyles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#ffffff',
     },
     backgroundImage: {
         justifyContent: 'center',
@@ -13,24 +14,11 @@ const registerStyles = StyleSheet.create({
         width: '80%',
         alignItems: 'center',
     },
-
-    //Button
-    loginButton: {
-        marginTop: 30,
-    },
-    registerButton: {
-        marginTop: 30,
-    },
-    registerButtonText: {
-        color: 'black',
-    },
-
-    //Input Field
     label: {
         fontSize: 40,
         fontWeight: '700',
         marginBottom: 8,
-    }
+    },
 });
 
 export default registerStyles;
