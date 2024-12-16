@@ -1,4 +1,5 @@
-import { IconNames, RightTextItem } from "@/components/common/CommonContent";
+import { RightTextItem } from "@/components/common/CommonContent";
+import { IconNames } from "@/components/common/CommonIcons";
 
 export const profileHealthData = [
     {
