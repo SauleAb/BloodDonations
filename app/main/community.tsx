@@ -50,7 +50,7 @@ export default function Community() {
                                     key={index}
                                     titleText={"Friend"}
                                     contentText={friend.name}
-                                    icon={IconNames.Delete}
+                                    icon={IconNames.Friend}
                                 />
                             ))
                         ) : (
