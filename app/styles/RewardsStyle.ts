@@ -9,4 +9,17 @@ export const rewardsStyles = StyleSheet.create({
     margin: {
         marginTop: 20,
     },
+    button: {
+        marginVertical: 10,
+        padding: 10,
+        backgroundColor: "#FF3B30", // Red color for subtraction
+        borderRadius: 5,
+        alignItems: "center",
+    },
+    buttonText: {
+        color: "#FFF",
+        fontSize: 16,
+        fontWeight: "bold",
+    },
+    
 });

@@ -16,10 +16,8 @@ const communityStyles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-around",
         alignItems: "center",
-        backgroundColor: "#f0f0f0",
+        backgroundColor: "#ffffff",
         paddingVertical: 10,
-        borderTopWidth: 1,
-        borderTopColor: "#ddd",
     },
     navButton: {
         paddingVertical: 5,

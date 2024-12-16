@@ -1,16 +1,22 @@
 import React from "react";
-import { View } from "react-native";
+import { View, Text, TouchableOpacity, Alert } from "react-native";
 import CommonBackground from "@/components/common/CommonBackground";
 import CommonContent, { IconNames } from "@/components/common/CommonContent";
 import CommonScrollElement from "@/components/common/CommonScrollElement";
 import CommonRewardBox from "@/components/common/CommonRewardBox";
-import { rewardPoints } from "@/constants/RewardsData";
 import { rewardsStyles } from "../styles/RewardsStyle";
 import commonStyles from "../styles/CommonStyles";
 import { rewardPairs } from "@/utils/rewardsUtils";
+import { useUser } from '@/components/UserContext';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import user from "../../components/user";
+
+type User = typeof user;
 
 export default function Rewards() {
-    const rewardPairsList = rewardPairs(); 
+    const { user, login } = useUser(); // Access user and login function from UserContext
+    const rewardPairsList = rewardPairs();
+
 
     return (
         <View style={commonStyles.container}>
@@ -20,7 +26,7 @@ export default function Rewards() {
                         <CommonContent
                             titleText="Reward Points"
                             icon={IconNames.Notification}
-                            contentText={rewardPoints}
+                            contentText={user?.rewardPoints?.toString() ?? '0'} // Safely display reward points
                         />
                         {rewardPairsList.map((pair, index) => (
                             <View style={rewardsStyles.row} key={index}>
