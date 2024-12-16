@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import CommonBackground from "@/components/common/CommonBackground";
-import CommonContent, { IconNames } from "@/components/common/CommonContent";
-import { View, FlatList, StyleSheet } from "react-native";
+import CommonContent from "@/components/common/CommonContent";
+import { View, FlatList, StyleSheet, SwitchComponent } from "react-native";
 import { Calendar } from "react-native-calendars";
 import InputField from "@/components/InputField";
 import moment from "moment";
@@ -17,6 +17,8 @@ import { cityLocations, DonationLocation } from "@/constants/DonateData";
 import CustomInput from "@/components/InputField";
 import CalendarComponent from "@/components/CalendarComponent";
 import CalendarContent from "@/components/CalendarComponent";
+import { IconNames } from "@/components/common/CommonIcons";
+import CommonContentSwitch from "@/components/common/CommonContentSwitch";
 
 export default function Donate() {
     const {
@@ -32,6 +34,13 @@ export default function Donate() {
         setSelectedHospital,
         resetFields,
     } = useDonationForm();
+
+    const [isToggled, setIsToggled] = useState(false); // Initial state is false
+
+    const handleToggle = () => {
+        setIsToggled((prevState) => !prevState); // Toggle the state
+    };
+    
 
     const { nextDonationAvailable, nextDonationText } = getNextDonationDetails();
     const disabledDates = generateDisabledDates(nextDonationAvailable);
@@ -155,6 +164,10 @@ export default function Donate() {
                                                         </CommonButton>
                                                     </View>
                                                 ))}
+                                                <View style={donateStyles.row}>
+                                                    <CommonText>Let others join you</CommonText>
+                                                    <CommonContentSwitch initialValue={false} onToggle={handleToggle} />
+                                                </View>
 
                                                 {selectedHospital && (
                                                     <View>

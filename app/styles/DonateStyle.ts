@@ -12,6 +12,11 @@ const donateStyles = StyleSheet.create({
         borderBottomWidth: 1,
         borderBottomColor: "#ddd",
     },
+    toggle: {
+        justifyContent: "space-between",
+        flexDirection: "row",
+        flex: 1
+    },
     calendarWrapper: {
         flex: 1,
         width: "100%",
