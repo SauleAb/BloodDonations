@@ -1,6 +1,6 @@
 import { IconNames } from "@/components/common/CommonContent";
 
-export const rewardPoints = "340";
+export const rewardPoints = "340"; // delete later!!
 
 export const rewards = [
     {
