@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, Image } from 'react-native';
+import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
 import { IconNames, iconMap } from "@/components/common/CommonContent";
 import CommonText from "@/components/common/CommonText";
 
@@ -7,13 +7,14 @@ type CommonRewardBoxProps = {
     titleText: string;
     amountText: string;
     icon: IconNames;
+    onPress: () => void; // ask for confirmation here
 };
 
-const CommonRewardBox: React.FC<CommonRewardBoxProps> = ({ titleText, icon, amountText }) => {
+const CommonRewardBox: React.FC<CommonRewardBoxProps> = ({ titleText, icon, amountText, onPress }) => {
     const iconSource = iconMap[icon];
 
     return (
-        <View style={styles.container}>
+        <TouchableOpacity style={styles.container} onPress={onPress}>
             <View style={styles.greyBar}>
                 <CommonText bold style={styles.label}>{titleText}</CommonText>
                 <CommonText style={styles.label}>{amountText}</CommonText>
@@ -23,7 +24,7 @@ const CommonRewardBox: React.FC<CommonRewardBoxProps> = ({ titleText, icon, amou
                     <Image source={iconSource} style={styles.contentIcon} />
                 </View>
             </View>
-        </View>
+            </TouchableOpacity>
     );
 };
 
