@@ -17,7 +17,10 @@ const donateStyles = StyleSheet.create({
         width: "100%",
         alignSelf: "center",
         justifyContent: "center",
-        paddingHorizontal: 10,
+    },
+    listContainer: {
+        flexGrow: 1, // Allows content to grow within the FlatList
+        alignItems: "center", // Centers content horizontally
     },
     timeButton: {
         margin: 1,

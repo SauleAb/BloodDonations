@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import CommonBackground from "@/components/common/CommonBackground";
 import CommonContent, { IconNames } from "@/components/common/CommonContent";
-import CommonScrollElement from "@/components/common/CommonScrollElement";
-import { View, FlatList, TouchableOpacity } from "react-native";
+import { View, FlatList, StyleSheet } from "react-native";
 import { Calendar } from "react-native-calendars";
 import InputField from "@/components/InputField";
 import moment from "moment";
@@ -78,127 +77,175 @@ export default function Donate() {
     return (
         <View style={commonStyles.container}>
             <CommonBackground logoVisible={true} mainPage={true}>
-                <CommonScrollElement>
-                    <CommonContent
-                        titleText={"Next Donation Available in"}
-                        contentText={nextDonationText}
-                        icon={IconNames.BloodDonated}
-                    />
+            <FlatList
+    data={[]} // Placeholder data
+    keyExtractor={(item, index) => index.toString()} // Dummy key extractor
+    renderItem={() => null} // Minimal renderItem to satisfy TypeScript
+    style={styles.fullWidthContainer} // Add full width container style
+    ListHeaderComponent={
+        <View style={styles.fullWidthContent}>
+                            <CommonContent
+                                titleText={"Next Donation Available in"}
+                                contentText={nextDonationText}
+                                icon={IconNames.BloodDonated}
+                            />
 
-                    <CustomInput
-                        placeholder="Search for a city"
-                        value={inputValue}
-                        onChangeText={handleTextChange}
-                        suggestions={suggestions}
-                        onSuggestionSelect={handleSuggestionSelect}
-                    />
+                            <CustomInput
+                                placeholder="Search for a city"
+                                value={inputValue}
+                                onChangeText={handleTextChange}
+                                suggestions={suggestions}
+                                onSuggestionSelect={handleSuggestionSelect}
+                            />
 
-                    {selectedCity.trim() && (
-                        <InputField
-                            placeholder="Enter search radius"
-                            value={selectedRadius}
-                            onChangeText={setSelectedRadius}
-                        />
-                    )}
-
-                    {isCityAndRadiusFilled && (
-                        <CommonContent titleText="Select a Donation Date">
-                            <View style={donateStyles.calendarWrapper}>
-                                <Calendar
-                                    onDayPress={(day: { dateString: string }) =>
-                                        setSelectedDate(day.dateString)
-                                    }
-                                    markedDates={{
-                                        ...disabledDates,
-                                        [selectedDate]: {
-                                            selected: true,
-                                            marked: true,
-                                            selectedColor: "#00BFFF",
-                                        },
-                                    }}
-                                    theme={calendarStyles.calendar}
-                                    minDate={moment().format("YYYY-MM-DD")}
-                                    disableAllTouchEventsForDisabledDays={true}
-                                    scrollEnabled={true}
-                                    enableSwipeMonths={true}
+                            {selectedCity.trim() && (
+                                <InputField
+                                    placeholder="Enter search radius"
+                                    value={selectedRadius}
+                                    onChangeText={setSelectedRadius}
                                 />
+                            )}
 
-                                {selectedDate && (
-                                    <View>
-                                        <CommonText bold style={donateStyles.selectedDateText}>
-                                            {selectedDate}
-                                        </CommonText>
-                                        <CommonText bold style={donateStyles.title}>
-                                            Available locations
-                                        </CommonText>
+                            {isCityAndRadiusFilled && (
+                                <CommonContent titleText="Select a Donation Date">
+                                    <View style={donateStyles.calendarWrapper}>
+                                        <Calendar
+                                            onDayPress={(day: { dateString: string }) =>
+                                                setSelectedDate(day.dateString)
+                                            }
+                                            markedDates={{
+                                                ...disabledDates,
+                                                [selectedDate]: {
+                                                    selected: true,
+                                                    marked: true,
+                                                    selectedColor: "#00BFFF",
+                                                },
+                                            }}
+                                            theme={calendarStyles.calendar}
+                                            minDate={moment().format("YYYY-MM-DD")}
+                                            disableAllTouchEventsForDisabledDays={true}
+                                            scrollEnabled={true}
+                                            enableSwipeMonths={true}
+                                        />
 
-                                        {locations.map((location, index) => (
-                                            <View style={donateStyles.row} key={index}>
-                                                <CommonText style={donateStyles.friend}>
-                                                    {location.name}
-                                                    {"\n"}
-                                                    {location.hours}
-                                                </CommonText>
-                                                <CommonButton
-                                                    size="small"
-                                                    onPress={() => handleSetAppointment(location.name)}
-                                                >
-                                                    Set{"\n"}Appointment
-                                                </CommonButton>
-                                            </View>
-                                        ))}
-
-                                        {selectedHospital && (
+                                        {selectedDate && (
                                             <View>
-                                                <CommonText bold style={donateStyles.title}>
-                                                    {selectedHospital}
+                                                <CommonText bold style={donateStyles.selectedDateText}>
+                                                    {selectedDate}
                                                 </CommonText>
-                                                {locations
-                                                    .filter((loc) => loc.name === selectedHospital)
-                                                    .map((loc, index) => (
-                                                        <View key={index}>
-                                                            <CommonText style={donateStyles.friend}>
-                                                                {loc.address}
-                                                                {"\n"}
-                                                                {loc.hours}
-                                                            </CommonText>
-                                                            <View style={donateStyles.rowStart}>
-                                                                {loc.availableTimes.map((time: string) => (
-                                                                    <CommonButton
-                                                                        key={time}
-                                                                        size="small"
-                                                                        onPress={() => setSelectedTime(time)}
-                                                                        style={[
-                                                                            selectedTime === time
-                                                                                ? donateStyles.selectedTime
-                                                                                : {},
-                                                                            donateStyles.timeButton,
-                                                                        ]}
+                                                <CommonText bold style={donateStyles.title}>
+                                                    Available locations
+                                                </CommonText>
+
+                                                {locations.map((location, index) => (
+                                                    <View style={donateStyles.row} key={index}>
+                                                        <CommonText style={donateStyles.friend}>
+                                                            {location.name}
+                                                            {"\n"}
+                                                            {location.hours}
+                                                        </CommonText>
+                                                        <CommonButton
+                                                            size="small"
+                                                            onPress={() =>
+                                                                handleSetAppointment(location.name)
+                                                            }
+                                                        >
+                                                            Set{"\n"}Appointment
+                                                        </CommonButton>
+                                                    </View>
+                                                ))}
+
+                                                {selectedHospital && (
+                                                    <View>
+                                                        <CommonText bold style={donateStyles.title}>
+                                                            {selectedHospital}
+                                                        </CommonText>
+                                                        {locations
+                                                            .filter(
+                                                                (loc) =>
+                                                                    loc.name === selectedHospital
+                                                            )
+                                                            .map((loc, index) => (
+                                                                <View key={index}>
+                                                                    <CommonText
+                                                                        style={donateStyles.friend}
                                                                     >
-                                                                        {time}
-                                                                    </CommonButton>
-                                                                ))}
-                                                            </View>
-                                                            {isTimeSelected && (
-                                                                <CommonButton
-                                                                    style={donateStyles.center}
-                                                                    size="small"
-                                                                    onPress={resetFields}
-                                                                >
-                                                                    Request {"\n"}Appointment
-                                                                </CommonButton>
-                                                            )}
-                                                        </View>
-                                                    ))}
+                                                                        {loc.address}
+                                                                        {"\n"}
+                                                                        {loc.hours}
+                                                                    </CommonText>
+                                                                    <View
+                                                                        style={
+                                                                            donateStyles.rowStart
+                                                                        }
+                                                                    >
+                                                                        {loc.availableTimes.map(
+                                                                            (time: string) => (
+                                                                                <CommonButton
+                                                                                    key={time}
+                                                                                    size="small"
+                                                                                    onPress={() =>
+                                                                                        setSelectedTime(
+                                                                                            time
+                                                                                        )
+                                                                                    }
+                                                                                    style={[
+                                                                                        selectedTime ===
+                                                                                        time
+                                                                                            ? donateStyles.selectedTime
+                                                                                            : {},
+                                                                                        donateStyles.timeButton,
+                                                                                    ]}
+                                                                                >
+                                                                                    {time}
+                                                                                </CommonButton>
+                                                                            )
+                                                                        )}
+                                                                    </View>
+                                                                    {isTimeSelected && (
+                                                                        <CommonButton
+                                                                            style={
+                                                                                donateStyles.center
+                                                                            }
+                                                                            size="small"
+                                                                            onPress={resetFields}
+                                                                        >
+                                                                            Request {"\n"}Appointment
+                                                                        </CommonButton>
+                                                                    )}
+                                                                </View>
+                                                            ))}
+                                                    </View>
+                                                )}
                                             </View>
                                         )}
                                     </View>
-                                )}
-                            </View>
-                        </CommonContent>
-                    )}
-                </CommonScrollElement>
+                                </CommonContent>
+                            )}
+                        </View>
+                    }
+                />
             </CommonBackground>
         </View>
     );
 }
+
+const styles = StyleSheet.create({
+    contentContainer: {
+        flexGrow: 1,
+        width: "90%", 
+        alignSelf: "center",
+        alignItems: "center"
+    },
+    fullWidthContainer: {
+        flexGrow: 1, 
+        width: "100%",
+    },
+    fullWidthContent: {
+        flex: 1,
+        width: "100%",
+        alignSelf: "center", 
+        justifyContent: "center",
+        alignItems: "center"
+    },
+});
