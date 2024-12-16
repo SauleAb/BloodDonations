@@ -50,7 +50,10 @@ export const UserProvider = ({ children }) => {
             await AsyncStorage.setItem('users', JSON.stringify(storedUsers));
     
             // Set the logged-in user and persist in AsyncStorage
-            setUser(userToLogin);
+            // setUser(userToLogin);
+            
+            // NOTE: skipped all previous steps, data is validated and passed through in login page
+            setUser(userData);
             await AsyncStorage.setItem('user', JSON.stringify(userToLogin));
         } catch (error) {
             console.error('Failed to login user:', error);

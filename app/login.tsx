@@ -24,25 +24,53 @@ export default function Login() {
     const router = useRouter();
 
     const handleLogin = async () => {
-        try {
-            const usersJSON = await AsyncStorage.getItem('users');
-            const users: User[] = usersJSON ? JSON.parse(usersJSON) : [];
-            const matchingUser = users.find(
-                (user) => user.email === email && user.password === password
-            );
-
-            if (matchingUser) {
-                login(matchingUser);
-                Alert.alert('Success', `Welcome back, ${matchingUser.firstName}!`);
-                router.replace('/main/home'); // Redirect to home screen
-            } else {
-                Alert.alert('Error', 'Invalid email or password. Please try again.');
-            }
-        } catch (error) {
-            console.error('Login error:', error);
-            Alert.alert('Error', 'An error occurred during login. Please try again.');
+        if(!email || email == ""){
+            // add error popup here
+            return
         }
-    };
+        if(!password || password == ""){
+            // add error popup here
+            return
+        }
+        const _email = email.replace(/@/g, "%40") // format email bc api uses url encoded
+        let url = `https://sanquin-api.onrender.com/users/email/${_email}?password=${password}`
+        fetch(url, {
+            method: 'GET',
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok' + response);
+                }
+                return response.json();
+            })
+            .then(data => {
+                const user = {
+                    firstName: '-', // user object given by database doesn't store any of these yet
+                    lastName: '-',
+                    email: data.data.email,
+                    password: data.data.password,
+                    profilePicture: String,
+                    rewardPoints: data.data.points,
+                    friendsList: [],
+                    posts: [],
+                    plasmaDonor: false,
+                    nextPlasmaDonation: Date,
+                    bloodDonor: false,
+                    nextBloodDonation: Date,
+                    totalBloodDonated: 0,
+                    donationHistory: [],
+                    timesDonated: 0,
+                    lastDonation: '',
+                    ironLevels: 0,
+                    darkModeEnabled: false,
+                };
+                login(user)
+                router.replace('/main/home');
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
 
     return (
         <View style={commonStyles.container}>

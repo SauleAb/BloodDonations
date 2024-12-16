@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useContext} from "react";
 import { View } from "react-native";
 import CommonBackground from "@/components/common/CommonBackground";
 import CommonContent from "@/components/common/CommonContent";
