@@ -25,10 +25,7 @@ export default function Register() {
                 return;
             }
 
-            const usersJSON = await AsyncStorage.getItem('users');
-            const users = usersJSON ? JSON.parse(usersJSON) : [];
-
-            const emailExists = users.some((user: { email: string }) => user.email === email);
+            const emailExists = false; // api request to check if email exists (waiting for nina)
             if (emailExists) {
                 Alert.alert('Error', 'An account with this email already exists.');
                 return;

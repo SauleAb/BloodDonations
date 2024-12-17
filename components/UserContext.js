@@ -45,18 +45,12 @@ export const UserProvider = ({ children }) => {
                     throw new Error('User not found');
                 }
             }
-    
-            // Save updated users list back to AsyncStorage
-            await AsyncStorage.setItem('users', JSON.stringify(storedUsers));
-    
-            // Set the logged-in user and persist in AsyncStorage
-            // setUser(userToLogin);
-            
-            // NOTE: skipped all previous steps, data is validated and passed through in login page
             setUser(userData);
             await AsyncStorage.setItem('user', JSON.stringify(userData));
         } catch (error) {
-            console.error('Failed to login user:', error);
+            let test = await AsyncStorage.getItem('user');
+            //console.error('Failed to login user:', error);
+            console.error('test: ', test);
         }
     };
     

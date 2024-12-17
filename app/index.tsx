@@ -6,29 +6,29 @@ import CommonButton from "@/components/common/CommonButton";
 import CommonText from "@/components/common/CommonText";
 import indexStyles from './styles/IndexStyle';
 import commonStyles from './styles/CommonStyles';
-import { 
-    registerForPushNotificationsAsync, 
-    addNotificationReceivedListener, 
-    removeNotificationListener 
+import {
+    registerForPushNotificationsAsync,
+    addNotificationReceivedListener,
+    removeNotificationListener
 } from '@/utils/notificationUtils';
-
+ 
 const { height } = Dimensions.get('window');
-
+ 
 export default function HomeScreen() {
     useEffect(() => {
         registerForPushNotificationsAsync().then(token => {
             console.log("Push notification token:", token);
         });
-
+ 
         const notificationListener = addNotificationReceivedListener((notification) => {
             console.log("Notification received:", notification);
         });
-
+ 
         return () => {
             removeNotificationListener(notificationListener);
         };
     }, []);
-
+ 
     return (
         <View style={commonStyles.container}>
             <CommonBackground style={indexStyles.backgroundImage} backgroundHeight={1} fullScreen={true}>
@@ -41,7 +41,12 @@ export default function HomeScreen() {
                 <CommonButton href="/login" style={indexStyles.button}>
                     Begin Your Journey
                 </CommonButton>
+                {/* New Button to Navigate to User List */}
+                <CommonButton href="/userlist" style={indexStyles.button}>
+                    View Users
+                </CommonButton>
             </CommonBackground>
         </View>
     );
 }
+ 

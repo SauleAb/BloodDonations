@@ -8,6 +8,7 @@ import CommonBackground from "@/components/common/CommonBackground";
 import commonStyles from "@/app/styles/CommonStyles";
 import InputField from '@/components/InputField';
 import CommonButton from '@/components/common/CommonButton';
+import defaultUser from '@/components/user'; // Import the default user structure
 
 
 interface User {
@@ -44,27 +45,18 @@ export default function Login() {
                 return response.json();
             })
             .then(data => {
+                const email = data.data.email;
+                const password = data.data.password;
+                const rewardPoints = data.data.points;
+
                 const user = {
-                    firstName: '-', // user object given by database doesn't store any of these yet
-                    lastName: '-',
-                    email: data.data.email,
-                    password: data.data.password,
-                    profilePicture: String,
-                    rewardPoints: data.data.points,
-                    friendsList: [],
-                    posts: [],
-                    plasmaDonor: false,
-                    nextPlasmaDonation: Date,
-                    bloodDonor: false,
-                    nextBloodDonation: Date,
-                    totalBloodDonated: 0,
-                    donationHistory: [],
-                    timesDonated: 0,
-                    lastDonation: '',
-                    ironLevels: 0,
-                    darkModeEnabled: false,
+                    ...defaultUser, // Use the default structure
+                    email,
+                    password,
+                    rewardPoints
                 };
                 login(user)
+                AsyncStorage.setItem('user', JSON.stringify(user))
                 router.replace('/main/home');
             })
             .catch(error => {
