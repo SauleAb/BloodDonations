@@ -59,7 +59,6 @@ export default function Donate() {
     };
 
     const fetchUserByEmail = async () => {
-        try {
           const response = await axios.get(
             `https://sanquin-api.onrender.com/users/email/${user.email}?password=${user.password}`
           );
@@ -70,9 +69,6 @@ export default function Donate() {
           } else {
             console.error("Error fetching user:", response.statusText);
           }
-        } catch (error) {
-          console.error("Error fetching user:", error);
-        }
       };
 
       useEffect(() => {
@@ -100,14 +96,10 @@ export default function Donate() {
 
     useEffect(() => {
         const fetchAllLocations = async () => {
-            try {
                 const response = await axios.get("https://sanquin-api.onrender.com/donations/location/all");
                 if (response.status === 200) {
                     setAllLocations(response.data.data);
                 }
-            } catch (error) {
-                console.error("Error fetching all locations:", error);
-            }
         };
 
         fetchAllLocations();
@@ -116,15 +108,11 @@ export default function Donate() {
     useEffect(() => {
         const fetchCityLocations = async () => {
             if (selectedCity) {
-                try {
                     const response = await axios.get(`https://sanquin-api.onrender.com/donations/location/${selectedCity}`);
                     if (response.status === 200) {
                         const cityLocations = response.data.data;
                         filterLocationsWithinRadius(cityLocations);
                     }
-                } catch (error) {
-                    console.error(`Error fetching locations for ${selectedCity}:`, error);
-                }
             }
         };
 
