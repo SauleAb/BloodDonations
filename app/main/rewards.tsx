@@ -16,14 +16,14 @@ export default function Rewards() {
     const { user } = useUser();
     const rewardPairsList = rewardPairs();
 
-    const [userPoints, setUserPoints] = useState(user.rewardPoints); // Local state to store the points
+    const [userPoints, setUserPoints] = useState(user?.rewardPoints); // Local state to store the points
 
     useEffect(() => {
-        setUserPoints(user.rewardPoints);
-    }, [user.rewardPoints]);
+        setUserPoints(user?.rewardPoints);
+    }, [user?.rewardPoints]);
 
     const redeem = () => {
-        setUserPoints(user.rewardPoints)
+        setUserPoints(user?.rewardPoints)
     };
 
 
@@ -35,7 +35,7 @@ export default function Rewards() {
                         <CommonContent
                             titleText="Reward Points"
                             icon={IconNames.Notification}
-                            contentText={user.rewardPoints.toString() ?? '0'} // Safely display reward points
+                            contentText={user?.rewardPoints.toString() ?? '0'} // Safely display reward points
                         />
                         {rewardPairsList.map((pair, index) => (
                             <View style={rewardsStyles.row} key={index}>

@@ -18,14 +18,14 @@ export const getProfileContent = (user: any) => [
         rightText: [
             user?.bloodType || "N/A",
             user?.nationality || "N/A",
-            user?.gender || "N/A",
-            user?.dob || "N/A",
+            user?.sex || "N/A",
+            user?.dateOfBirth || "N/A",
             { type: "switch", switchValue: user?.eligible || false, onToggle: () => console.log("Eligible switched!") } as RightTextItem,
         ],
     },
     {
         titleText: "Phone Number",
-        contentText: user?.phone || "N/A",
+        contentText: user?.phoneNumber || "N/A",
         icon: IconNames.BloodDonated,
     },
     {

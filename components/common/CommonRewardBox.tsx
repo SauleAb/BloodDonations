@@ -25,7 +25,7 @@ const CommonRewardBox: React.FC<CommonRewardBoxProps> = ({ titleText, icon, amou
 
     const handleConfirm = () => {
         const price = parseInt(amountText)
-        if(user.rewardPoints >= price){
+        if(user?.rewardPoints >= price){
             user.rewardPoints -= price
             setIsModalVisible(false); // Close the modal
             onPress(); // Execute the redeem action

@@ -19,6 +19,18 @@ const user = {
     nextBloodDonation: Date,
     totalBloodDonated: 0,
 
+    // DEMO PURPOSES
+    // profile information
+    bloodType: "AB+",
+    nationality: "Dutch",
+    sex: "Male",
+    dateOfBirth: "21-07-2001",
+    eligible: false,
+
+    phoneNumber: "06 12345678",
+    city: "",
+    address: "Achtseweg Zuid 151C",
+
     // Donation Info
     donationHistory: [],
     timesDonated: 0,

@@ -33,15 +33,3 @@ export function getPoints(userId: Int32){
 
     return points;
 }
-
-// returns true if user has enough points and false if not user doesnt have enough points
-export function redeem(userId: Int32, rewardId: Int32){
-    let rewardCost = 5
-    const points = getPoints(userId)
-    if (points && points >= rewardCost){
-        // POST REQUEST TO TAKE POINTS OFF OF USER IN DATABASE
-        return true
-    } else{
-        return false
-    }
-}
