@@ -7,7 +7,7 @@ export const getProfileContent = (user: any) => [
         contentText: user?.first_name + ' ' + user?.last_name || "N/A",
     },
     {
-        titleText: "Username",
+        titleText: "Email",
         contentText: user?.username || "N/A",
     },
     {
