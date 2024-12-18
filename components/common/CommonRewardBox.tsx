@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, Image, TouchableOpacity, Modal, Button } from 'react-native';
-import { IconNames, iconMap } from "@/components/common/CommonContent";
+import { IconNames, iconMap } from "@/components/common/CommonIcons";
 import CommonText from "@/components/common/CommonText";
 import { useUser } from '@/components/UserContext';
 
@@ -8,7 +8,7 @@ type CommonRewardBoxProps = {
     titleText: string;
     amountText: string;
     icon: IconNames;
-    onPress: () => void; // ask for confirmation here
+    onPress: () => void;
 };
 
 const CommonRewardBox: React.FC<CommonRewardBoxProps> = ({ titleText, icon, amountText, onPress }) => {

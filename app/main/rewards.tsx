@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, TouchableOpacity, Alert } from "react-native";
 import CommonBackground from "@/components/common/CommonBackground";
-import CommonContent, { IconNames } from "@/components/common/CommonContent";
+import CommonContent from "@/components/common/CommonContent";
 import CommonScrollElement from "@/components/common/CommonScrollElement";
 import CommonRewardBox from "@/components/common/CommonRewardBox";
 import { rewardsStyles } from "../styles/RewardsStyle";
@@ -11,6 +11,7 @@ import { useUser } from '@/components/UserContext';
 import user from "../../components/user";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useTransitionProgress } from "react-native-screens";
+import { IconNames } from "@/components/common/CommonIcons";
 
 export default function Rewards() {
     const { user } = useUser();
