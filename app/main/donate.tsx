@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { View, FlatList, StyleSheet } from "react-native";
 import { Calendar } from "react-native-calendars";
 import InputField from "@/components/InputField";
@@ -12,14 +13,12 @@ import { getNextDonationDetails } from "@/utils/donationUtils";
 import { generateDisabledDates } from "@/utils/calendarUtils";
 import calendarStyles from "@/app/styles/CalendarStyle";
 import commonStyles from "@/app/styles/CommonStyles";
-import { cityLocations, DonationLocation } from "@/constants/DonateData";
-import { getDistance } from "geolib";  // Import geolib
+import { getDistance } from "geolib";
 import moment from "moment";
 import CustomInput from "@/components/InputField";
-import { IconNames } from "@/components/common/CommonIcons";
 import CommonContentSwitch from "@/components/common/CommonContentSwitch";
 import CalendarContent from "@/components/CalendarComponent";
-
+import { IconNames } from "@/components/common/CommonIcons";
 export default function Donate() {
     const {
         selectedDate,
@@ -43,26 +42,102 @@ export default function Donate() {
 
     const [isToggled, setIsToggled] = useState(false);
     const [activeAppointment, setActiveAppointment] = useState<ActiveAppointment>(null);
-    const [locations, setLocations] = useState<DonationLocation[]>([]); 
-    const [inputValue, setInputValue] = useState(""); 
+    const [locations, setLocations] = useState<Location[]>([]); // Filtered locations
+    const [allLocations, setAllLocations] = useState<Location[]>([]); // All locations
+    const [inputValue, setInputValue] = useState("");
     const [suggestions, setSuggestions] = useState<string[]>([]);
+
+    const { nextDonationAvailable, nextDonationText } = getNextDonationDetails();
+    const disabledDates = generateDisabledDates(nextDonationAvailable);
 
     const handleToggle = () => {
         setIsToggled((prevState) => !prevState);
     };
 
-    const { nextDonationAvailable, nextDonationText } = getNextDonationDetails();
-    const disabledDates = generateDisabledDates(nextDonationAvailable);
+    type TimeSlot = {
+        start_time: string; 
+        end_time: string;   
+        total_capacity: number;
+        remaining_capacity: number;
+    };
+
+    type Location = {
+        name: string;
+        opening_hours: string;
+        latitude: number;
+        longitude: number;
+        address: string;
+        timeslots: TimeSlot[];
+        id: string;
+    };
 
     const isCityAndRadiusFilled = selectedCity.trim() && selectedRadius.trim();
     const isTimeSelected = selectedTime !== "";
 
+    // Fetch all locations on component mount
+    useEffect(() => {
+        const fetchAllLocations = async () => {
+            try {
+                const response = await axios.get("https://sanquin-api.onrender.com/donations/location/all");
+                if (response.status === 200) {
+                    setAllLocations(response.data.data);
+                }
+            } catch (error) {
+                console.error("Error fetching all locations:", error);
+            }
+        };
+
+        fetchAllLocations();
+    }, []);
+
+    // Fetch and filter locations by city and radius
+    useEffect(() => {
+        const fetchCityLocations = async () => {
+            if (selectedCity) {
+                try {
+                    const response = await axios.get(`https://sanquin-api.onrender.com/donations/location/${selectedCity}`);
+                    if (response.status === 200) {
+                        const cityLocations = response.data.data;
+                        filterLocationsWithinRadius(cityLocations);
+                    }
+                } catch (error) {
+                    console.error(`Error fetching locations for ${selectedCity}:`, error);
+                }
+            }
+        };
+
+        if (selectedCity && selectedRadius) {
+            fetchCityLocations();
+        }
+    }, [selectedCity, selectedRadius]);
+
+    // Helper function to filter locations within radius
+    const filterLocationsWithinRadius = (cityLocations: Location[]) => {
+        const radiusInMeters = parseInt(selectedRadius) * 1000;
+        const selectedCityCoordinates = cityLocations.length
+            ? { latitude: cityLocations[0].latitude, longitude: cityLocations[0].longitude }
+            : null;
+    
+        if (!selectedCityCoordinates) return;
+    
+        const withinRadius = allLocations.filter((location) => {
+            const locationCoordinates = { latitude: location.latitude, longitude: location.longitude };
+            const distance = getDistance(selectedCityCoordinates, locationCoordinates);
+            return distance <= radiusInMeters;
+        });
+    
+        const uniqueLocations = [...new Map([...cityLocations, ...withinRadius].map((loc) => [loc.id, loc])).values()];
+    
+        setLocations(uniqueLocations);
+    };
+
     const handleTextChange = (text: string) => {
         setInputValue(text);
 
-        const filteredSuggestions = Object.keys(cityLocations).filter((city) =>
-            city.toLowerCase().includes(text.toLowerCase())
-        );
+        const filteredSuggestions = allLocations
+            .map((location) => location.address.split(",")[1]?.trim())
+            .filter((city, index, self) => city && self.indexOf(city) === index && city.toLowerCase().includes(text.toLowerCase()));
+
         setSuggestions(filteredSuggestions);
     };
 
@@ -71,13 +146,6 @@ export default function Donate() {
         setSuggestions([]);
         setSelectedCity(city);
     };
-
-    useEffect(() => {
-        if (selectedCity.trim()) {
-            const cityData = cityLocations[selectedCity];
-            setLocations(cityData ? cityData.locations : []);
-        }
-    }, [selectedCity]);
 
     const handleSetAppointment = (hospitalName: string) => {
         setSelectedHospital(hospitalName);
@@ -88,82 +156,56 @@ export default function Donate() {
         resetFields();
     };
 
+    const getAvailableTimesForSelectedDay = () => {
+        const selectedLocation = locations.find((loc) => loc.name === selectedHospital);
+        if (!selectedLocation) return [];
+    
+        const timeslots = selectedLocation.timeslots || [];
+        return timeslots.filter(
+            (slot) => moment(slot.start_time).format("YYYY-MM-DD") === selectedDate
+        );
+    };
+
     const handleRequestAppointment = async () => {
         if (selectedHospital && selectedDate && selectedTime) {
-            const appointmentDateTime = `${selectedDate}T${selectedTime}:00.000Z`; 
-            const userId = 0; // current user
+            const appointmentDateTime = `${selectedDate}T${selectedTime}:00.000Z`;
+            const userId = 0;
             const location = locations.find((loc) => loc.name === selectedHospital);
-            const locationId = 0; // database
+    
+            if (!location) {
+                console.error("Location not found for the selected hospital.");
+                return;
+            }
     
             const appointmentData = {
-                amount: 1, // toggle check
+                amount: 0,
                 user_id: userId,
-                location_id: locationId,
-                type: "blood", // user data check
+                location_id: location.id,
+                type: "blood",
                 appointment: appointmentDateTime,
                 status: "pending",
             };
     
             try {
-                if (selectedHospital && selectedDate && selectedTime) {
-                    setActiveAppointment({
-                        hospital: selectedHospital,
-                        date: selectedDate,
-                        time: selectedTime,
-                    });
-                }
-                // const response = await axios.post(
-                //     "https://sanquin-api.onrender.com/donations/",
-                //     appointmentData
-                // );
+                const response = await axios.post(
+                    "https://sanquin-api.onrender.com/donations/",
+                    appointmentData
+                );
+                setActiveAppointment({
+                    hospital: selectedHospital,
+                    date: selectedDate,
+                    time: selectedTime,
+                });
                 setSelectedCity("");
-                setInputValue(""); 
-                setSelectedRadius(""); 
-                setSelectedDate(""); 
+                setInputValue("");
+                setSelectedRadius("");
+                setSelectedDate("");
                 setSelectedTime("");
             } catch (error) {
                 console.error("Error posting appointment:", error);
             }
         }
     };
-
-    const timeUntilNextDonation = activeAppointment
-        ? moment(`${activeAppointment.date} ${activeAppointment.time}`, "YYYY-MM-DD HH:mm").fromNow()
-        : "";
-
-    // Helper function to filter locations based on radius
-    const filterLocationsWithinRadius = (cityCoordinates: { latitude: number, longitude: number }) => {
-        const radiusInMeters = parseInt(selectedRadius) * 1000;  // Convert radius to meters
-        const filteredLocations: DonationLocation[] = [];
-
-        // Add the selected city's locations first
-        const selectedCityLocations = cityLocations[selectedCity]?.locations || [];
-        filteredLocations.push(...selectedCityLocations);
-
-        // Check other cities within radius
-        Object.keys(cityLocations).forEach((city) => {
-            if (city !== selectedCity) {
-                const cityData = cityLocations[city];
-                const distance = getDistance(cityCoordinates, cityData.coordinates);
-                if (distance <= radiusInMeters) {
-                    filteredLocations.push(...cityData.locations);
-                }
-            }
-        });
-
-        setLocations(filteredLocations);
-    };
-
-    useEffect(() => {
-        if (selectedCity && selectedRadius) {
-            const cityData = cityLocations[selectedCity];
-            const cityCoordinates = cityData ? cityData.coordinates : null;
-            if (cityCoordinates) {
-                filterLocationsWithinRadius(cityCoordinates);
-            }
-        }
-    }, [selectedCity, selectedRadius]);
-
     return (
         <View style={commonStyles.container}>
             <CommonBackground logoVisible={true} mainPage={true}>
@@ -215,7 +257,6 @@ export default function Donate() {
                                                         setSelectedDate(day.dateString)
                                                     }
                                                     markedDates={{
-                                                        ...disabledDates,
                                                         [selectedDate]: {
                                                             selected: true,
                                                             marked: true,
@@ -242,7 +283,7 @@ export default function Donate() {
                                                                 <CommonText style={donateStyles.friend}>
                                                                     {location.name}
                                                                     {"\n"}
-                                                                    {location.hours}
+                                                                    {location.opening_hours}
                                                                 </CommonText>
                                                                 <CommonButton
                                                                     size="small"
@@ -277,30 +318,26 @@ export default function Donate() {
                                                                             >
                                                                                 {loc.address}
                                                                                 {"\n"}
-                                                                                {loc.hours}
+                                                                                {loc.opening_hours}
                                                                             </CommonText>
-                                                                            <View
-                                                                                style={donateStyles.rowStart}
-                                                                            >
-                                                                                {loc.availableTimes.map(
-                                                                                    (time: string) => (
-                                                                                        <CommonButton
-                                                                                            key={time}
-                                                                                            size="small"
-                                                                                            onPress={() =>
-                                                                                                setSelectedTime(time)
-                                                                                            }
-                                                                                            style={[ 
-                                                                                                selectedTime === time
-                                                                                                    ? donateStyles.selectedTime
-                                                                                                    : {},
-                                                                                                donateStyles.timeButton,
-                                                                                            ]}>
-                                                                                            {time}
-                                                                                        </CommonButton>
-                                                                                    )
-                                                                                )}
-                                                                            </View>
+                                                                            <View style={donateStyles.rowStart}>
+                        {getAvailableTimesForSelectedDay().map((slot, index) => {
+                            const time = moment(slot.start_time).format("HH:mm");
+                            return (
+                                <CommonButton
+                                    key={index}
+                                    size="small"
+                                    onPress={() => setSelectedTime(time)}
+                                    style={[
+                                        selectedTime === time ? donateStyles.selectedTime : {},
+                                        donateStyles.timeButton,
+                                    ]}
+                                >
+                                    {time}
+                                </CommonButton>
+                            );
+                        })}
+                    </View>
                                                                             {isTimeSelected && (
                                                                                 <CommonButton
                                                                                     style={donateStyles.center}

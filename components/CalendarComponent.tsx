@@ -76,6 +76,7 @@ const styles = StyleSheet.create({
     contentWrapper: {
         overflow: 'hidden',
         backgroundColor: 'white',
+        flexDirection: 'column'
     },
     shadow: {
         elevation: 2,
