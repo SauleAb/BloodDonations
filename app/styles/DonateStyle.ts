@@ -6,12 +6,21 @@ const donateStyles = StyleSheet.create({
         fontWeight: "bold",
         marginTop: 20
     },
+    locationItem: {
+        padding: 10,
+        backgroundColor: "#f8f8f8",
+        borderBottomWidth: 1,
+        borderBottomColor: "#ddd",
+    },
     calendarWrapper: {
         flex: 1,
         width: "100%",
         alignSelf: "center",
         justifyContent: "center",
-        paddingHorizontal: 10,
+    },
+    listContainer: {
+        flexGrow: 1, // Allows content to grow within the FlatList
+        alignItems: "center", // Centers content horizontally
     },
     timeButton: {
         margin: 1,

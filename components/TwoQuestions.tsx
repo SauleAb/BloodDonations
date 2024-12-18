@@ -1,18 +1,30 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, TouchableOpacity } from 'react-native';
 import CommonText from "@/components/common/CommonText";
 
 type TwoQuestionsProps = {
     titleText: string;
-    onAnswerChange: (answer: string | null) => void;
+    onAnswerChange: (answer: boolean | string | null) => void;
+    customYesLabel?: string;
+    customNoLabel?: string;
+    answerOne?: string;
+    answerTwo?: string;
 };
 
-const TwoQuestions: React.FC<TwoQuestionsProps> = ({ titleText, onAnswerChange }) => {
-    const [selected, setSelected] = useState<string | null>(null);
+const TwoQuestions: React.FC<TwoQuestionsProps> = ({
+                                                       titleText,
+                                                       onAnswerChange,
+                                                       customYesLabel,
+                                                       customNoLabel,
+                                                       answerOne,
+                                                       answerTwo,
+                                                   }) => {
+    const [selected, setSelected] = useState<boolean | string | null>(null);
 
-    const handlePress = (answer: string) => {
-        setSelected(answer);
-        onAnswerChange(answer);
+    const handlePress = (answer: boolean, customAnswer?: string) => {
+        const valueToReturn = customAnswer ?? answer;
+        setSelected(valueToReturn);
+        onAnswerChange(valueToReturn);
     };
 
     return (
@@ -25,24 +37,24 @@ const TwoQuestions: React.FC<TwoQuestionsProps> = ({ titleText, onAnswerChange }
                 <TouchableOpacity
                     style={[
                         styles.button,
-                        selected === 'yes' && styles.buttonSelectedYes,
+                        selected === (answerOne ?? true) && styles.buttonSelectedYes,
                     ]}
-                    onPress={() => handlePress('yes')}
+                    onPress={() => handlePress(true, answerOne)}
                 >
                     <CommonText bold style={styles.buttonText}>
-                        Yes
+                        {customYesLabel || "Yes"}
                     </CommonText>
                 </TouchableOpacity>
 
                 <TouchableOpacity
                     style={[
                         styles.button,
-                        selected === 'no' && styles.buttonSelectedNo,
+                        selected === (answerTwo ?? false) && styles.buttonSelectedNo,
                     ]}
-                    onPress={() => handlePress('no')}
+                    onPress={() => handlePress(false, answerTwo)}
                 >
                     <CommonText bold style={styles.buttonText}>
-                        No
+                        {customNoLabel || "No"}
                     </CommonText>
                 </TouchableOpacity>
             </View>
@@ -50,9 +62,10 @@ const TwoQuestions: React.FC<TwoQuestionsProps> = ({ titleText, onAnswerChange }
     );
 };
 
+
 const styles = StyleSheet.create({
     container: {
-        width: '87%',
+        width: '90%',
         marginBottom: 20,
         overflow: 'hidden',
         backgroundColor: '#fff',
@@ -77,7 +90,9 @@ const styles = StyleSheet.create({
         flexWrap: 'wrap',
     },
     label: {
-        fontSize: 25,
+        paddingTop: 5,
+        lineHeight: 25,
+        fontSize: 16,
         color: '#404040',
     },
     content: {

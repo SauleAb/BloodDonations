@@ -14,8 +14,22 @@ import user from "../../components/user";
 type User = typeof user;
 
 export default function Rewards() {
-    const { user, login } = useUser(); // Access user and login function from UserContext
+    const { user } = useUser(); // Access user and login function from UserContext
     const rewardPairsList = rewardPairs();
+    try{
+        console.log(user)
+        console.log(user.current_points)
+        let userData = JSON.parse(user);
+        console.log("1")
+        let username = userData.username;
+        console.log("2")
+        console.log(username)
+        console.log("3")
+    }
+    catch{
+        console.log("couldnt log that")
+    }
+    //console.log(user?.points?.toString())
 
 
     return (
@@ -26,7 +40,7 @@ export default function Rewards() {
                         <CommonContent
                             titleText="Reward Points"
                             icon={IconNames.Notification}
-                            contentText={user?.rewardPoints?.toString() ?? '0'} // Safely display reward points
+                            contentText={user?.current_points?.toString() ?? '0'} // Safely display reward points
                         />
                         {rewardPairsList.map((pair, index) => (
                             <View style={rewardsStyles.row} key={index}>

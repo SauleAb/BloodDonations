@@ -1,4 +1,4 @@
-import { IconNames } from "@/components/common/CommonContent";
+import { IconNames } from "@/components/common/CommonIcons";
 import { getTimeTillNextDonation } from "@/utils/timeUtils";
 
 const targetDate = new Date("2024-12-31T23:59:59");

@@ -1,4 +1,5 @@
-import { IconNames } from "@/components/common/CommonContent";
+import { RightTextItem } from "@/components/common/CommonContent";
+import { IconNames } from "@/components/common/CommonIcons";
 
 export const profileHealthData = [
     {
@@ -37,7 +38,7 @@ export const profileHealthData = [
                     { left: "Amount", right: "0.9 Units" },
                     { left: "Date", right: "2024/07/16" },
                 ],
-            },
+            } as RightTextItem,
             {
                 type: "expandableContent",
                 title: "View Details",
@@ -47,7 +48,7 @@ export const profileHealthData = [
                     { left: "Amount", right: "0.8 Units" },
                     { left: "Date", right: "2024/09/26" },
                 ],
-            },
+            } as RightTextItem,
             "30th of October, 2024",
         ]
     }

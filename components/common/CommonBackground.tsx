@@ -99,6 +99,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     titleText: {
+        marginTop: 30,
         fontSize: 30,
         lineHeight: 36
     },

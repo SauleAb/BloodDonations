@@ -13,6 +13,7 @@
     "**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts",
-    "global.d.ts"
-, "components/UserContext.tsx"  ]
+    "global.d.ts",
+    "utils/donationUtils.js",
+    "components/UserContext.tsx"  ]
 }

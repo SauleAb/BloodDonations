@@ -6,7 +6,7 @@ import { useUser } from '@/components/UserContext';
 
 import Register from './register';
 import NextScreen from './next';
-import MainLayout from './_layout'; // Tabs for authenticated users
+import MainLayout from './_layout';
 
 const Stack = createStackNavigator();
 
