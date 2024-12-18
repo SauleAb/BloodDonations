@@ -18,22 +18,29 @@ const CommonRewardBox: React.FC<CommonRewardBoxProps> = ({ titleText, icon, amou
     const [isLoading, setIsLoading] = useState(false);
     const iconSource = iconMap[icon];
 
-    const { user } = useUser();
+    const { user, setUser } = useUser(); // Include setUser
 
     const handlePress = () => {
-        setErrorMessage('') // ensure previous error messages arent still there
-        setIsModalVisible(true); // Show the confirmation modal
+        setErrorMessage('');
+        setIsModalVisible(true);
     };
 
     const handleConfirm = async () => {
         setErrorMessage('');
         setIsLoading(true);
 
+        const price = parseInt(amountText);
+
         try {
-            const success = await redeem(user.id, parseInt(amountText)); // Call redeem function
+            const success = await redeem(user.rewardPoints, price); // Pass current points directly
             if (success) {
-                setIsModalVisible(false); // Close the modal
-                onPress(); // Execute the redeem action (e.g., UI update)
+                const updatedPoints = user.rewardPoints - price;
+
+                // Update the user context with new points
+                setUser({ ...user, rewardPoints: updatedPoints });
+
+                setIsModalVisible(false);
+                onPress && onPress();
             } else {
                 setErrorMessage('You do not have enough points to redeem this reward.');
             }
@@ -46,7 +53,7 @@ const CommonRewardBox: React.FC<CommonRewardBoxProps> = ({ titleText, icon, amou
     };
 
     const handleCancel = () => {
-        setIsModalVisible(false); // Simply close the modal
+        setIsModalVisible(false);
     };
 
     return (

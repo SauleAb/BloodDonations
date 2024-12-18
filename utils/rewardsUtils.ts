@@ -22,36 +22,18 @@ export async function getPoints(userId: Int32): Promise<number | null> {
         }
 
         const data = await response.json();
-        return data.data?.points ?? null; // Safely access points
+        return data.data?.current_points ?? null;
     } catch (error) {
         console.error('There was a problem with the fetch operation:', error);
-        return null; // Return null on failure
+        return null;
     }
-    }
+}
 
-export async function redeem(userId: Int32, rewardId: Int32): Promise<boolean> {
-    const rewardCost = 5;
-    const points = await getPoints(userId);
-
-    if (points !== null && points >= rewardCost) {
-        // POST request to deduct points from the user
-        // Example placeholder logic:
-        try {
-            const response = await fetch(`${url}${userId}/redeem`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ rewardId }),
-            });
-
-            if (!response.ok) {
-                throw new Error(`Failed to redeem reward: ${response.status}`);
-            }
-
-            return true;
-        } catch (error) {
-            console.error('Error redeeming reward:', error);
-            return false;
-        }
+export async function redeem(currentPoints: number, rewardCost: number): Promise<boolean> {
+    if (currentPoints >= rewardCost) {
+        // Simulate an API call or perform any required logic here
+        console.log("Redeeming reward...");
+        return true; // Reward is successfully redeemed
     } else {
         return false; // Not enough points
     }

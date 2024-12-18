@@ -27,8 +27,8 @@ export enum IconNames {
     Tickets = "Tickets",
     Medal = "Medal",
     Friend = "Friend",
-    NotFriend = "NotFriend"
-    Candy = "Candy"
+    NotFriend = "NotFriend",
+    Candy = "Candy",
 }
 
 export const iconMap: Record<IconNames, any> = {

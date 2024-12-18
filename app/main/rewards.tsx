@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, TouchableOpacity, Alert } from "react-native";
+import React from "react";
+import { View } from "react-native";
 import CommonBackground from "@/components/common/CommonBackground";
 import CommonContent from "@/components/common/CommonContent";
 import CommonScrollElement from "@/components/common/CommonScrollElement";
@@ -8,25 +8,11 @@ import { rewardsStyles } from "../styles/RewardsStyle";
 import commonStyles from "../styles/CommonStyles";
 import { rewardPairs } from "@/utils/rewardsUtils";
 import { useUser } from '@/components/UserContext';
-import user from "../../components/user";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useTransitionProgress } from "react-native-screens";
 import { IconNames } from "@/components/common/CommonIcons";
 
 export default function Rewards() {
-    const { user } = useUser();
+    const { user } = useUser(); // Get the user object from context
     const rewardPairsList = rewardPairs();
-
-    const [userPoints, setUserPoints] = useState(user.rewardPoints); // Local state to store the points
-
-    useEffect(() => {
-        setUserPoints(user.rewardPoints);
-    }, [user.rewardPoints]);
-
-    const redeem = () => {
-        setUserPoints(user.rewardPoints)
-    };
-
 
     return (
         <View style={commonStyles.container}>
@@ -44,14 +30,14 @@ export default function Rewards() {
                                     titleText={pair[0].titleText}
                                     icon={pair[0].icon}
                                     amountText={pair[0].amountText}
-                                    onPress={redeem}
+                                    onPress={() => {}} // Optional callback
                                 />
                                 {pair[1] && (
                                     <CommonRewardBox
                                         titleText={pair[1].titleText}
                                         icon={pair[1].icon}
                                         amountText={pair[1].amountText}
-                                        onPress={redeem}
+                                        onPress={() => {}}
                                     />
                                 )}
                             </View>
