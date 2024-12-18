@@ -1,19 +1,46 @@
-import React from 'react';
-import { StyleSheet, Text, View, Image } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, Text, View, Image, TouchableOpacity, Modal, Button } from 'react-native';
 import { IconNames, iconMap } from "@/components/common/CommonContent";
 import CommonText from "@/components/common/CommonText";
+import { useUser } from '@/components/UserContext';
 
 type CommonRewardBoxProps = {
     titleText: string;
     amountText: string;
     icon: IconNames;
+    onPress: () => void; // ask for confirmation here
 };
 
-const CommonRewardBox: React.FC<CommonRewardBoxProps> = ({ titleText, icon, amountText }) => {
+const CommonRewardBox: React.FC<CommonRewardBoxProps> = ({ titleText, icon, amountText, onPress }) => {
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
     const iconSource = iconMap[icon];
 
+    const { user } = useUser();
+
+    const handlePress = () => {
+        setErrorMessage('') // ensure previous error messages arent still there
+        setIsModalVisible(true); // Show the confirmation modal
+    };
+
+    const handleConfirm = () => {
+        const price = parseInt(amountText)
+        if(user.rewardPoints >= price){
+            user.rewardPoints -= price
+            setIsModalVisible(false); // Close the modal
+            onPress(); // Execute the redeem action
+        } else {
+            setErrorMessage('You do not have enough points to redeem this reward.'); // Set the error message
+        }
+    };
+
+    const handleCancel = () => {
+        setIsModalVisible(false); // Simply close the modal
+    };
+
     return (
-        <View style={styles.container}>
+        <>
+        <TouchableOpacity style={styles.container} onPress={handlePress}>
             <View style={styles.greyBar}>
                 <CommonText bold style={styles.label}>{titleText}</CommonText>
                 <CommonText style={styles.label}>{amountText}</CommonText>
@@ -23,7 +50,29 @@ const CommonRewardBox: React.FC<CommonRewardBoxProps> = ({ titleText, icon, amou
                     <Image source={iconSource} style={styles.contentIcon} />
                 </View>
             </View>
-        </View>
+            </TouchableOpacity>
+            
+            {/* Confirmation Modal */}
+            <Modal
+                transparent={true}
+                animationType="slide"
+                visible={isModalVisible}
+                onRequestClose={handleCancel} // Handle Android back button
+            >
+                <View style={styles.modalOverlay}>
+                    <View style={styles.modalContent}>
+                        <Text style={styles.modalText}>
+                            Are you sure you want to redeem this reward?
+                        </Text>
+                        {errorMessage ? <Text style={styles.errorMessage}>{errorMessage}</Text> : null}
+                        <View style={styles.modalButtons}>
+                            <Button title="Cancel" onPress={handleCancel} color="#888" />
+                            <Button title="Confirm" onPress={handleConfirm} color="#4CAF50" />
+                        </View>
+                    </View>
+                </View>
+            </Modal>
+        </>
     );
 };
 
@@ -70,6 +119,35 @@ const styles = StyleSheet.create({
     contentIcon: {
         width: 80,
         height: 80,
+    },
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    modalContent: {
+        width: '80%',
+        backgroundColor: 'white',
+        padding: 20,
+        borderRadius: 10,
+        alignItems: 'center',
+    },
+    modalText: {
+        fontSize: 18,
+        marginBottom: 20,
+        textAlign: 'center',
+    },
+    modalButtons: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        width: '100%',
+    },
+    errorMessage: {
+        fontSize: 14,
+        color: 'red',
+        marginTop: 10,
+        textAlign: 'center',
     },
 });
 

@@ -1,12 +1,18 @@
 import { IconNames } from "@/components/common/CommonContent";
 
-export const rewardPoints = "340";
+export const rewardPoints = "340"; // delete later!!
 
 export const rewards = [
-    {
+/*  {
         titleText: "Pin #27",
         icon: IconNames.Pin,
         amountText: "100*",
+    },
+*/
+    {
+        titleText: "Candy",
+        icon: IconNames.Candy,
+        amountText: "100*"
     },
     {
         titleText: "Random Pin",
