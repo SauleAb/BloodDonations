@@ -200,9 +200,10 @@ export default function Donate() {
 
                                     {selectedCity.trim() && (
                                         <InputField
-                                            placeholder="Enter search radius"
+                                            placeholder="Enter search radius (km)"
                                             value={selectedRadius}
                                             onChangeText={setSelectedRadius}
+                                            keyboardType="numeric"
                                         />
                                     )}
 
