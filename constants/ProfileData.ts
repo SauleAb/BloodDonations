@@ -1,13 +1,13 @@
 import { RightTextItem, IconNames } from "@/components/common/CommonContent";
 
-export const profileContent = [
+export const getProfileContent = (user: any) => [
     {
         titleText: "Full Name",
-        contentText: "Garfield Gingerman",
+        contentText: user?.first_name + ' ' + user?.last_name || "N/A",
     },
     {
         titleText: "Username",
-        contentText: "bloodforlasagna",
+        contentText: user?.username || "N/A",
     },
     {
         titleText: "Health Information",
@@ -15,26 +15,26 @@ export const profileContent = [
         icon: IconNames.BloodDrop,
         contentTextSize: "small",
         rightText: [
-            "A+",
-            "Netherlands",
-            "Male",
-            "19/19/1999",
-            { type: "switch", switchValue: true, onToggle: () => console.log("Eligible switched!") } as RightTextItem,
+            user?.bloodType || "N/A",
+            user?.nationality || "N/A",
+            user?.gender || "N/A",
+            user?.dob || "N/A",
+            { type: "switch", switchValue: user?.eligible || false, onToggle: () => console.log("Eligible switched!") } as RightTextItem,
         ],
     },
     {
         titleText: "Phone Number",
-        contentText: "+31 6 12 34 56 78",
+        contentText: user?.phone || "N/A",
         icon: IconNames.BloodDonated,
     },
     {
         titleText: "City",
-        contentText: "Eindhoven",
+        contentText: user?.city || "N/A",
         icon: IconNames.BloodDonated,
     },
     {
         titleText: "Address",
-        contentText: "Zwaanstraat 1",
+        contentText: user?.address || "N/A",
         icon: IconNames.BloodDonated,
     },
     {
@@ -43,8 +43,8 @@ export const profileContent = [
         icon: IconNames.Notification,
         contentTextSize: "small",
         rightText: [
-            { type: "switch", switchValue: false, onToggle: () => console.log("Eligible switched!") } as RightTextItem,
-            { type: "switch", switchValue: false, onToggle: () => console.log("Friend activity switched!") } as RightTextItem,
+            { type: "switch", switchValue: user?.notifications?.donationReminder || false, onToggle: () => console.log("Donation Reminder switched!") },
+            { type: "switch", switchValue: user?.notifications?.friendActivity || false, onToggle: () => console.log("Friend Activity switched!") },
         ],
     },
     {
@@ -53,9 +53,9 @@ export const profileContent = [
         icon: IconNames.Notification,
         contentTextSize: "small",
         rightText: [
-            { type: "switch", switchValue: false, onToggle: () => console.log("Friend activity switched!") } as RightTextItem,
-            { type: "switch", switchValue: false, onToggle: () => console.log("Donation timer switched!") } as RightTextItem,
-            { type: "switch", switchValue: false, onToggle: () => console.log("Amount donated switched!") } as RightTextItem,
+            { type: "switch", switchValue: user?.homeScreen?.friendActivity || false, onToggle: () => console.log("Friend Activity switched!") },
+            { type: "switch", switchValue: user?.homeScreen?.donationTimer || false, onToggle: () => console.log("Donation Timer switched!") },
+            { type: "switch", switchValue: user?.homeScreen?.amountDonated || false, onToggle: () => console.log("Amount Donated switched!") },
         ],
     },
     {
@@ -64,8 +64,8 @@ export const profileContent = [
         icon: IconNames.Notification,
         contentTextSize: "small",
         rightText: [
-            { type: "switch", switchValue: false, onToggle: () => console.log("Dark mode switched!") } as RightTextItem,
-            { type: "switch", switchValue: false, onToggle: () => console.log("Big UI size switched!") } as RightTextItem,
+            { type: "switch", switchValue: user?.appearance?.darkMode || false, onToggle: () => console.log("Dark mode switched!") },
+            { type: "switch", switchValue: user?.appearance?.bigUiSize || false, onToggle: () => console.log("Big UI size switched!") },
         ],
     },
     {

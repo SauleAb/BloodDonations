@@ -1,13 +1,13 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import defaultUser from './user'; // Import the default user structure
+import defaultUser from './user';
 
 // Create User Context
 const UserContext = createContext();
 
 // User Provider Component
 export const UserProvider = ({ children }) => {
-    const [user, setUser] = useState(null); // `null` when not authenticated
+    const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -15,7 +15,7 @@ export const UserProvider = ({ children }) => {
             try {
                 const storedUser = await AsyncStorage.getItem('user');
                 if (storedUser) {
-                    setUser(JSON.parse(storedUser)); // Use existing stored user
+                    setUser(JSON.parse(storedUser));
                 }
             } catch (error) {
                 console.error('Error loading user data', error);
@@ -26,37 +26,17 @@ export const UserProvider = ({ children }) => {
         loadUserData();
     }, []);
 
-    const login = async (userData, isNewUser = false) => {
+    const login = async (userData) => {
         try {
-            let storedUsers = await AsyncStorage.getItem('users');
-            storedUsers = storedUsers ? JSON.parse(storedUsers) : [];
-    
-            let userToLogin;
-    
-            if (isNewUser) {
-                // For new users, merge with default values
-                userToLogin = { ...defaultUser, ...userData };
-                storedUsers.push(userToLogin); // Add to stored users
-            } else {
-                // For existing users, find the matching user in storage
-                userToLogin = storedUsers.find(user => user.email === userData.email);
-    
-                if (!userToLogin) {
-                    throw new Error('User not found');
-                }
-            }
-    
-            // Save updated users list back to AsyncStorage
-            await AsyncStorage.setItem('users', JSON.stringify(storedUsers));
-    
-            // Set the logged-in user and persist in AsyncStorage
-            setUser(userToLogin);
-            await AsyncStorage.setItem('user', JSON.stringify(userToLogin));
+            // Save only the currently logged-in user
+            const userToLogin = { ...defaultUser, ...userData };
+
+            setUser(userToLogin); // Update state
+            await AsyncStorage.setItem('user', JSON.stringify(userToLogin)); // Save to storage
         } catch (error) {
-            console.error('Failed to login user:', error);
+            console.error('Login Error:', error.message);
         }
     };
-    
 
     const logout = async () => {
         setUser(null);

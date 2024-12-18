@@ -1,5 +1,6 @@
 const user = {
     // Basic Info
+    username: '',
     firstName: '',
     lastName: '',
     email: '',
