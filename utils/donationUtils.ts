@@ -1,4 +1,3 @@
-import { cityLocations } from '@/constants/DonateData';
 import moment from 'moment';
 
 export const getNextDonationDetails = () => {

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Tabs } from 'expo-router';
 import { Image, Text, View } from 'react-native';
-import { IconNames, iconMap } from '@/components/common/CommonContent';
+import { IconNames, iconMap } from '@/components/common/CommonIcons';
 import mainLayoutStyles from '../styles/MainLayoutStyle';
 import { useUser, UserProvider } from '@/components/UserContext';
 

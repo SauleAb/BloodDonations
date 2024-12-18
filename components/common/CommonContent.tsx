@@ -28,6 +28,7 @@ export enum IconNames {
     Medal = "Medal",
     Friend = "Friend",
     NotFriend = "NotFriend"
+    Candy = "Candy"
 }
 
 export const iconMap: Record<IconNames, any> = {
@@ -55,6 +56,7 @@ export const iconMap: Record<IconNames, any> = {
     [IconNames.Medal]: require('@/assets/icons/medal.png'),
     [IconNames.Friend]: require('@/assets/icons/friend.png'),
     [IconNames.NotFriend]: require('@/assets/icons/not-friend.png'),
+    [IconNames.Candy]: require('@/assets/icons/candy.png'),
 };
 
 export type RightTextItem =
