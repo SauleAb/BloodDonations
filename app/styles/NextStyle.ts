@@ -13,12 +13,20 @@ const nextStyles = StyleSheet.create({
         width: '80%',
         alignItems: 'center',
     },
-
+    fullWidthContainer: {
+        flexGrow: 1,
+        width: "100%",
+    },
+    fullWidthContent: {
+        flex: 1,
+        width: "100%",
+        alignSelf: "center",
+        justifyContent: "center",
+        alignItems: "center",
+        marginBottom: 20,
+    },
     //Button
     loginButton: {
-        marginTop: 30,
-    },
-    registerButton: {
         marginTop: 30,
     },
     registerButtonText: {

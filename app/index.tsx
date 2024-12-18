@@ -38,12 +38,8 @@ export default function HomeScreen() {
                 <CommonText style={[indexStyles.welcomeText, { marginTop: height * 0.7 }]}>
                     Welcome Aboard! Thank you for starting your donor adventure!
                 </CommonText>
-                <CommonButton href="/login" style={indexStyles.button}>
+                <CommonButton size={"big"} href="/login" style={indexStyles.button}>
                     Begin Your Journey
-                </CommonButton>
-                {/* New Button to Navigate to User List */}
-                <CommonButton href="/userlist" style={indexStyles.button}>
-                    View Users
                 </CommonButton>
             </CommonBackground>
         </View>

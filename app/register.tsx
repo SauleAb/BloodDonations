@@ -20,6 +20,12 @@ export default function Register() {
                 return;
             }
 
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailPattern.test(email)) {
+                Alert.alert('Error', 'Invalid email format');
+                return;
+            }
+
             if (password !== confirmPassword) {
                 Alert.alert('Error', 'Passwords do not match!');
                 return;
@@ -42,7 +48,7 @@ export default function Register() {
     };
 
     return (
-        <CommonBackground style={registerStyles.backgroundImage} titleText={"Register"} logoVisible={true}>
+        <CommonBackground style={registerStyles.backgroundImage} titleText={"Register"} titleSubText={"Fill in the fields to create your account"} logoVisible={true}>
             <InputField
                 placeholder="Email"
                 value={email}

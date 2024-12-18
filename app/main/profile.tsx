@@ -8,15 +8,22 @@ import { profileHealthData } from "@/constants/ProfileHealthData";
 import { commonStyles } from "@/app/styles/CommonStyles";
 import SecondaryNavBar from "@/components/common/CommonSecondaryNavBar";
 import { useUser } from "@/components/UserContext";
+import CommonButton from "@/components/common/CommonButton";
+import {router} from "expo-router";
 
 const validateTextSize = (size: any): "small" | "large" | undefined => {
     return size === "small" || size === "large" ? size : undefined;
 };
 
 export default function Profile() {
-    const { user } = useUser(); // Access user data from UserContext
+    const { user } = useUser();
+    const { logout } = useUser();
     const [activeTab, setActiveTab] = useState<"profile" | "health">("profile");
 
+    const handleLogout = async () => {
+        await logout();
+        router.replace('/login');
+    };
     const renderContent = () => {
         if (activeTab === "profile") {
             const profileContent = getProfileContent(user); // Get dynamic profile content
@@ -33,6 +40,8 @@ export default function Profile() {
                             showContent={item.showContent}
                         />
                     ))}
+
+                    <CommonButton onPress={handleLogout}>Log Out</CommonButton>
                 </CommonScrollElement>
             );
         } else {
@@ -48,6 +57,8 @@ export default function Profile() {
                             rightText={item.rightText}
                         />
                     ))}
+
+                    <CommonButton onPress={handleLogout}>Log Out</CommonButton>
                 </CommonScrollElement>
             );
         }

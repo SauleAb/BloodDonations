@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Text, View } from 'react-native';
+import {Alert, Text, View} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import { useUser } from '@/components/UserContext';
@@ -24,43 +24,40 @@ export default function Login() {
     const router = useRouter();
 
     const handleLogin = async () => {
-        if (!email || email == "") {
-            // Add error popup or handling here if needed
-            return;
-        }
-        if (!password || password == "") {
-            // Add error popup or handling here if needed
+        if (!email || email === "" || !password || password === "") {
+            Alert.alert('Error', 'Please fill out all fields');
             return;
         }
 
         const _email = email.replace(/@/g, "%40");
-        let url = `https://sanquin-api.onrender.com/users/email/${_email}?password=${password}`;
+        const url = `https://sanquin-api.onrender.com/users/email/${_email}?password=${password}`;
 
-        fetch(url, {
-            method: 'GET',
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok' + response);
-                }
-                return response.json();
-            })
-            .then(data => {
-                // Merge the entire data.data object with defaultUser,
-                // ensuring all fields (username, first_name, last_name, etc.) are captured
-                const userData = {
-                    ...defaultUser,
-                    ...data.data
-                };
-
-                login(userData);
-                AsyncStorage.setItem('user', JSON.stringify(userData));
-                router.replace('/main/home');
-            })
-            .catch(error => {
-                console.error('Error:', error);
+        try {
+            const response = await fetch(url, {
+                method: 'GET',
             });
-    }
+
+            if (response.status === 404) {
+                Alert.alert('Login Error', 'Incorrect credentials, please try again.');
+                return;
+            } else if (!response.ok) {
+                Alert.alert('Login Error', 'Something went wrong, please try again later.');
+                return;
+            }
+
+            const data = await response.json();
+            const userData = {
+                ...defaultUser,
+                ...data.data,
+            };
+
+            login(userData);
+            await AsyncStorage.setItem('user', JSON.stringify(userData));
+            router.replace('/main/home');
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
 
     return (
         <View style={commonStyles.container}>
