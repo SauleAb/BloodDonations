@@ -4,14 +4,20 @@ export interface DonationLocation {
     hours: string;
     availableTimes: string[];
 }
-  
+
 interface CityLocations {
     [city: string]: {
+        coordinates: {
+            latitude: number;
+            longitude: number;
+        };
         locations: DonationLocation[];
     };
 }
-export const cityLocations: { [city: string]: { locations: DonationLocation[] } } = {
+
+export const cityLocations: { [city: string]: { coordinates: { latitude: number; longitude: number }; locations: DonationLocation[] } } = {
     "Amsterdam": {
+        coordinates: { latitude: 52.379189, longitude: 4.90091 }, // Coordinates for Amsterdam
         locations: [
             {
                 name: "Medisch Centrum Amsterdam",
@@ -20,7 +26,7 @@ export const cityLocations: { [city: string]: { locations: DonationLocation[] } 
                 availableTimes: ["10:30", "11:30", "12:30", "13:30"]
             },
             {
-                name: "Hospital XYZ",
+                name: "Amsterdam Hospital XYZ",
                 address: "Street 123, Amsterdam",
                 hours: "9:00-18:00",
                 availableTimes: ["14:30", "15:30", "16:30"]
@@ -28,6 +34,7 @@ export const cityLocations: { [city: string]: { locations: DonationLocation[] } 
         ]
     },
     "Rotterdam": {
+        coordinates: { latitude: 51.9225, longitude: 4.47917 }, // Coordinates for Rotterdam
         locations: [
             {
                 name: "Medisch Centrum Rotterdam",
@@ -36,7 +43,7 @@ export const cityLocations: { [city: string]: { locations: DonationLocation[] } 
                 availableTimes: ["11:00", "12:00", "13:00"]
             },
             {
-                name: "Hospital ABC",
+                name: "Rotterdam Hospital ABC",
                 address: "Main St, Rotterdam",
                 hours: "9:00-18:00",
                 availableTimes: ["14:30", "15:30", "16:30"]
@@ -44,6 +51,7 @@ export const cityLocations: { [city: string]: { locations: DonationLocation[] } 
         ]
     },
     "The Hague": {
+        coordinates: { latitude: 52.0705, longitude: 4.3007 }, // Coordinates for The Hague
         locations: [
             {
                 name: "Medisch Centrum Den Haag",
@@ -52,7 +60,7 @@ export const cityLocations: { [city: string]: { locations: DonationLocation[] } 
                 availableTimes: ["10:00", "11:00", "12:00", "13:00"]
             },
             {
-                name: "Hospital 123",
+                name: "The Hague Hospital 123",
                 address: "Main Road, The Hague",
                 hours: "9:00-17:00",
                 availableTimes: ["14:00", "15:00", "16:00"]
@@ -60,6 +68,7 @@ export const cityLocations: { [city: string]: { locations: DonationLocation[] } 
         ]
     },
     "Utrecht": {
+        coordinates: { latitude: 52.0907, longitude: 5.1214 }, // Coordinates for Utrecht
         locations: [
             {
                 name: "Utrecht Medical Center",
@@ -68,7 +77,7 @@ export const cityLocations: { [city: string]: { locations: DonationLocation[] } 
                 availableTimes: ["9:00", "10:00", "11:00", "12:00"]
             },
             {
-                name: "Hospital PQR",
+                name: "Utrecht Hospital PQR",
                 address: "Parkweg 10, Utrecht",
                 hours: "8:00-17:00",
                 availableTimes: ["14:00", "15:00", "16:00"]
@@ -76,6 +85,7 @@ export const cityLocations: { [city: string]: { locations: DonationLocation[] } 
         ]
     },
     "Eindhoven": {
+        coordinates: { latitude: 51.4416, longitude: 5.4697 }, // Coordinates for Eindhoven
         locations: [
             {
                 name: "Eindhoven University Medical Center",
@@ -92,6 +102,7 @@ export const cityLocations: { [city: string]: { locations: DonationLocation[] } 
         ]
     },
     "Groningen": {
+        coordinates: { latitude: 53.2194, longitude: 6.5665 }, // Coordinates for Groningen
         locations: [
             {
                 name: "Groningen University Medical Center",
@@ -100,7 +111,7 @@ export const cityLocations: { [city: string]: { locations: DonationLocation[] } 
                 availableTimes: ["9:00", "10:00", "11:00"]
             },
             {
-                name: "Hospital Delta",
+                name: "Groningen Hospital Delta",
                 address: "Stadhuisplein 1, Groningen",
                 hours: "8:30-17:30",
                 availableTimes: ["14:00", "15:00", "16:00"]
@@ -108,6 +119,7 @@ export const cityLocations: { [city: string]: { locations: DonationLocation[] } 
         ]
     },
     "Leiden": {
+        coordinates: { latitude: 52.1583, longitude: 4.4932 }, // Coordinates for Leiden
         locations: [
             {
                 name: "Leiden Medical Center",
@@ -116,7 +128,7 @@ export const cityLocations: { [city: string]: { locations: DonationLocation[] } 
                 availableTimes: ["9:30", "10:30", "11:30"]
             },
             {
-                name: "Hospital QRS",
+                name: "Leiden Hospital QRS",
                 address: "Burgemeesterstraat 8, Leiden",
                 hours: "9:00-18:00",
                 availableTimes: ["12:00", "13:00", "14:00"]
@@ -124,6 +136,7 @@ export const cityLocations: { [city: string]: { locations: DonationLocation[] } 
         ]
     },
     "Maastricht": {
+        coordinates: { latitude: 50.8514, longitude: 5.6889 }, // Coordinates for Maastricht
         locations: [
             {
                 name: "Maastricht University Medical Center",
@@ -132,7 +145,7 @@ export const cityLocations: { [city: string]: { locations: DonationLocation[] } 
                 availableTimes: ["9:00", "10:00", "11:00", "12:00"]
             },
             {
-                name: "Hospital JKL",
+                name: "Maastricht Hospital JKL",
                 address: "St. Pietersplein, Maastricht",
                 hours: "9:00-18:00",
                 availableTimes: ["13:00", "14:00", "15:00"]

@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from "react";
-import CommonBackground from "@/components/common/CommonBackground";
-import CommonContent from "@/components/common/CommonContent";
 import { View, FlatList, StyleSheet } from "react-native";
 import { Calendar } from "react-native-calendars";
 import InputField from "@/components/InputField";
-import moment from "moment";
-import axios from "axios";
+import CommonBackground from "@/components/common/CommonBackground";
+import CommonContent from "@/components/common/CommonContent";
 import CommonButton from "@/components/common/CommonButton";
 import CommonText from "@/components/common/CommonText";
 import donateStyles from "@/app/styles/DonateStyle";
@@ -15,10 +13,12 @@ import { generateDisabledDates } from "@/utils/calendarUtils";
 import calendarStyles from "@/app/styles/CalendarStyle";
 import commonStyles from "@/app/styles/CommonStyles";
 import { cityLocations, DonationLocation } from "@/constants/DonateData";
+import { getDistance } from "geolib";  // Import geolib
+import moment from "moment";
 import CustomInput from "@/components/InputField";
-import CalendarContent from "@/components/CalendarComponent";
-import CommonContentSwitch from "@/components/common/CommonContentSwitch";
 import { IconNames } from "@/components/common/CommonIcons";
+import CommonContentSwitch from "@/components/common/CommonContentSwitch";
+import CalendarContent from "@/components/CalendarComponent";
 
 export default function Donate() {
     const {
@@ -70,7 +70,6 @@ export default function Donate() {
         setInputValue(city);
         setSuggestions([]);
         setSelectedCity(city);
-        setLocations(cityLocations[city].locations);
     };
 
     useEffect(() => {
@@ -97,10 +96,10 @@ export default function Donate() {
             const locationId = 0; // database
     
             const appointmentData = {
-                amount: 1, //toggle check
+                amount: 1, // toggle check
                 user_id: userId,
                 location_id: locationId,
-                type: "blood", //user data check
+                type: "blood", // user data check
                 appointment: appointmentDateTime,
                 status: "pending",
             };
@@ -131,6 +130,39 @@ export default function Donate() {
     const timeUntilNextDonation = activeAppointment
         ? moment(`${activeAppointment.date} ${activeAppointment.time}`, "YYYY-MM-DD HH:mm").fromNow()
         : "";
+
+    // Helper function to filter locations based on radius
+    const filterLocationsWithinRadius = (cityCoordinates: { latitude: number, longitude: number }) => {
+        const radiusInMeters = parseInt(selectedRadius) * 1000;  // Convert radius to meters
+        const filteredLocations: DonationLocation[] = [];
+
+        // Add the selected city's locations first
+        const selectedCityLocations = cityLocations[selectedCity]?.locations || [];
+        filteredLocations.push(...selectedCityLocations);
+
+        // Check other cities within radius
+        Object.keys(cityLocations).forEach((city) => {
+            if (city !== selectedCity) {
+                const cityData = cityLocations[city];
+                const distance = getDistance(cityCoordinates, cityData.coordinates);
+                if (distance <= radiusInMeters) {
+                    filteredLocations.push(...cityData.locations);
+                }
+            }
+        });
+
+        setLocations(filteredLocations);
+    };
+
+    useEffect(() => {
+        if (selectedCity && selectedRadius) {
+            const cityData = cityLocations[selectedCity];
+            const cityCoordinates = cityData ? cityData.coordinates : null;
+            if (cityCoordinates) {
+                filterLocationsWithinRadius(cityCoordinates);
+            }
+        }
+    }, [selectedCity, selectedRadius]);
 
     return (
         <View style={commonStyles.container}>
@@ -256,13 +288,12 @@ export default function Donate() {
                                                                                             onPress={() =>
                                                                                                 setSelectedTime(time)
                                                                                             }
-                                                                                            style={[
+                                                                                            style={[ 
                                                                                                 selectedTime === time
                                                                                                     ? donateStyles.selectedTime
                                                                                                     : {},
                                                                                                 donateStyles.timeButton,
-                                                                                            ]}
-                                                                                        >
+                                                                                            ]}>
                                                                                             {time}
                                                                                         </CommonButton>
                                                                                     )
