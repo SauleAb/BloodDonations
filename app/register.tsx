@@ -20,15 +20,18 @@ export default function Register() {
                 return;
             }
 
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailPattern.test(email)) {
+                Alert.alert('Error', 'Invalid email format');
+                return;
+            }
+
             if (password !== confirmPassword) {
                 Alert.alert('Error', 'Passwords do not match!');
                 return;
             }
 
-            const usersJSON = await AsyncStorage.getItem('users');
-            const users = usersJSON ? JSON.parse(usersJSON) : [];
-
-            const emailExists = users.some((user: { email: string }) => user.email === email);
+            const emailExists = false; // api request to check if email exists (waiting for nina)
             if (emailExists) {
                 Alert.alert('Error', 'An account with this email already exists.');
                 return;
@@ -45,7 +48,7 @@ export default function Register() {
     };
 
     return (
-        <CommonBackground style={registerStyles.backgroundImage} titleText={"Register"} logoVisible={true}>
+        <CommonBackground style={registerStyles.backgroundImage} titleText={"Register"} titleSubText={"Fill in the fields to create your account"} logoVisible={true}>
             <InputField
                 placeholder="Email"
                 value={email}

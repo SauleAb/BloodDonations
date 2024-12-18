@@ -1,22 +1,32 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import { View } from "react-native";
 import CommonBackground from "@/components/common/CommonBackground";
 import CommonContent from "@/components/common/CommonContent";
 import CommonScrollElement from "@/components/common/CommonScrollElement";
-import { profileContent } from "@/constants/ProfileData";
+import { getProfileContent } from "@/constants/ProfileData";
 import { profileHealthData } from "@/constants/ProfileHealthData";
 import { commonStyles } from "@/app/styles/CommonStyles";
 import SecondaryNavBar from "@/components/common/CommonSecondaryNavBar";
+import { useUser } from "@/components/UserContext";
+import CommonButton from "@/components/common/CommonButton";
+import {router} from "expo-router";
 
 const validateTextSize = (size: any): "small" | "large" | undefined => {
     return size === "small" || size === "large" ? size : undefined;
 };
 
 export default function Profile() {
-    const [activeTab, setActiveTab] = useState<'profile' | 'health'>('profile');
+    const { user } = useUser();
+    const { logout } = useUser();
+    const [activeTab, setActiveTab] = useState<"profile" | "health">("profile");
 
+    const handleLogout = async () => {
+        await logout();
+        router.replace('/login');
+    };
     const renderContent = () => {
         if (activeTab === "profile") {
+            const profileContent = getProfileContent(user); // Get dynamic profile content
             return (
                 <CommonScrollElement>
                     {profileContent.map((item, index) => (
@@ -30,10 +40,11 @@ export default function Profile() {
                             showContent={item.showContent}
                         />
                     ))}
+
+                    <CommonButton onPress={handleLogout}>Log Out</CommonButton>
                 </CommonScrollElement>
-            )
-        }
-        else {
+            );
+        } else {
             return (
                 <CommonScrollElement>
                     {profileHealthData.map((item, index) => (
@@ -46,10 +57,13 @@ export default function Profile() {
                             rightText={item.rightText}
                         />
                     ))}
+
+                    <CommonButton onPress={handleLogout}>Log Out</CommonButton>
                 </CommonScrollElement>
-            )
+            );
         }
-    }
+    };
+
     return (
         <View style={commonStyles.container}>
             <CommonBackground logoVisible={true} mainPage={true}>
