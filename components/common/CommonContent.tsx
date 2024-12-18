@@ -26,6 +26,8 @@ export enum IconNames {
     Uber = "Uber",
     Tickets = "Tickets",
     Medal = "Medal",
+    Friend = "Friend",
+    NotFriend = "NotFriend"
     Candy = "Candy"
 }
 
@@ -52,6 +54,8 @@ export const iconMap: Record<IconNames, any> = {
     [IconNames.Uber]: require('@/assets/icons/uber.png'),
     [IconNames.Tickets]: require('@/assets/icons/tickets.png'),
     [IconNames.Medal]: require('@/assets/icons/medal.png'),
+    [IconNames.Friend]: require('@/assets/icons/friend.png'),
+    [IconNames.NotFriend]: require('@/assets/icons/not-friend.png'),
     [IconNames.Candy]: require('@/assets/icons/candy.png'),
 };
 

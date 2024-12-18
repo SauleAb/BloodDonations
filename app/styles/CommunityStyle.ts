@@ -19,6 +19,34 @@ const communityStyles = StyleSheet.create({
         backgroundColor: "#ffffff",
         paddingVertical: 10,
     },
+    friendInfoRow: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        marginVertical: 5,
+    },
+    leftText: {
+        fontWeight: "bold",
+        color: "#333",
+    },
+    rightText: {
+        color: "#555",
+    },
+    toggleButton: {
+        marginTop: 10,
+        alignSelf: "flex-start",
+    },
+    seeMoreButton: {
+        marginTop: 10,
+        backgroundColor: "#007BFF",
+        paddingVertical: 5,
+        paddingHorizontal: 10,
+        borderRadius: 5,
+        alignSelf: "flex-start",
+    },
+    buttonText: {
+        color: "white",
+        fontWeight: "bold",
+    },
     navButton: {
         paddingVertical: 5,
         paddingHorizontal: 20,

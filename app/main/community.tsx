@@ -12,6 +12,7 @@ import { friendsList, achievements } from "@/constants/CommunityData";
 import commonStyles from "@/app/styles/CommonStyles";
 import communityStyles from "../styles/CommunityStyle";
 
+//Hello
 export default function Community() {
     const [activeTab, setActiveTab] = useState<'feed' | 'friends'>('feed');
     const [search, setSearch] = useState('');
@@ -20,9 +21,6 @@ export default function Community() {
         friend.name.toLowerCase().includes(search.toLowerCase())
     );
 
-    const handleAddFriend = () => {
-        console.log("Add Friend button pressed!");
-    };
 
     const renderContent = () => {
         if (activeTab === "feed") {
@@ -55,7 +53,7 @@ export default function Community() {
                                     key={index}
                                     titleText={"Friend"}
                                     contentText={friend.name}
-                                    icon={IconNames.Delete}
+                                    icon={IconNames.Friend}
                                 />
                             ))
                         ) : (
@@ -64,13 +62,6 @@ export default function Community() {
                             </CommonText>
                         )}
                     </CommonScrollElement>
-                    <TouchableOpacity
-                        style={communityStyles.addFriendButton}
-                        onPress={handleAddFriend}
-                    >
-                        <CommonText>Add Friend</CommonText>
-                        <CommonText bold>+</CommonText>
-                    </TouchableOpacity>
                 </>
             );
         }
