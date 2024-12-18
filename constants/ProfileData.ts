@@ -1,35 +1,75 @@
-import { IconNames } from "@/components/common/CommonContent";
+import { RightTextItem, IconNames } from "@/components/common/CommonContent";
 
-export const profileContent = [
+export const getProfileContent = (user: any) => [
     {
-        titleText: "Last Donation",
-        contentText: "26th September, 2024",
-        icon: IconNames.Time,
+        titleText: "Full Name",
+        contentText: user?.first_name + ' ' + user?.last_name || "N/A",
     },
     {
-        titleText: "Times Donated",
-        contentText: "9",
-        icon: IconNames.Time,
+        titleText: "Username",
+        contentText: user?.username || "N/A",
     },
     {
-        titleText: "Amount Donated",
-        contentText: "14 units of plasma",
+        titleText: "Health Information",
+        contentText: "Blood Type\nNationality\nSex\nDate Of Birth\nEligible Status",
+        icon: IconNames.BloodDrop,
+        contentTextSize: "small",
+        rightText: [
+            user?.bloodType || "N/A",
+            user?.nationality || "N/A",
+            user?.gender || "N/A",
+            user?.dob || "N/A",
+            { type: "switch", switchValue: user?.eligible || false, onToggle: () => console.log("Eligible switched!") } as RightTextItem,
+        ],
+    },
+    {
+        titleText: "Phone Number",
+        contentText: user?.phone || "N/A",
         icon: IconNames.BloodDonated,
     },
     {
-        titleText: "Iron Levels",
-        contentText: "41 ng/ml",
-        icon: IconNames.BloodData,
+        titleText: "City",
+        contentText: user?.city || "N/A",
+        icon: IconNames.BloodDonated,
     },
     {
-        titleText: "Donation History",
-        contentText: "26th September, 2024\n16th July, 2024\n3rd June, 2024",
-        icon: IconNames.Time,
+        titleText: "Address",
+        contentText: user?.address || "N/A",
+        icon: IconNames.BloodDonated,
+    },
+    {
+        titleText: "Notifications",
+        contentText: "Donation Reminder\nFriend Activity",
+        icon: IconNames.Notification,
         contentTextSize: "small",
-        rightText: "View Details\nView Details\nView Details",
+        rightText: [
+            { type: "switch", switchValue: user?.notifications?.donationReminder || false, onToggle: () => console.log("Donation Reminder switched!") },
+            { type: "switch", switchValue: user?.notifications?.friendActivity || false, onToggle: () => console.log("Friend Activity switched!") },
+        ],
     },
     {
-        titleText: "Settings",
+        titleText: "Home Screen",
+        contentText: "Friend Activity\nDonation Timer\nAmount Donated",
+        icon: IconNames.Notification,
+        contentTextSize: "small",
+        rightText: [
+            { type: "switch", switchValue: user?.homeScreen?.friendActivity || false, onToggle: () => console.log("Friend Activity switched!") },
+            { type: "switch", switchValue: user?.homeScreen?.donationTimer || false, onToggle: () => console.log("Donation Timer switched!") },
+            { type: "switch", switchValue: user?.homeScreen?.amountDonated || false, onToggle: () => console.log("Amount Donated switched!") },
+        ],
+    },
+    {
+        titleText: "Appearance",
+        contentText: "Dark Mode\nBig UI Size",
+        icon: IconNames.Notification,
+        contentTextSize: "small",
+        rightText: [
+            { type: "switch", switchValue: user?.appearance?.darkMode || false, onToggle: () => console.log("Dark mode switched!") },
+            { type: "switch", switchValue: user?.appearance?.bigUiSize || false, onToggle: () => console.log("Big UI size switched!") },
+        ],
+    },
+    {
+        titleText: "Edit Details",
         icon: IconNames.Settings,
         showContent: false,
     },

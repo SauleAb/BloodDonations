@@ -20,7 +20,7 @@ const CustomInput: React.FC<CustomInputProps> = ({
     style,
     secureTextEntry = false,
     placeholderTextColor = '#888',
-    suggestions = [],  // Default to an empty array if no suggestions are passed
+    suggestions = [],
     onSuggestionSelect,
 }) => {
     return (
@@ -37,7 +37,6 @@ const CustomInput: React.FC<CustomInputProps> = ({
                 placeholderTextColor={placeholderTextColor}
             />
 
-            {/* Render FlatList if suggestions are provided */}
             {suggestions.length > 0 && (
                 <FlatList
                     data={suggestions}
@@ -94,7 +93,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgb(255, 255, 255)',
     },
     suggestionsContainer: {
-        maxHeight: 150,
+        maxHeight: 170,
         marginTop: 5,
         backgroundColor: '#fff',
         borderRadius: 5,

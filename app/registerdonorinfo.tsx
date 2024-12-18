@@ -10,7 +10,7 @@ import commonStyles from './styles/CommonStyles';
 import registerDonor from './styles/RegisterDonorStyle';
 
 export default function DonorTest() {
-    const [donatedBeforeAnswer, setDonatedBefore] = useState<string | null>(null);
+    const [donatedBeforeAnswer, setDonatedBefore] = useState<string | boolean | null>(null);
 
     return (
         <View style={commonStyles.container}>
@@ -18,7 +18,7 @@ export default function DonorTest() {
                 <CommonScrollElement>
                     <TwoQuestions titleText={"Have you donated before?"} onAnswerChange={(selectedAnswer) => setDonatedBefore(selectedAnswer)}/>
 
-                    {donatedBeforeAnswer === 'yes' && (
+                    {donatedBeforeAnswer && (
                         <View style={registerDonor.content}>
                             <CommonText style={registerDonor.text}>Feel free to go to the home page</CommonText>
                             <CommonButton href={"/main/home" as Href<string | object>}>
@@ -31,7 +31,7 @@ export default function DonorTest() {
                         </View>
 
                     )}
-                    {donatedBeforeAnswer === 'no' && (
+                    {donatedBeforeAnswer && (
                         <View style={registerDonor.content}>
                             <CommonText style={registerDonor.text}>We then urge you to take a quick test to see if you are eligible to donate, it won't take more than a minute, promise!</CommonText>
                             <CommonButton href={"/donortesting/donortest" as Href<string | object>}>

@@ -15,6 +15,8 @@ import calendarStyles from "@/app/styles/CalendarStyle";
 import commonStyles from "@/app/styles/CommonStyles";
 import { cityLocations, DonationLocation } from "@/constants/DonateData";
 import CustomInput from "@/components/InputField";
+import CalendarComponent from "@/components/CalendarComponent";
+import CalendarContent from "@/components/CalendarComponent";
 
 export default function Donate() {
     const {
@@ -38,13 +40,12 @@ export default function Donate() {
     const isTimeSelected = selectedTime !== "";
 
     const [locations, setLocations] = useState<DonationLocation[]>([]);
-    const [inputValue, setInputValue] = useState(""); // Input state for city search
-    const [suggestions, setSuggestions] = useState<string[]>([]); // Suggestions for city names
+    const [inputValue, setInputValue] = useState(""); 
+    const [suggestions, setSuggestions] = useState<string[]>([]);
 
     const handleTextChange = (text: string) => {
         setInputValue(text);
 
-        // Filter cities based on input
         const filteredSuggestions = Object.keys(cityLocations).filter((city) =>
             city.toLowerCase().includes(text.toLowerCase())
         );
@@ -52,10 +53,10 @@ export default function Donate() {
     };
 
     const handleSuggestionSelect = (city: string) => {
-        setInputValue(city); // Update input field with selected city
-        setSuggestions([]); // Clear suggestions after selection
-        setSelectedCity(city); // Set selected city state
-        setLocations(cityLocations[city].locations); // Set locations for the selected city
+        setInputValue(city); 
+        setSuggestions([]); 
+        setSelectedCity(city);
+        setLocations(cityLocations[city].locations); 
     };
 
     useEffect(() => {
@@ -78,12 +79,12 @@ export default function Donate() {
         <View style={commonStyles.container}>
             <CommonBackground logoVisible={true} mainPage={true}>
             <FlatList
-    data={[]} // Placeholder data
-    keyExtractor={(item, index) => index.toString()} // Dummy key extractor
-    renderItem={() => null} // Minimal renderItem to satisfy TypeScript
-    style={styles.fullWidthContainer} // Add full width container style
-    ListHeaderComponent={
-        <View style={styles.fullWidthContent}>
+                data={[]}
+                keyExtractor={(item, index) => index.toString()} 
+                renderItem={() => null} 
+                style={styles.fullWidthContainer} 
+                ListHeaderComponent={
+                <View style={styles.fullWidthContent}>
                             <CommonContent
                                 titleText={"Next Donation Available in"}
                                 contentText={nextDonationText}
@@ -107,7 +108,7 @@ export default function Donate() {
                             )}
 
                             {isCityAndRadiusFilled && (
-                                <CommonContent titleText="Select a Donation Date">
+                                <CalendarContent titleText="Select a Donation Date">
                                     <View style={donateStyles.calendarWrapper}>
                                         <Calendar
                                             onDayPress={(day: { dateString: string }) =>
@@ -220,7 +221,7 @@ export default function Donate() {
                                             </View>
                                         )}
                                     </View>
-                                </CommonContent>
+                                </CalendarContent>
                             )}
                         </View>
                     }

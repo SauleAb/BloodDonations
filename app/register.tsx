@@ -1,54 +1,76 @@
-import React, { useState } from "react";
-import { View } from "react-native";
-import { Href } from "expo-router";
+import React, { useState } from 'react';
+import { TextInput, Button, Alert, Text } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useRouter } from 'expo-router';
+import registerStyles from './styles/RegisterStyle';
 import CommonBackground from "@/components/common/CommonBackground";
-import CommonButton from "@/components/common/CommonButton";
-import InputField from "@/components/InputField";
-import { REGISTER_FORM_FIELDS, REGISTER_PAGE_TEXT } from "@/constants/RegisterData";
-import { registerStyles } from "@/app/styles/RegisterStyle";
-
-interface FormState {
-    username: string;
-    email: string;
-    password: string;
-    confirmPassword: string;
-}
+import InputField from '@/components/InputField';
+import CommonButton from '@/components/common/CommonButton';
 
 export default function Register() {
-    const [formState, setFormState] = useState<FormState>({
-        username: '',
-        email: '',
-        password: '',
-        confirmPassword: '',
-    });
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const router = useRouter();
 
-    const handleInputChange = (key: keyof FormState, value: string) => {
-        setFormState((prevState) => ({ ...prevState, [key]: value }));
+    const handleRegister = async () => {
+        try {
+            if (!email || !password || !confirmPassword) {
+                Alert.alert('Error', 'All fields are required!');
+                return;
+            }
+
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailPattern.test(email)) {
+                Alert.alert('Error', 'Invalid email format');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                Alert.alert('Error', 'Passwords do not match!');
+                return;
+            }
+
+            const emailExists = false; // api request to check if email exists (waiting for nina)
+            if (emailExists) {
+                Alert.alert('Error', 'An account with this email already exists.');
+                return;
+            }
+
+            router.push({
+                pathname: '/next',
+                params: { email, password },
+            });
+        } catch (error) {
+            console.error('Error during registration:', error);
+            Alert.alert('Error', 'An error occurred. Please try again.');
+        }
     };
 
     return (
-        <View style={registerStyles.container}>
-            <CommonBackground
-                style={registerStyles.backgroundImage}
-                titleText={REGISTER_PAGE_TEXT.title}
-                titleSubText={REGISTER_PAGE_TEXT.subTitle}
-                logoVisible={true}
-            >
-                {REGISTER_FORM_FIELDS.map(({ placeholder, secureTextEntry, stateSetterKey }) => (
-                    <InputField
-                        key={placeholder}
-                        placeholder={placeholder}
-                        value={formState[stateSetterKey.replace("set", "").toLowerCase() as keyof FormState]}
-                        onChangeText={(value) => handleInputChange(stateSetterKey.replace("set", "").toLowerCase() as keyof FormState, value)}
-                        secureTextEntry={secureTextEntry}
-                        placeholderTextColor="#5a5959"
-                    />
-                ))}
-
-                <CommonButton href={"/registerdonorinfo" as Href<string | object>}>
-                    {REGISTER_PAGE_TEXT.buttonText}
-                </CommonButton>
-            </CommonBackground>
-        </View>
+        <CommonBackground style={registerStyles.backgroundImage} titleText={"Register"} titleSubText={"Fill in the fields to create your account"} logoVisible={true}>
+            <InputField
+                placeholder="Email"
+                value={email}
+                onChangeText={setEmail}
+            />
+            <InputField
+                placeholder="Password"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+            />
+            <InputField
+                placeholder="Confirm Password"
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
+                secureTextEntry
+            />
+            <CommonButton
+            style={registerStyles.registerButton} 
+            onPress={handleRegister} >
+            <Text> Register </Text>
+            </CommonButton>
+        </CommonBackground>
     );
 }

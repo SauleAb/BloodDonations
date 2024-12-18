@@ -1,48 +1,88 @@
-import React, {useState} from 'react';
-import {StyleSheet, View} from 'react-native';
-import CommonButton from '@/components/common/CommonButton';
-import InputField from '@/components/InputField';
-import CommonBackground from "@/components/common/CommonBackground";
-import {Href} from "expo-router";
-import commonStyles from './styles/CommonStyles';
+import React, { useState } from 'react';
+import {Alert, Text, View} from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useRouter } from 'expo-router';
+import { useUser } from '@/components/UserContext';
 import loginStyles from './styles/LoginStyle';
+import CommonBackground from "@/components/common/CommonBackground";
+import commonStyles from "@/app/styles/CommonStyles";
+import InputField from '@/components/InputField';
+import CommonButton from '@/components/common/CommonButton';
+import defaultUser from '@/components/user';
+
+interface User {
+    firstName: string;
+    lastName: string;
+    email: string;
+    password: string;
+}
 
 export default function Login() {
-    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const { login } = useUser();
+    const router = useRouter();
+
+    const handleLogin = async () => {
+        if (!email || email === "" || !password || password === "") {
+            Alert.alert('Error', 'Please fill out all fields');
+            return;
+        }
+
+        const _email = email.replace(/@/g, "%40");
+        const url = `https://sanquin-api.onrender.com/users/email/${_email}?password=${password}`;
+
+        try {
+            const response = await fetch(url, {
+                method: 'GET',
+            });
+
+            if (response.status === 404) {
+                Alert.alert('Login Error', 'Incorrect credentials, please try again.');
+                return;
+            } else if (!response.ok) {
+                Alert.alert('Login Error', 'Something went wrong, please try again later.');
+                return;
+            }
+
+            const data = await response.json();
+            const userData = {
+                ...defaultUser,
+                ...data.data,
+            };
+
+            login(userData);
+            await AsyncStorage.setItem('user', JSON.stringify(userData));
+            router.replace('/main/home');
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
 
     return (
         <View style={commonStyles.container}>
             <CommonBackground style={loginStyles.backgroundImage} titleText={"Welcome to Sanquin!"} logoVisible={true}>
                 <InputField
-                    placeholder="Username"
-                    value={username}
-                    onChangeText={setUsername}
+                    placeholder="Email"
+                    value={email}
+                    onChangeText={setEmail}
                 />
-
                 <InputField
                     placeholder="Password"
                     value={password}
                     onChangeText={setPassword}
-                    secureTextEntry={true}
-
+                    secureTextEntry
                 />
-
-                <CommonButton
-                    href={"/main/home" as Href<string | object>} style={loginStyles.loginButton}>
-                    Log In
+                <CommonButton onPress={handleLogin} style={loginStyles.loginButton}>
+                    <Text>Log In</Text>
                 </CommonButton>
-
                 <CommonButton
-                    href="/register"
                     style={loginStyles.registerButton}
-                    textStyle={loginStyles.registerButtonText}
+                    onPress={() => router.push('/register')}
                 >
-                    Register
+                    <Text>Register</Text>
                 </CommonButton>
-
             </CommonBackground>
         </View>
     );
 }
-

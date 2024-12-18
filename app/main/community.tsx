@@ -1,15 +1,17 @@
+import React, { useState } from "react";
 import { View, TouchableOpacity } from "react-native";
 import CommonBackground from "@/components/common/CommonBackground";
-import React, { useState } from "react";
 import AchievementCard from "@/components/AchievementCard";
 import CommonScrollElement from "@/components/common/CommonScrollElement";
 import CommonContent, { IconNames } from "@/components/common/CommonContent";
 import CommonText from "@/components/common/CommonText";
 import InputField from "@/components/InputField";
-import { friendsList, achievements } from "@/constants/CommunityData"; 
+import SecondaryNavBar from "@/components/common/CommonSecondaryNavBar";
+import { friendsList, achievements } from "@/constants/CommunityData";
 import commonStyles from "@/app/styles/CommonStyles";
 import communityStyles from "../styles/CommunityStyle";
 
+//Hello
 export default function Community() {
     const [activeTab, setActiveTab] = useState<'feed' | 'friends'>('feed');
     const [search, setSearch] = useState('');
@@ -69,26 +71,14 @@ export default function Community() {
             <CommonBackground logoVisible={true} mainPage={true}>
                 {renderContent()}
             </CommonBackground>
-            <View style={communityStyles.secondaryNavBar}>
-                <TouchableOpacity
-                    style={[
-                        communityStyles.navButton,
-                        activeTab === "feed" ? communityStyles.activeTab : null,
-                    ]}
-                    onPress={() => setActiveTab("feed")}
-                >
-                    <CommonText style={communityStyles.navText}>Feed</CommonText>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={[
-                        communityStyles.navButton,
-                        activeTab === "friends" ? communityStyles.activeTab : null,
-                    ]}
-                    onPress={() => setActiveTab("friends")}
-                >
-                    <CommonText style={communityStyles.navText}>Friends</CommonText>
-                </TouchableOpacity>
-            </View>
+            <SecondaryNavBar
+                tabs={[
+                    { key: "feed", label: "Feed" },
+                    { key: "friends", label: "Friends" },
+                ]}
+                activeTab={activeTab}
+                onTabChange={setActiveTab}
+            />
         </View>
     );
 }
