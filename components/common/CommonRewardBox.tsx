@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, Image, TouchableOpacity, Modal, Button } from '
 import { IconNames, iconMap } from "@/components/common/CommonIcons";
 import CommonText from "@/components/common/CommonText";
 import { useUser } from '@/components/UserContext';
+import {redeem} from "@/utils/rewardsUtils";
 
 type CommonRewardBoxProps = {
     titleText: string;
@@ -14,6 +15,7 @@ type CommonRewardBoxProps = {
 const CommonRewardBox: React.FC<CommonRewardBoxProps> = ({ titleText, icon, amountText, onPress }) => {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
     const iconSource = iconMap[icon];
 
     const { user } = useUser();
@@ -23,14 +25,23 @@ const CommonRewardBox: React.FC<CommonRewardBoxProps> = ({ titleText, icon, amou
         setIsModalVisible(true); // Show the confirmation modal
     };
 
-    const handleConfirm = () => {
-        const price = parseInt(amountText)
-        if(user.rewardPoints >= price){
-            user.rewardPoints -= price
-            setIsModalVisible(false); // Close the modal
-            onPress(); // Execute the redeem action
-        } else {
-            setErrorMessage('You do not have enough points to redeem this reward.'); // Set the error message
+    const handleConfirm = async () => {
+        setErrorMessage('');
+        setIsLoading(true);
+
+        try {
+            const success = await redeem(user.id, parseInt(amountText)); // Call redeem function
+            if (success) {
+                setIsModalVisible(false); // Close the modal
+                onPress(); // Execute the redeem action (e.g., UI update)
+            } else {
+                setErrorMessage('You do not have enough points to redeem this reward.');
+            }
+        } catch (error) {
+            console.error('Error redeeming reward:', error);
+            setErrorMessage('Something went wrong. Please try again.');
+        } finally {
+            setIsLoading(false);
         }
     };
 

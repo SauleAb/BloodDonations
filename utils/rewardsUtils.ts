@@ -12,36 +12,47 @@ export const rewardPairs = () => {
     return pairs;
 };
 
-export function getPoints(userId: Int32){
-    let points;
-    const _url = url + userId
+export async function getPoints(userId: Int32): Promise<number | null> {
+    const _url = url + userId;
 
-    fetch(url)
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-      return response.json();
-    })
-    .then(data => {
-        points = data.data.points;
-        
-    })
-    .catch(error => {
+    try {
+        const response = await fetch(_url);
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        return data.data?.points ?? null; // Safely access points
+    } catch (error) {
         console.error('There was a problem with the fetch operation:', error);
-    });
+        return null; // Return null on failure
+    }
+    }
 
-    return points;
-}
+export async function redeem(userId: Int32, rewardId: Int32): Promise<boolean> {
+    const rewardCost = 5;
+    const points = await getPoints(userId);
 
-// returns true if user has enough points and false if not user doesnt have enough points
-export function redeem(userId: Int32, rewardId: Int32){
-    let rewardCost = 5
-    const points = getPoints(userId)
-    if (points && points >= rewardCost){
-        // POST REQUEST TO TAKE POINTS OFF OF USER IN DATABASE
-        return true
-    } else{
-        return false
+    if (points !== null && points >= rewardCost) {
+        // POST request to deduct points from the user
+        // Example placeholder logic:
+        try {
+            const response = await fetch(`${url}${userId}/redeem`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ rewardId }),
+            });
+
+            if (!response.ok) {
+                throw new Error(`Failed to redeem reward: ${response.status}`);
+            }
+
+            return true;
+        } catch (error) {
+            console.error('Error redeeming reward:', error);
+            return false;
+        }
+    } else {
+        return false; // Not enough points
     }
 }
