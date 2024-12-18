@@ -1,22 +1,25 @@
-import React, {useState, useContext} from "react";
+import React, { useState } from "react";
 import { View } from "react-native";
 import CommonBackground from "@/components/common/CommonBackground";
 import CommonContent from "@/components/common/CommonContent";
 import CommonScrollElement from "@/components/common/CommonScrollElement";
-import { profileContent } from "@/constants/ProfileData";
+import { getProfileContent } from "@/constants/ProfileData";
 import { profileHealthData } from "@/constants/ProfileHealthData";
 import { commonStyles } from "@/app/styles/CommonStyles";
 import SecondaryNavBar from "@/components/common/CommonSecondaryNavBar";
+import { useUser } from "@/components/UserContext";
 
 const validateTextSize = (size: any): "small" | "large" | undefined => {
     return size === "small" || size === "large" ? size : undefined;
 };
 
 export default function Profile() {
-    const [activeTab, setActiveTab] = useState<'profile' | 'health'>('profile');
+    const { user } = useUser(); // Access user data from UserContext
+    const [activeTab, setActiveTab] = useState<"profile" | "health">("profile");
 
     const renderContent = () => {
         if (activeTab === "profile") {
+            const profileContent = getProfileContent(user); // Get dynamic profile content
             return (
                 <CommonScrollElement>
                     {profileContent.map((item, index) => (
@@ -31,9 +34,8 @@ export default function Profile() {
                         />
                     ))}
                 </CommonScrollElement>
-            )
-        }
-        else {
+            );
+        } else {
             return (
                 <CommonScrollElement>
                     {profileHealthData.map((item, index) => (
@@ -47,9 +49,10 @@ export default function Profile() {
                         />
                     ))}
                 </CommonScrollElement>
-            )
+            );
         }
-    }
+    };
+
     return (
         <View style={commonStyles.container}>
             <CommonBackground logoVisible={true} mainPage={true}>
