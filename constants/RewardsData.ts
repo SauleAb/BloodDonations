@@ -1,14 +1,6 @@
-import { IconNames } from "@/components/common/CommonContent";
-
-export const rewardPoints = "340"; // delete later!!
+import { IconNames } from "@/components/common/CommonIcons";
 
 export const rewards = [
-/*  {
-        titleText: "Pin #27",
-        icon: IconNames.Pin,
-        amountText: "100*",
-    },
-*/
     {
         titleText: "Candy",
         icon: IconNames.Candy,

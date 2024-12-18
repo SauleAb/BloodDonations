@@ -36,7 +36,7 @@ export default function Rewards() {
                         <CommonContent
                             titleText="Reward Points"
                             icon={IconNames.Notification}
-                            contentText={user.rewardPoints.toString() ?? '0'} // Safely display reward points
+                            contentText={user.rewardPoints.toString() ?? '0'}
                         />
                         {rewardPairsList.map((pair, index) => (
                             <View style={rewardsStyles.row} key={index}>
