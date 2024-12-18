@@ -5,6 +5,7 @@ import { View, FlatList, StyleSheet } from "react-native";
 import { Calendar } from "react-native-calendars";
 import InputField from "@/components/InputField";
 import moment from "moment";
+import axios from "axios";
 import CommonButton from "@/components/common/CommonButton";
 import CommonText from "@/components/common/CommonText";
 import donateStyles from "@/app/styles/DonateStyle";
@@ -88,14 +89,44 @@ export default function Donate() {
         resetFields();
     };
 
-    const handleRequestAppointment = () => {
+    const handleRequestAppointment = async () => {
         if (selectedHospital && selectedDate && selectedTime) {
-            setActiveAppointment({
-                hospital: selectedHospital,
-                date: selectedDate,
-                time: selectedTime,
-            });
+            const appointmentDateTime = `${selectedDate}T${selectedTime}:00.000Z`; 
+            const userId = 0; // current user
+            const location = locations.find((loc) => loc.name === selectedHospital);
+            const locationId = 0; // database
+    
+            const appointmentData = {
+                amount: 1, //toggle check
+                user_id: userId,
+                location_id: locationId,
+                type: "blood", //user data check
+                appointment: appointmentDateTime,
+                status: "pending",
+            };
+    
+            try {
+                if (selectedHospital && selectedDate && selectedTime) {
+                    setActiveAppointment({
+                        hospital: selectedHospital,
+                        date: selectedDate,
+                        time: selectedTime,
+                    });
+                }
+                // const response = await axios.post(
+                //     "https://sanquin-api.onrender.com/donations/",
+                //     appointmentData
+                // );
+                setSelectedCity("");
+                setInputValue(""); 
+                setSelectedRadius(""); 
+                setSelectedDate(""); 
+                setSelectedTime("");
+            } catch (error) {
+                console.error("Error posting appointment:", error);
+            }
         }
+        
     };
 
     const timeUntilNextDonation = activeAppointment
