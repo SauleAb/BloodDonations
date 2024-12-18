@@ -19,6 +19,8 @@ import CustomInput from "@/components/InputField";
 import CommonContentSwitch from "@/components/common/CommonContentSwitch";
 import CalendarContent from "@/components/CalendarComponent";
 import { IconNames } from "@/components/common/CommonIcons";
+import { useUser } from '@/components/UserContext';
+
 export default function Donate() {
     const {
         selectedDate,
@@ -34,6 +36,7 @@ export default function Donate() {
         resetFields,
     } = useDonationForm();
 
+
     type ActiveAppointment = {
         hospital: string;
         date: string;
@@ -46,17 +49,38 @@ export default function Donate() {
     const [allLocations, setAllLocations] = useState<Location[]>([]); // All locations
     const [inputValue, setInputValue] = useState("");
     const [suggestions, setSuggestions] = useState<string[]>([]);
+    const [userId, setUserId] = useState<string | null>(null);
+    const { user, loading } = useUser();
 
     const { nextDonationAvailable, nextDonationText } = getNextDonationDetails();
     const disabledDates = generateDisabledDates(nextDonationAvailable);
-
     const handleToggle = () => {
         setIsToggled((prevState) => !prevState);
     };
 
+    const fetchUserByEmail = async () => {
+        try {
+          const response = await axios.get(
+            `https://sanquin-api.onrender.com/users/email/${user.email}?password=${user.password}`
+          );
+          if (response.status === 200 && response.data) {
+            const userEntity = response.data; 
+            setUserId(userEntity.id); 
+            console.log("User entity:", userEntity); 
+          } else {
+            console.error("Error fetching user:", response.statusText);
+          }
+        } catch (error) {
+          console.error("Error fetching user:", error);
+        }
+      };
+
+      useEffect(() => {
+        fetchUserByEmail();
+      }, []); 
     type TimeSlot = {
         start_time: string; 
-        end_time: string;   
+        end_time: string; 
         total_capacity: number;
         remaining_capacity: number;
     };
@@ -74,7 +98,6 @@ export default function Donate() {
     const isCityAndRadiusFilled = selectedCity.trim() && selectedRadius.trim();
     const isTimeSelected = selectedTime !== "";
 
-    // Fetch all locations on component mount
     useEffect(() => {
         const fetchAllLocations = async () => {
             try {
@@ -90,7 +113,6 @@ export default function Donate() {
         fetchAllLocations();
     }, []);
 
-    // Fetch and filter locations by city and radius
     useEffect(() => {
         const fetchCityLocations = async () => {
             if (selectedCity) {
@@ -111,7 +133,6 @@ export default function Donate() {
         }
     }, [selectedCity, selectedRadius]);
 
-    // Helper function to filter locations within radius
     const filterLocationsWithinRadius = (cityLocations: Location[]) => {
         const radiusInMeters = parseInt(selectedRadius) * 1000;
         const selectedCityCoordinates = cityLocations.length
@@ -169,7 +190,6 @@ export default function Donate() {
     const handleRequestAppointment = async () => {
         if (selectedHospital && selectedDate && selectedTime) {
             const appointmentDateTime = `${selectedDate}T${selectedTime}:00.000Z`;
-            const userId = 0;
             const location = locations.find((loc) => loc.name === selectedHospital);
     
             if (!location) {
@@ -186,11 +206,10 @@ export default function Donate() {
                 status: "pending",
             };
     
-            try {
-                const response = await axios.post(
-                    "https://sanquin-api.onrender.com/donations/",
-                    appointmentData
-                );
+                // const response = await axios.post(
+                //     "https://sanquin-api.onrender.com/donations/",
+                //     appointmentData
+                // );
                 setActiveAppointment({
                     hospital: selectedHospital,
                     date: selectedDate,
@@ -201,11 +220,11 @@ export default function Donate() {
                 setSelectedRadius("");
                 setSelectedDate("");
                 setSelectedTime("");
-            } catch (error) {
-                console.error("Error posting appointment:", error);
-            }
         }
     };
+
+    const daysUntilDonation = nextDonationAvailable ? moment(nextDonationAvailable).diff(moment(), 'days') : null;
+
     return (
         <View style={commonStyles.container}>
             <CommonBackground logoVisible={true} mainPage={true}>
@@ -224,8 +243,8 @@ export default function Donate() {
                                 />
                             ) : (
                                 <CommonContent
-                                    titleText={"Next Donation Available in"}
-                                    contentText={nextDonationText}
+                                    titleText={"You are eligible to donate again!"}
+                                    showContent={false}
                                     icon={IconNames.BloodDonated}
                                 />
                             )}
