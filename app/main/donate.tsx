@@ -126,7 +126,6 @@ export default function Donate() {
                 console.error("Error posting appointment:", error);
             }
         }
-        
     };
 
     const timeUntilNextDonation = activeAppointment
@@ -324,5 +323,15 @@ const styles = StyleSheet.create({
         alignSelf: "center",
         justifyContent: "center",
         alignItems: "center",
+    },
+    suggestionList: {
+        maxHeight: 200,  
+        width: "100%",
+        borderWidth: 1,
+        borderColor: "#ccc",
+        backgroundColor: "#fff",
+        position: "absolute",
+        top: 45,  
+        zIndex: 1000,
     },
 });
