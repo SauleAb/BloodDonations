@@ -249,6 +249,7 @@ export default function Donate() {
                                                                     onPress={() =>
                                                                         handleSetAppointment(location.name)
                                                                     }
+                                                                    disabled={selectedHospital === location.name}
                                                                 >
                                                                     Set{"\n"}Appointment
                                                                 </CommonButton>
