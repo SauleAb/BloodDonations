@@ -1,5 +1,5 @@
 import React from 'react';
-import { TextInput, StyleSheet, TextStyle, View, FlatList, TouchableOpacity } from 'react-native';
+import { TextInput, StyleSheet, TextStyle, View, FlatList, TouchableOpacity, KeyboardTypeOptions } from 'react-native';
 import CommonText from "@/components/common/CommonText";
 
 type CustomInputProps = {
@@ -9,8 +9,9 @@ type CustomInputProps = {
     style?: TextStyle;
     secureTextEntry?: boolean;
     placeholderTextColor?: string;
-    suggestions?: string[];  // Optional suggestions list
-    onSuggestionSelect?: (suggestion: string) => void; // Optional callback when suggestion is selected
+    suggestions?: string[];  
+    onSuggestionSelect?: (suggestion: string) => void; 
+    keyboardType?: KeyboardTypeOptions; 
 };
 
 const CustomInput: React.FC<CustomInputProps> = ({
@@ -22,6 +23,7 @@ const CustomInput: React.FC<CustomInputProps> = ({
     placeholderTextColor = '#888',
     suggestions = [],
     onSuggestionSelect,
+    keyboardType = 'default',  
 }) => {
     return (
         <View style={[styles.container, styles.shadow]}>
@@ -35,6 +37,7 @@ const CustomInput: React.FC<CustomInputProps> = ({
                 onChangeText={onChangeText}
                 secureTextEntry={secureTextEntry}
                 placeholderTextColor={placeholderTextColor}
+                keyboardType={keyboardType} 
             />
 
             {suggestions.length > 0 && (
