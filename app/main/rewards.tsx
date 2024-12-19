@@ -10,8 +10,9 @@ import { rewardPairs } from "@/utils/rewardsUtils";
 import { useUser } from '@/components/UserContext';
 import { IconNames } from "@/components/common/CommonIcons";
 
+const { user } = useUser(); // Get the user object from context
+
 export default function Rewards() {
-    const { user } = useUser(); // Get the user object from context
     const rewardPairsList = rewardPairs();
 
     return (
