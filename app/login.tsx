@@ -9,6 +9,7 @@ import commonStyles from "@/app/styles/CommonStyles";
 import InputField from '@/components/InputField';
 import CommonButton from '@/components/common/CommonButton';
 import defaultUser from '@/components/user';
+import CommonScrollElement from "@/components/common/CommonScrollElement";
 
 interface User {
     firstName: string;
@@ -62,26 +63,28 @@ export default function Login() {
     return (
         <View style={commonStyles.container}>
             <CommonBackground style={loginStyles.backgroundImage} titleText={"Welcome to Sanquin!"} logoVisible={true}>
-                <InputField
-                    placeholder="Email"
-                    value={email}
-                    onChangeText={setEmail}
-                />
-                <InputField
-                    placeholder="Password"
-                    value={password}
-                    onChangeText={setPassword}
-                    secureTextEntry
-                />
-                <CommonButton onPress={handleLogin} style={loginStyles.loginButton}>
-                    <Text>Log In</Text>
-                </CommonButton>
-                <CommonButton
-                    style={loginStyles.registerButton}
-                    onPress={() => router.push('/register')}
-                >
-                    <Text>Register</Text>
-                </CommonButton>
+                <CommonScrollElement>
+                    <InputField
+                        placeholder="Email"
+                        value={email}
+                        onChangeText={setEmail}
+                    />
+                    <InputField
+                        placeholder="Password"
+                        value={password}
+                        onChangeText={setPassword}
+                        secureTextEntry
+                    />
+                    <CommonButton onPress={handleLogin} style={loginStyles.loginButton}>
+                        <Text>Log In</Text>
+                    </CommonButton>
+                    <CommonButton
+                        style={loginStyles.registerButton}
+                        onPress={() => router.push('/register')}
+                    >
+                        <Text>Register</Text>
+                    </CommonButton>
+                </CommonScrollElement>
             </CommonBackground>
         </View>
     );

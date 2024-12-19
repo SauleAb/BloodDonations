@@ -6,6 +6,7 @@ import registerStyles from './styles/RegisterStyle';
 import CommonBackground from "@/components/common/CommonBackground";
 import InputField from '@/components/InputField';
 import CommonButton from '@/components/common/CommonButton';
+import CommonScrollElement from "@/components/common/CommonScrollElement";
 
 export default function Register() {
     const [email, setEmail] = useState('');
@@ -49,28 +50,30 @@ export default function Register() {
 
     return (
         <CommonBackground style={registerStyles.backgroundImage} titleText={"Register"} titleSubText={"Fill in the fields to create your account"} logoVisible={true}>
-            <InputField
-                placeholder="Email"
-                value={email}
-                onChangeText={setEmail}
-            />
-            <InputField
-                placeholder="Password"
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry
-            />
-            <InputField
-                placeholder="Confirm Password"
-                value={confirmPassword}
-                onChangeText={setConfirmPassword}
-                secureTextEntry
-            />
-            <CommonButton
-            style={registerStyles.registerButton} 
-            onPress={handleRegister} >
-            <Text> Register </Text>
-            </CommonButton>
+            <CommonScrollElement>
+                <InputField
+                    placeholder="Email"
+                    value={email}
+                    onChangeText={setEmail}
+                />
+                <InputField
+                    placeholder="Password"
+                    value={password}
+                    onChangeText={setPassword}
+                    secureTextEntry
+                />
+                <InputField
+                    placeholder="Confirm Password"
+                    value={confirmPassword}
+                    onChangeText={setConfirmPassword}
+                    secureTextEntry
+                />
+                <CommonButton
+                style={registerStyles.registerButton}
+                onPress={handleRegister} >
+                <Text> Register </Text>
+                </CommonButton>
+            </CommonScrollElement>
         </CommonBackground>
     );
 }

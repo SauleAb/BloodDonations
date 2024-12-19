@@ -10,11 +10,10 @@ import { rewardPairs } from "@/utils/rewardsUtils";
 import { useUser } from '@/components/UserContext';
 import { IconNames } from "@/components/common/CommonIcons";
 
-const { user } = useUser(); // Get the user object from context
-
 export default function Rewards() {
-    const rewardPairsList = rewardPairs();
 
+    const rewardPairsList = rewardPairs();
+    const { user } = useUser();
     return (
         <View style={commonStyles.container}>
             <CommonBackground logoVisible={true} mainPage={true}>
