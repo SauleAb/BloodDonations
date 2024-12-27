@@ -11,7 +11,6 @@ import { friendsList, achievements } from "@/constants/CommunityData";
 import commonStyles from "@/app/styles/CommonStyles";
 import communityStyles from "../styles/CommunityStyle";
 
-//Hello
 export default function Community() {
     const [activeTab, setActiveTab] = useState<'feed' | 'friends'>('feed');
     const [search, setSearch] = useState('');
