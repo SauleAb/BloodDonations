@@ -1,12 +1,11 @@
 import React, { useState } from "react";
-import { View, TouchableOpacity } from "react-native";
+import { View } from "react-native";
 import CommonBackground from "@/components/common/CommonBackground";
 import AchievementCard from "@/components/AchievementCard";
 import CommonScrollElement from "@/components/common/CommonScrollElement";
 import CommonContent from "@/components/common/CommonContent";
-import { IconNames } from "@/components/common/CommonIcons";
 import CommonText from "@/components/common/CommonText";
-import InputField from "@/components/InputField";
+import InputField from "@/components/common/CommonInputField";
 import SecondaryNavBar from "@/components/common/CommonSecondaryNavBar";
 import { friendsList, achievements } from "@/constants/CommunityData";
 import commonStyles from "@/app/styles/CommonStyles";

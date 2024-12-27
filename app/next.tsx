@@ -4,12 +4,11 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import nextStyles from './styles/NextStyle';
 import CommonBackground from "@/components/common/CommonBackground";
 import { useUser } from '@/components/UserContext';
-import InputField from '@/components/InputField';
+import InputField from '@/components/common/CommonInputField';
 import CommonButton from '@/components/common/CommonButton';
 import defaultUser from '@/components/user';
 import TwoQuestions from "@/components/TwoQuestions";
-import CommonScrollElement from "@/components/common/CommonScrollElement";
-import CustomInput from "@/components/InputField";
+import CustomInput from "@/components/common/CommonInputField";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const API_BASE_URL = 'https://sanquin-api.onrender.com';
