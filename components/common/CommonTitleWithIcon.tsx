@@ -1,7 +1,6 @@
 import React from 'react';
-import { StyleSheet, Text, View, Image } from 'react-native';
-import { iconMap, IconNames } from './CommonContent';
-import { useFonts } from 'expo-font';
+import { StyleSheet, View, Image } from 'react-native';
+import { iconMap, IconNames } from './CommonIcons';
 import CommonText from "@/components/common/CommonText";
 
 export type CommonTitleWithIconProps = {

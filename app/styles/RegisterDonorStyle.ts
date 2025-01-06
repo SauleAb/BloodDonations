@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
 
-const registerDonor = StyleSheet.create({
+const registerDonorStyles = StyleSheet.create({
     backgroundImage: {
         justifyContent: 'center',
         alignItems: 'center',
@@ -25,4 +25,4 @@ const registerDonor = StyleSheet.create({
     }
 });
 
-export default registerDonor;
+export default registerDonorStyles;

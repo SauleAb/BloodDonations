@@ -10,7 +10,6 @@ import CommonContent from "@/components/common/CommonContent";
 export default function Home() {
     useEffect(() => {
         const backAction = () => {
-            // Prevent back navigation
             return true;
         };
 

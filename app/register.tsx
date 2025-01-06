@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import { TextInput, Button, Alert, Text } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Alert, Text } from 'react-native';
 import { useRouter } from 'expo-router';
 import registerStyles from './styles/RegisterStyle';
 import CommonBackground from "@/components/common/CommonBackground";
-import InputField from '@/components/InputField';
+import InputField from '@/components/common/CommonInputField';
 import CommonButton from '@/components/common/CommonButton';
 import CommonScrollElement from "@/components/common/CommonScrollElement";
 

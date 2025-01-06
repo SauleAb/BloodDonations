@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
-import { StyleSheet, View, Image, TouchableOpacity } from 'react-native';
+import React from 'react';
+import { StyleSheet, View, Image } from 'react-native';
 import CommonText from "@/components/common/CommonText";
-import CommonContentSwitch from "@/components/common/CommonContentSwitch";
 import { iconMap, IconNames } from './common/CommonIcons';
 
 

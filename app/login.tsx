@@ -6,7 +6,7 @@ import { useUser } from '@/components/UserContext';
 import loginStyles from './styles/LoginStyle';
 import CommonBackground from "@/components/common/CommonBackground";
 import commonStyles from "@/app/styles/CommonStyles";
-import InputField from '@/components/InputField';
+import InputField from '@/components/common/CommonInputField';
 import CommonButton from '@/components/common/CommonButton';
 import defaultUser from '@/components/user';
 import CommonScrollElement from "@/components/common/CommonScrollElement";
