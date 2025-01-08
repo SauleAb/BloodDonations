@@ -47,9 +47,11 @@ export default function Login() {
             }
 
             const data = await response.json();
+            const userObject = Object.fromEntries(data.data);
+
             const userData = {
-                ...defaultUser,
-                ...data.data,
+                ...userObject,
+                ...defaultUser
             };
 
             login(userData);
