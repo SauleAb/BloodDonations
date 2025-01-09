@@ -89,24 +89,38 @@ export const handleRequestAppointment = async (
             amount: 0,
             user_id: userId,
             location_id: location.id,
-            type: "blood",
+            donation_type: "blood",
             appointment: appointmentDateTime,
             status: "pending",
+            enable_joining: true
         };
 
-        // Uncomment this when ready to send the request to the API
-        // const response = await axios.post("https://sanquin-api.onrender.com/donations/", appointmentData);
+        console.log("Sending appointment data:", appointmentData);
 
-        return {
-            hospital: selectedHospital,
-            date: selectedDate,
-            time: selectedTime,
-        };
+        const response = await axios.post("https://sanquin-api.onrender.com/donations/", appointmentData);
+
+        console.log("API Response:", response.data);
+
+        if (response.status === 200) { 
+            const responseData = Object.fromEntries(response.data.data); 
+            console.log("Parsed response data:", responseData);
+        
+            return {
+                id: responseData.id,
+                hospital: selectedHospital,
+                date: selectedDate,
+                time: selectedTime,
+            };
+        } else {
+            console.error("Unexpected response from API:", response.status, response.data);
+            return null;
+        }
     } catch (error) {
         console.error("Error requesting appointment:", error);
         return null;
     }
 };
+
 
 export const handleTextChange = (text: string, allLocations: Location[]) => {
     return allLocations

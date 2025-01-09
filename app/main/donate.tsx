@@ -51,16 +51,7 @@ export default function Donate() {
     const [allLocations, setAllLocations] = useState<Location[]>([]);
     const [inputValue, setInputValue] = useState("");
     const [suggestions, setSuggestions] = useState<string[]>([]);
-    const [userId, setUserId] = useState<string | null>(null);
     const { user } = useUser();
-
-    useEffect(() => {
-        const initializeUser = async () => {
-            const userEntity = await fetchUserByEmail(user.email, user.password);
-            if (userEntity) setUserId(userEntity.id);
-        };
-        initializeUser();
-    }, [user]);
 
     useEffect(() => {
         const initializeLocations = async () => {
@@ -87,14 +78,26 @@ export default function Donate() {
     };
 
     const requestAppointment = async () => {
-        if (selectedHospital && selectedDate && selectedTime && userId) {
-            const appointment = await handleRequestAppointment(userId, locations, selectedHospital, selectedDate, selectedTime);
+        console.log("Requesting appointment with the following details:");
+        console.log("User ID:", user.id);
+        console.log("Selected Hospital:", selectedHospital);
+        console.log("Selected Date:", selectedDate);
+        console.log("Selected Time:", selectedTime);
+    
+        if (selectedHospital && selectedDate && selectedTime && user.id) {
+            const appointment = await handleRequestAppointment(user.id, locations, selectedHospital, selectedDate, selectedTime);
             if (appointment) {
+                console.log("Appointment created successfully:", appointment);
                 setActiveAppointment(appointment);
                 resetFields();
+            } else {
+                console.error("Failed to create appointment.");
             }
+        } else {
+            console.error("Missing required fields for appointment creation.");
         }
     };
+    
 
     return (
         <View style={commonStyles.container}>

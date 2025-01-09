@@ -51,8 +51,11 @@ export default function Login() {
 
             const userData = {
                 ...userObject,
-                ...defaultUser
+                ...defaultUser,
+                id: userObject.id || defaultUser.id,
             };
+
+            console.log("Final User Data:", userData);
 
             login(userData);
             await AsyncStorage.setItem('user', JSON.stringify(userData));
