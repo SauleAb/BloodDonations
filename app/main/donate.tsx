@@ -83,9 +83,18 @@ export default function Donate() {
         console.log("Selected Hospital:", selectedHospital);
         console.log("Selected Date:", selectedDate);
         console.log("Selected Time:", selectedTime);
+        console.log("Allow friends to join:", isToggled);
     
         if (selectedHospital && selectedDate && selectedTime && user.id) {
-            const appointment = await handleRequestAppointment(user.id, locations, selectedHospital, selectedDate, selectedTime);
+            const appointment = await handleRequestAppointment(
+                user.id,
+                locations,
+                selectedHospital,
+                selectedDate,
+                selectedTime,
+                isToggled
+            );
+    
             if (appointment) {
                 console.log("Appointment created successfully:", appointment);
                 setActiveAppointment(appointment);
@@ -97,6 +106,7 @@ export default function Donate() {
             console.error("Missing required fields for appointment creation.");
         }
     };
+    
     
 
     return (
@@ -195,7 +205,12 @@ export default function Donate() {
                                                         ))}
                                                         <View style={donateStyles.row}>
                                                             <CommonText>Let others join you</CommonText>
-                                                            <CommonContentSwitch initialValue={false} onToggle={setIsToggled} />
+                                                            <CommonContentSwitch
+                                                                initialValue={true}
+                                                                onToggle={(value) => {
+                                                                    setIsToggled(value);
+                                                                }}
+                                                            />
                                                         </View>
 
                                                         {selectedHospital && (

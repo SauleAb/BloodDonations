@@ -74,7 +74,8 @@ export const handleRequestAppointment = async (
     locations: Location[],
     selectedHospital: string,
     selectedDate: string,
-    selectedTime: string
+    selectedTime: string,
+    enableJoining: boolean
 ) => {
     try {
         const appointmentDateTime = `${selectedDate}T${selectedTime}:00.000Z`;
@@ -92,7 +93,7 @@ export const handleRequestAppointment = async (
             donation_type: "blood",
             appointment: appointmentDateTime,
             status: "pending",
-            enable_joining: true
+            enable_joining: enableJoining
         };
 
         console.log("Sending appointment data:", appointmentData);
