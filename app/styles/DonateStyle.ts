@@ -24,8 +24,8 @@ const donateStyles = StyleSheet.create({
         justifyContent: "center",
     },
     listContainer: {
-        flexGrow: 1, // Allows content to grow within the FlatList
-        alignItems: "center", // Centers content horizontally
+        flexGrow: 1, 
+        alignItems: "center", 
     },
     timeButton: {
         margin: 1,
@@ -97,6 +97,11 @@ const donateStyles = StyleSheet.create({
         padding: 10,
         borderRadius: 5,
         alignSelf: "center",
+    },
+    friendDonationInfo: {
+        fontSize: 15,
+        marginVertical: 8,
+        textAlign: "left",
     },
 });
 

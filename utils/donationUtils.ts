@@ -87,7 +87,7 @@ export const fetchUserDonations = async (userId: string): Promise<Appointment[]>
         return [];
     }
 };
-export const cancelDonation = async (donationId: number) => {
+export const cancelDonation = async (donationId: number): Promise<boolean> => {
     try {
         const response = await axios.delete(`https://sanquin-api.onrender.com/donations/${donationId}`);
         if (response.status === 200) {

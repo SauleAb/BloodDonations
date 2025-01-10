@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { View, FlatList, Alert } from "react-native";
-import { StyleSheet } from 'react-native';
+import { View, FlatList } from "react-native";
+import { StyleSheet } from "react-native";
 import { Calendar } from "react-native-calendars";
 import InputField from "@/components/common/CommonInputField";
 import CommonBackground from "@/components/common/CommonBackground";
@@ -12,8 +12,8 @@ import { useDonationForm } from "@/hooks/useDonationForm";
 import calendarStyles from "@/app/styles/CalendarStyle";
 import commonStyles from "@/app/styles/CommonStyles";
 import { IconNames } from "@/components/common/CommonIcons";
-import { useUser } from '@/components/UserContext';
-import { Location } from '@/types/Location';
+import { useUser } from "@/components/UserContext";
+import { Location } from "@/types/Location";
 import {
     fetchAllLocations,
     fetchCityLocations,
@@ -31,6 +31,7 @@ import CalendarContent from "@/components/CalendarComponent";
 import CommonContentSwitch from "@/components/common/CommonContentSwitch";
 import { TimeSlot } from "@/types/TimeSlot";
 import CancelButton from "@/components/common/CommonCancelButton";
+import axios from "axios";
 
 export default function Donate() {
     const {
@@ -47,27 +48,41 @@ export default function Donate() {
         resetFields,
     } = useDonationForm();
 
+    interface FriendDonation {
+        amount: number;
+        user_id: number;
+        location_id: number;
+        donation_type: string;
+        appointment: string;
+        status: string;
+        enable_joining: boolean;
+        id: number;
+    }
+
     const [isToggled, setIsToggled] = useState(false);
     const [activeAppointment, setActiveAppointment] = useState<Appointment | null>(null);
     const [locations, setLocations] = useState<Location[]>([]);
     const [allLocations, setAllLocations] = useState<Location[]>([]);
     const [inputValue, setInputValue] = useState("");
     const [suggestions, setSuggestions] = useState<string[]>([]);
+    const [markedDates, setMarkedDates] = useState({});
+    const [friendsDonations, setFriendsDonations] = useState<FriendDonation[]>([]);
+    const [selectedFriendInfo, setSelectedFriendInfo] = useState<string | null>(null);
     const { user } = useUser();
 
     useEffect(() => {
         const initialize = async () => {
             if (user.id) {
                 const donations = await fetchUserDonations(user.id);
-    
+
                 const futureDonations = donations.filter((donation) =>
                     moment(`${donation.date}T${donation.time}`).isAfter(moment())
                 );
-    
+
                 if (futureDonations.length > 0) {
                     setActiveAppointment(futureDonations[0]);
                 }
-    
+
                 const allLocs = await fetchAllLocations();
                 setAllLocations(allLocs);
             }
@@ -99,26 +114,76 @@ export default function Donate() {
         setSuggestions(handleTextChange(text, allLocations));
     };
 
-    const handleCancelAppointment = async () => {
-        if (!activeAppointment) return;
-        cancelDonationHandler()
+    useEffect(() => {
+        const fetchFriendsAppointments = async () => {
+            try {
+                const friendsDonationsResponse = await axios.get(
+                    `https://sanquin-api.onrender.com/donations/user/${user.id}/friends`
+                );
+                const donations = friendsDonationsResponse.data.data;
+                console.log("Friends' Donations:", donations);
+
+                const tempMarkedDates: Record<string, { dots: { color: string }[] }> = {};
+
+                donations.forEach((donation: { appointment: string }) => {
+                    const appointmentDate = moment(donation.appointment).format("YYYY-MM-DD");
+                    if (!tempMarkedDates[appointmentDate]) {
+                        tempMarkedDates[appointmentDate] = {
+                            dots: [{ color: "#FFC0CB" }], // Pink dot
+                        };
+                    }
+                });
+
+                setMarkedDates(tempMarkedDates);
+                setFriendsDonations(donations);
+            } catch (error) {
+                console.error("Error fetching friends' appointments:", error);
+            }
+        };
+
+        fetchFriendsAppointments();
+    }, [user]);
+
+    const handleDateSelection = async (date: string) => {
+        setSelectedDate(date);
+        const donation = friendsDonations.find(
+            (d: { appointment: string }) =>
+                moment(d.appointment).format("YYYY-MM-DD") === date
+        );
+
+        if (donation) {
+            try {
+                const userResponse = await axios.get(
+                    `https://sanquin-api.onrender.com/users/id/${donation.user_id}`
+                );
+                const userData = Object.fromEntries(userResponse.data.data);
+                setSelectedFriendInfo(
+                    `${userData.username} is donating on this date at location ID ${donation.location_id} at ${moment(
+                        donation.appointment
+                    ).format("HH:mm")}! Join!`
+                );
+            } catch (error) {
+                console.error("Error fetching friend details:", error);
+                setSelectedFriendInfo(null);
+            }
+        } else {
+            setSelectedFriendInfo(null);
+        }
     };
 
     const cancelDonationHandler = async () => {
-        var success = false;
-        if (activeAppointment && activeAppointment.id) {
-            success = await cancelDonation(activeAppointment.id);
+        if (!activeAppointment || !activeAppointment.id) return;
+    
+        const success = await cancelDonation(activeAppointment.id);
+        if (success) {
+            console.log("Donation canceled successfully");
+            setActiveAppointment(null); 
+        } else {
+            console.error("Failed to cancel the donation");
         }
     };
 
     const requestAppointment = async () => {
-        console.log("Requesting appointment with the following details:");
-        console.log("User ID:", user.id);
-        console.log("Selected Hospital:", selectedHospital);
-        console.log("Selected Date:", selectedDate);
-        console.log("Selected Time:", selectedTime);
-        console.log("Allow friends to join:", isToggled);
-    
         if (selectedHospital && selectedDate && selectedTime && user.id) {
             const appointment = await handleRequestAppointment(
                 user.id,
@@ -128,9 +193,8 @@ export default function Donate() {
                 selectedTime,
                 isToggled
             );
-    
+
             if (appointment) {
-                console.log("Appointment created successfully:", appointment);
                 setActiveAppointment(appointment);
                 resetFields();
             } else {
@@ -140,8 +204,6 @@ export default function Donate() {
             console.error("Missing required fields for appointment creation.");
         }
     };
-    
-    
 
     return (
         <View style={commonStyles.container}>
@@ -155,19 +217,15 @@ export default function Donate() {
                         <View style={styles.fullWidthContent}>
                             {activeAppointment ? (
                                 <>
-                                <CommonContent
-                                    titleText="Next Donation"
-                                    contentText={`Scheduled at ${activeAppointment.hospital} on ${activeAppointment.date} at ${activeAppointment.time}.`}
-                                    icon={IconNames.BloodDonated}
-                                />
-                                <CancelButton
-                                    onConfirm={() => {
-                                        handleCancelAppointment();
-                                    }}
-                                    onCancel={() => {
-                                        console.log("Cancellation aborted");
-                                    }}
-                                />
+                                    <CommonContent
+                                        titleText="Next Donation"
+                                        contentText={`Scheduled at ${activeAppointment.hospital} on ${activeAppointment.date} at ${activeAppointment.time}.`}
+                                        icon={IconNames.BloodDonated}
+                                    />
+                                    <CancelButton
+                                        onConfirm={cancelDonationHandler}
+                                        onCancel={() => console.log("Cancellation aborted")}
+                                    />
                                 </>
                             ) : (
                                 <CommonContent
@@ -205,15 +263,17 @@ export default function Donate() {
                                             <View style={donateStyles.calendarWrapper}>
                                                 <Calendar
                                                     onDayPress={(day: { dateString: string }) =>
-                                                        setSelectedDate(day.dateString)
+                                                        handleDateSelection(day.dateString)
                                                     }
                                                     markedDates={{
+                                                        ...markedDates,
                                                         [selectedDate]: {
                                                             selected: true,
                                                             marked: true,
                                                             selectedColor: "#00BFFF",
                                                         },
                                                     }}
+                                                    markingType="multi-dot"
                                                     theme={calendarStyles.calendar}
                                                     minDate={moment().format("YYYY-MM-DD")}
                                                     disableAllTouchEventsForDisabledDays={true}
@@ -225,6 +285,11 @@ export default function Donate() {
                                                         <CommonText bold style={donateStyles.selectedDateText}>
                                                             {selectedDate}
                                                         </CommonText>
+                                                        {selectedFriendInfo && (
+                                                            <CommonText style={donateStyles.friendDonationInfo}>
+                                                                {selectedFriendInfo}
+                                                            </CommonText>
+                                                        )}
                                                         <CommonText bold style={donateStyles.title}>
                                                             Available locations
                                                         </CommonText>
@@ -323,16 +388,17 @@ export default function Donate() {
     );
 }
 
+
 const styles = StyleSheet.create({
-fullWidthContainer: { 
-    flexGrow: 1,
-    width: "100%",
-},
-fullWidthContent: {
-    flex: 1,
-    width: "100%",
-    alignSelf: "center",
-    justifyContent: "center",
-    alignItems: "center",
-},
-})
+    fullWidthContainer: {
+        flexGrow: 1,
+        width: "100%",
+    },
+    fullWidthContent: {
+        flex: 1,
+        width: "100%",
+        alignSelf: "center",
+        justifyContent: "center",
+        alignItems: "center",
+    },
+});
