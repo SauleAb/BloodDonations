@@ -1,8 +1,8 @@
 export const friendsList = [
-    { name: "Henk de Boom", username: "Henkie", lastDonated: "2 weeks ago" },
-    { name: "Ava van Kerkrade", username: "Ava87", lastDonated: "1 month ago" },
-    { name: "Pieter Pietersen", username: "Pieterisimo", lastDonated: "3 months ago" },
-    { name: "Jacque Smit", username: "Jas123", lastDonated: "1 week ago" },
+    { name: "Henk de Boom", username: "Henkie", lastDonated: "2 weeks ago" , id: 1},
+    { name: "Ava van Kerkrade", username: "Ava87", lastDonated: "1 month ago", id: 2 },
+    { name: "Pieter Pietersen", username: "Pieterisimo", lastDonated: "3 months ago", id: 3 },
+    { name: "Jacque Smit", username: "Jas123", lastDonated: "1 week ago", id: 4 },
 ];
 
 export const achievements = [

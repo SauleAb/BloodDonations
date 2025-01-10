@@ -3,22 +3,23 @@ import { View } from "react-native";
 import CommonBackground from "@/components/common/CommonBackground";
 import AchievementCard from "@/components/AchievementCard";
 import CommonScrollElement from "@/components/common/CommonScrollElement";
-import CommonContent from "@/components/common/CommonContent";
+import FriendContent from "@/components/FriendContent"; // Imported FriendContent
 import CommonText from "@/components/common/CommonText";
 import InputField from "@/components/common/CommonInputField";
 import SecondaryNavBar from "@/components/common/CommonSecondaryNavBar";
 import { friendsList, achievements } from "@/constants/CommunityData";
 import commonStyles from "@/app/styles/CommonStyles";
 import communityStyles from "../styles/CommunityStyle";
+import { useRouter } from 'expo-router'; // Added for navigation
 
 export default function Community() {
     const [activeTab, setActiveTab] = useState<'feed' | 'friends'>('feed');
     const [search, setSearch] = useState('');
+    const router = useRouter();
 
     const filteredFriends = friendsList.filter((friend) =>
         friend.name.toLowerCase().includes(search.toLowerCase())
     );
-
 
     const renderContent = () => {
         if (activeTab === "feed") {
@@ -38,28 +39,27 @@ export default function Community() {
             );
         } else if (activeTab === "friends") {
             return (
-                <>
-                    <CommonScrollElement>
-                        <InputField
-                            placeholder="Search..."
-                            value={search}
-                            onChangeText={setSearch}
+                <CommonScrollElement>
+                    <InputField
+                        placeholder="Search..."
+                        value={search}
+                        onChangeText={setSearch}
+                    />
+                    {filteredFriends.length > 0 ? (
+                        filteredFriends.map((friend, index) => (
+                        <FriendContent
+                            key={friend.id}
+                            id={friend.id.toString()} // Convert id to string
+                            name={friend.name}
+                            onPress={(id) => router.push(`/FriendsDetailScreen?id=${id}`)} // Corrected path
                         />
-                        {filteredFriends.length > 0 ? (
-                            filteredFriends.map((friend, index) => (
-                                <CommonContent
-                                    key={index}
-                                    titleText={"Friend"}
-                                    contentText={friend.name}
-                                />
-                            ))
-                        ) : (
-                            <CommonText style={communityStyles.noResultsText}>
-                                No friends found.
-                            </CommonText>
-                        )}
-                    </CommonScrollElement>
-                </>
+                        ))
+                    ) : (
+                        <CommonText style={communityStyles.noResultsText}>
+                            No friends found.
+                        </CommonText>
+                    )}
+                </CommonScrollElement>
             );
         }
     };
