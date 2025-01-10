@@ -92,6 +92,12 @@ const donateStyles = StyleSheet.create({
         textDecorationLine: "underline",
         textDecorationStyle: "solid",
     },
+    cancelButton: {
+        backgroundColor: "#FF5733",
+        padding: 10,
+        borderRadius: 5,
+        alignSelf: "center",
+    },
 });
 
 export default donateStyles;

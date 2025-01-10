@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, FlatList } from "react-native";
+import { View, FlatList, Alert } from "react-native";
 import { StyleSheet } from 'react-native';
 import { Calendar } from "react-native-calendars";
 import InputField from "@/components/common/CommonInputField";
@@ -15,13 +15,14 @@ import { IconNames } from "@/components/common/CommonIcons";
 import { useUser } from '@/components/UserContext';
 import { Location } from '@/types/Location';
 import {
-    fetchUserByEmail,
     fetchAllLocations,
     fetchCityLocations,
     filterLocationsWithinRadius,
     getAvailableTimesForSelectedDay,
     handleRequestAppointment,
     handleTextChange,
+    cancelDonation,
+    fetchUserDonations,
 } from "@/utils/donationUtils";
 import moment from "moment";
 import { Appointment } from "@/types/Appointment";
@@ -54,6 +55,26 @@ export default function Donate() {
     const { user } = useUser();
 
     useEffect(() => {
+        const initialize = async () => {
+            if (user.id) {
+                const donations = await fetchUserDonations(user.id);
+    
+                const futureDonations = donations.filter((donation) =>
+                    moment(`${donation.date}T${donation.time}`).isAfter(moment())
+                );
+    
+                if (futureDonations.length > 0) {
+                    setActiveAppointment(futureDonations[0]);
+                }
+    
+                const allLocs = await fetchAllLocations();
+                setAllLocations(allLocs);
+            }
+        };
+        initialize();
+    }, [user]);
+
+    useEffect(() => {
         const initializeLocations = async () => {
             const allLocs = await fetchAllLocations();
             setAllLocations(allLocs);
@@ -75,6 +96,34 @@ export default function Donate() {
     const onTextChange = (text: string) => {
         setInputValue(text);
         setSuggestions(handleTextChange(text, allLocations));
+    };
+
+    const handleCancelAppointment = async () => {
+        if (!activeAppointment) return;
+
+        const confirm = await Alert.alert(
+            "Cancel Appointment",
+            "Are you sure you want to cancel this appointment?",
+            [
+                { text: "No", style: "cancel" },
+                { text: "Yes", onPress: async () => await cancelDonationHandler() },
+            ],
+            { cancelable: true }
+        );
+    };
+
+    const cancelDonationHandler = async () => {
+        var success = false;
+        if (activeAppointment && activeAppointment.id) {
+            success = await cancelDonation(activeAppointment.id);
+        }
+        if (success) {
+            setActiveAppointment(null);
+            resetFields();
+            Alert.alert("Appointment canceled successfully");
+        } else {
+            Alert.alert("Failed to cancel appointment");
+        }
     };
 
     const requestAppointment = async () => {
@@ -120,11 +169,20 @@ export default function Donate() {
                     ListHeaderComponent={
                         <View style={styles.fullWidthContent}>
                             {activeAppointment ? (
+                                <>
                                 <CommonContent
                                     titleText="Next Donation"
                                     contentText={`Scheduled at ${activeAppointment.hospital} on ${activeAppointment.date} at ${activeAppointment.time}.`}
                                     icon={IconNames.BloodDonated}
                                 />
+                                <CommonButton
+                                        size="small"
+                                        onPress={handleCancelAppointment}
+                                        style={donateStyles.cancelButton}
+                                    >
+                                        Cancel Appointment
+                                    </CommonButton>
+                                </>
                             ) : (
                                 <CommonContent
                                     titleText="You are eligible to donate again!"

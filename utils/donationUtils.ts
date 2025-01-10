@@ -3,6 +3,7 @@ import axios from "axios";
 import { getDistance } from "geolib";
 import { TimeSlot } from '@/types/TimeSlot';
 import { Location } from '@/types/Location'
+import { Appointment } from '@/types/Appointment';
 
 export const getNextDonationDetails = () => {
     const nextDonationAvailable = moment().add(7, "days").startOf("day");
@@ -67,6 +68,37 @@ export const getAvailableTimesForSelectedDay = (
     return timeslots.filter((slot: TimeSlot) =>
         moment(slot.start_time).format("YYYY-MM-DD") === selectedDate
     );
+};
+
+export const fetchUserDonations = async (userId: string): Promise<Appointment[]> => {
+    try {
+        const response = await axios.get(`https://sanquin-api.onrender.com/donations/user/${userId}`);
+        if (response.status === 200 && response.data) {
+            return response.data.data.map((donation: any) => ({
+                id: donation.id,
+                hospital: `Hospital ID: ${donation.location_id}`, // Replace with actual name mapping if available
+                date: moment(donation.appointment).format("YYYY-MM-DD"),
+                time: moment(donation.appointment).format("HH:mm"),
+            }));
+        }
+        throw new Error("Error fetching user donations");
+    } catch (error) {
+        console.error("Error fetching user donations:", error);
+        return [];
+    }
+};
+export const cancelDonation = async (donationId: number) => {
+    try {
+        const response = await axios.delete(`https://sanquin-api.onrender.com/donations/${donationId}`);
+        if (response.status === 200) {
+            console.log("Donation canceled successfully");
+            return true;
+        }
+        throw new Error("Error canceling donation");
+    } catch (error) {
+        console.error("Error canceling donation:", error);
+        return false;
+    }
 };
 
 export const handleRequestAppointment = async (
