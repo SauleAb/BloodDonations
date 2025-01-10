@@ -30,6 +30,7 @@ import CustomInput from "@/components/common/CommonInputField";
 import CalendarContent from "@/components/CalendarComponent";
 import CommonContentSwitch from "@/components/common/CommonContentSwitch";
 import { TimeSlot } from "@/types/TimeSlot";
+import CancelButton from "@/components/common/CommonCancelButton";
 
 export default function Donate() {
     const {
@@ -100,29 +101,13 @@ export default function Donate() {
 
     const handleCancelAppointment = async () => {
         if (!activeAppointment) return;
-
-        const confirm = await Alert.alert(
-            "Cancel Appointment",
-            "Are you sure you want to cancel this appointment?",
-            [
-                { text: "No", style: "cancel" },
-                { text: "Yes", onPress: async () => await cancelDonationHandler() },
-            ],
-            { cancelable: true }
-        );
+        cancelDonationHandler()
     };
 
     const cancelDonationHandler = async () => {
         var success = false;
         if (activeAppointment && activeAppointment.id) {
             success = await cancelDonation(activeAppointment.id);
-        }
-        if (success) {
-            setActiveAppointment(null);
-            resetFields();
-            Alert.alert("Appointment canceled successfully");
-        } else {
-            Alert.alert("Failed to cancel appointment");
         }
     };
 
@@ -175,13 +160,14 @@ export default function Donate() {
                                     contentText={`Scheduled at ${activeAppointment.hospital} on ${activeAppointment.date} at ${activeAppointment.time}.`}
                                     icon={IconNames.BloodDonated}
                                 />
-                                <CommonButton
-                                        size="small"
-                                        onPress={handleCancelAppointment}
-                                        style={donateStyles.cancelButton}
-                                    >
-                                        Cancel Appointment
-                                    </CommonButton>
+                                <CancelButton
+                                    onConfirm={() => {
+                                        handleCancelAppointment();
+                                    }}
+                                    onCancel={() => {
+                                        console.log("Cancellation aborted");
+                                    }}
+                                />
                                 </>
                             ) : (
                                 <CommonContent
