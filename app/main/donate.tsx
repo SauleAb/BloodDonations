@@ -61,6 +61,7 @@ export default function Donate() {
 
     const [isToggled, setIsToggled] = useState(false);
     const [activeAppointment, setActiveAppointment] = useState<Appointment | null>(null);
+    const [activeAppointmentLocationName, setActiveAppointmentLocationName] = useState<string | null>(null);
     const [locations, setLocations] = useState<Location[]>([]);
     const [allLocations, setAllLocations] = useState<Location[]>([]);
     const [inputValue, setInputValue] = useState("");
@@ -69,6 +70,18 @@ export default function Donate() {
     const [friendsDonations, setFriendsDonations] = useState<FriendDonation[]>([]);
     const [selectedFriendInfo, setSelectedFriendInfo] = useState<string | null>(null);
     const { user } = useUser();
+
+    const fetchLocationName = async (locationId: number): Promise<string> => {
+        try {
+            const response = await axios.get(
+                `https://sanquin-api.onrender.com/donations/location/${locationId}/name`
+            );
+            return response.data.data.name;
+        } catch (error) {
+            console.error(`Error fetching location name for location ID ${locationId}:`, error);
+            return `Location ID: ${locationId}`;
+        }
+    };
 
     useEffect(() => {
         const initialize = async () => {
@@ -80,7 +93,14 @@ export default function Donate() {
                 );
 
                 if (futureDonations.length > 0) {
-                    setActiveAppointment(futureDonations[0]);
+                    const firstAppointment = futureDonations[0];
+                    setActiveAppointment(firstAppointment);
+
+                    // Fetch location name for the active appointment
+                    const locationName = await fetchLocationName(
+                        parseInt(firstAppointment.hospital.split(": ")[1])
+                    );
+                    setActiveAppointmentLocationName(locationName);
                 }
 
                 const allLocs = await fetchAllLocations();
@@ -125,11 +145,11 @@ export default function Donate() {
 
                 const tempMarkedDates: Record<string, { dots: { color: string }[] }> = {};
 
-                donations.forEach((donation: { appointment: string }) => {
+                donations.forEach((donation: FriendDonation) => {
                     const appointmentDate = moment(donation.appointment).format("YYYY-MM-DD");
                     if (!tempMarkedDates[appointmentDate]) {
                         tempMarkedDates[appointmentDate] = {
-                            dots: [{ color: "#FFC0CB" }], // Pink dot
+                            dots: [{ color: "#FFC0CB" }],
                         };
                     }
                 });
@@ -147,8 +167,7 @@ export default function Donate() {
     const handleDateSelection = async (date: string) => {
         setSelectedDate(date);
         const donation = friendsDonations.find(
-            (d: { appointment: string }) =>
-                moment(d.appointment).format("YYYY-MM-DD") === date
+            (d: FriendDonation) => moment(d.appointment).format("YYYY-MM-DD") === date
         );
 
         if (donation) {
@@ -157,10 +176,12 @@ export default function Donate() {
                     `https://sanquin-api.onrender.com/users/id/${donation.user_id}`
                 );
                 const userData = Object.fromEntries(userResponse.data.data);
+
+                const locationName = await fetchLocationName(donation.location_id);
                 setSelectedFriendInfo(
-                    `${userData.username} is donating on this date at location ID ${donation.location_id} at ${moment(
+                    `${userData.username} is donating on this date at ${locationName} at ${moment(
                         donation.appointment
-                    ).format("HH:mm")}! Join!`
+                    ).format("HH:mm")}!`
                 );
             } catch (error) {
                 console.error("Error fetching friend details:", error);
@@ -176,8 +197,8 @@ export default function Donate() {
     
         const success = await cancelDonation(activeAppointment.id);
         if (success) {
-            console.log("Donation canceled successfully");
             setActiveAppointment(null); 
+            resetFields();
         } else {
             console.error("Failed to cancel the donation");
         }
@@ -219,7 +240,9 @@ export default function Donate() {
                                 <>
                                     <CommonContent
                                         titleText="Next Donation"
-                                        contentText={`Scheduled at ${activeAppointment.hospital} on ${activeAppointment.date} at ${activeAppointment.time}.`}
+                                        contentText={`Scheduled at ${
+                                            activeAppointmentLocationName || activeAppointment.hospital
+                                        } on ${activeAppointment.date} at ${activeAppointment.time}.`}
                                         icon={IconNames.BloodDonated}
                                     />
                                     <CancelButton
