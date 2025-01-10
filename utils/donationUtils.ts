@@ -70,23 +70,65 @@ export const getAvailableTimesForSelectedDay = (
     );
 };
 
+const fetchWithRetry = async (url: string, options = {}, retries = 3) => {
+    for (let i = 0; i < retries; i++) {
+        try {
+            const response = await axios.get(url, options);
+            return response.data;
+        } catch (error) {
+            if (i === retries - 1) throw error; // Throw error if all retries fail
+            console.warn(`Retrying... (${i + 1}/${retries})`);
+            await new Promise((resolve) => setTimeout(resolve, 1000)); // Wait before retrying
+        }
+    }
+};
+
+let donationFetchTimeout: string | number | NodeJS.Timeout | undefined;
+export const fetchDonationsThrottled = async (userId: string, callback: (arg0: Appointment[]) => void) => {
+    clearTimeout(donationFetchTimeout);
+    donationFetchTimeout = setTimeout(async () => {
+        const donations = await fetchUserDonations(userId);
+        if (callback) {
+            callback(donations); 
+        }
+    }, 500); 
+};
+
 export const fetchUserDonations = async (userId: string): Promise<Appointment[]> => {
     try {
-        const response = await axios.get(`https://sanquin-api.onrender.com/donations/user/${userId}`);
-        if (response.status === 200 && response.data) {
-            return response.data.data.map((donation: any) => ({
+        if (!userId) {
+            console.error("User ID is not defined. Skipping donation fetch.");
+            return [];
+        }
+        const response = await fetchWithRetry(
+            `https://sanquin-api.onrender.com/donations/user/${userId}`
+        );
+        if (response.status === 200 && Array.isArray(response.data)) {
+            return response.data.map((donation: any) => ({
                 id: donation.id,
-                hospital: `Hospital ID: ${donation.location_id}`, // Replace with actual name mapping if available
+                hospital: `Hospital ID: ${donation.location_id}`, 
                 date: moment(donation.appointment).format("YYYY-MM-DD"),
                 time: moment(donation.appointment).format("HH:mm"),
             }));
+        } else if (response.status === 200 && Array.isArray(response.data.data)) {
+            return response.data.data.map((donation: any) => ({
+                id: donation.id,
+                hospital: `Hospital ID: ${donation.location_id}`, 
+                date: moment(donation.appointment).format("YYYY-MM-DD"),
+                time: moment(donation.appointment).format("HH:mm"),
+            }));
+        } else {
+            console.warn("Unexpected response format:", JSON.stringify(response));
+            return []; 
         }
-        throw new Error("Error fetching user donations");
     } catch (error) {
         console.error("Error fetching user donations:", error);
-        return [];
+        return []; 
     }
 };
+
+
+
 export const cancelDonation = async (donationId: number): Promise<boolean> => {
     try {
         const response = await axios.delete(`https://sanquin-api.onrender.com/donations/${donationId}`);
@@ -128,16 +170,10 @@ export const handleRequestAppointment = async (
             enable_joining: enableJoining
         };
 
-        console.log("Sending appointment data:", appointmentData);
-
         const response = await axios.post("https://sanquin-api.onrender.com/donations/", appointmentData);
-
-        console.log("API Response:", response.data);
 
         if (response.status === 200) { 
             const responseData = Object.fromEntries(response.data.data); 
-            console.log("Parsed response data:", responseData);
-        
             return {
                 id: responseData.id,
                 hospital: selectedHospital,

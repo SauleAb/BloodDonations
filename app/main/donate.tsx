@@ -32,6 +32,7 @@ import CommonContentSwitch from "@/components/common/CommonContentSwitch";
 import { TimeSlot } from "@/types/TimeSlot";
 import CancelButton from "@/components/common/CommonCancelButton";
 import axios from "axios";
+import { fetchDonationsThrottled } from "@/utils/donationUtils";
 
 export default function Donate() {
     const {
@@ -86,27 +87,28 @@ export default function Donate() {
     useEffect(() => {
         const initialize = async () => {
             if (user.id) {
-                const donations = await fetchUserDonations(user.id);
-
-                const futureDonations = donations.filter((donation) =>
-                    moment(`${donation.date}T${donation.time}`).isAfter(moment())
-                );
-
-                if (futureDonations.length > 0) {
-                    const firstAppointment = futureDonations[0];
-                    setActiveAppointment(firstAppointment);
-
-                    // Fetch location name for the active appointment
-                    const locationName = await fetchLocationName(
-                        parseInt(firstAppointment.hospital.split(": ")[1])
+                fetchDonationsThrottled(user.id, async (donations) => {
+                    const futureDonations = donations.filter((donation : Appointment) =>
+                        moment(`${donation.date}T${donation.time}`).isAfter(moment())
                     );
-                    setActiveAppointmentLocationName(locationName);
-                }
-
-                const allLocs = await fetchAllLocations();
-                setAllLocations(allLocs);
+    
+                    if (futureDonations.length > 0) {
+                        const firstAppointment = futureDonations[0];
+                        setActiveAppointment(firstAppointment);
+    
+                        // Fetch location name for the active appointment
+                        const locationName = await fetchLocationName(
+                            parseInt(firstAppointment.hospital.split(": ")[1])
+                        );
+                        setActiveAppointmentLocationName(locationName);
+                    }
+    
+                    const allLocs = await fetchAllLocations();
+                    setAllLocations(allLocs);
+                });
             }
         };
+    
         initialize();
     }, [user]);
 
@@ -141,7 +143,6 @@ export default function Donate() {
                     `https://sanquin-api.onrender.com/donations/user/${user.id}/friends`
                 );
                 const donations = friendsDonationsResponse.data.data;
-                console.log("Friends' Donations:", donations);
 
                 const tempMarkedDates: Record<string, { dots: { color: string }[] }> = {};
 
