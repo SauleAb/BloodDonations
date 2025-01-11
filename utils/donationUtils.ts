@@ -105,7 +105,15 @@ export const fetchLocationName = async (locationId: number): Promise<string> => 
 export const fetchUserDetails = async (userId: number): Promise<{ username: string }> => {
     try {
         const response = await axios.get(`https://sanquin-api.onrender.com/users/id/${userId}`);
-        return { username: response.data.data?.username || "Unknown User" };
+        console.log("fetchUserDetails response:", response.data);
+        const userArray = response.data?.data;
+        if (Array.isArray(userArray)) {
+            const usernameEntry = userArray.find((entry) => entry[0] === "username");
+            if (usernameEntry) {
+                return { username: usernameEntry[1] };
+            }
+        }
+        return { username: "Unknown User" };
     } catch (error) {
         console.error(`Error fetching user details for user ID ${userId}:`, error);
         return { username: "Unknown User" };
@@ -283,6 +291,16 @@ export const cancelDonation = async (donationId: number): Promise<boolean> => {
     }
 };
 
+const fetchUserFriends = async (userId: string): Promise<{ id: string; pushToken: string }[]> => {
+    try {
+        const response = await axios.get(`https://sanquin-api.onrender.com/users/${userId}/friends`);
+        return response.data.data;
+    } catch (error) {
+        console.error("Error fetching user friends:", error);
+        return [];
+    }
+};
+
 export const handleRequestAppointment = async (
     userId: string,
     locations: Location[],
@@ -307,13 +325,26 @@ export const handleRequestAppointment = async (
             donation_type: "blood",
             appointment: appointmentDateTime,
             status: "pending",
-            enable_joining: enableJoining
+            enable_joining: enableJoining,
         };
 
-        const response = await axios.post("https://sanquin-api.onrender.com/donations/", appointmentData);
+        const response = await axios.post("/donations/", appointmentData);
 
-        if (response.status === 200) { 
-            const responseData = Object.fromEntries(response.data.data); 
+        if (response.status === 200) {
+            const responseData = response.data.data;
+
+            // Notify friends if enableJoining is true
+            if (enableJoining) {
+                const friends = await fetchUserFriends(userId);
+                friends.forEach((friend) => {
+                    createNotification(
+                        friend.id,
+                        "Join a Donation!",
+                        `Your friend has scheduled a donation at ${selectedHospital} on ${selectedDate} at ${selectedTime}. Join them!`
+                    );
+                });
+            }
+
             return {
                 id: responseData.id,
                 hospital: selectedHospital,
@@ -330,9 +361,22 @@ export const handleRequestAppointment = async (
     }
 };
 
-
 export const handleTextChange = (text: string, allLocations: Location[]) => {
     return allLocations
         .map((location) => location.address.split(",")[1]?.trim())
         .filter((city, index, self) => city && self.indexOf(city) === index && city.toLowerCase().includes(text.toLowerCase()));
 };
+
+const createNotification = async (userId: string, title: string, content: string) => {
+    try {
+        await axios.post(`/users/${userId}/notifications`, {
+            title,
+            content,
+            user_id: userId,
+        });
+        console.log(`Notification sent to user ID ${userId}`);
+    } catch (error) {
+        console.error(`Error sending notification to user ID ${userId}:`, error);
+    }
+};
+
