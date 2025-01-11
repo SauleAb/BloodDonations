@@ -22,7 +22,11 @@ import {
     handleRequestAppointment,
     handleTextChange,
     cancelDonation,
-    fetchUserDonations,
+    initializeActiveAppointment,
+    fetchFriendsAppointments,
+    findDonationByDate,
+    fetchUserDetails,
+    formatFriendDonationInfo,
 } from "@/utils/donationUtils";
 import moment from "moment";
 import { Appointment } from "@/types/Appointment";
@@ -32,7 +36,7 @@ import CommonContentSwitch from "@/components/common/CommonContentSwitch";
 import { TimeSlot } from "@/types/TimeSlot";
 import CancelButton from "@/components/common/CommonCancelButton";
 import axios from "axios";
-import { fetchDonationsThrottled } from "@/utils/donationUtils";
+import { FriendDonation } from "@/types/FriendDonation";
 
 export default function Donate() {
     const {
@@ -48,17 +52,7 @@ export default function Donate() {
         setSelectedHospital,
         resetFields,
     } = useDonationForm();
-
-    interface FriendDonation {
-        amount: number;
-        user_id: number;
-        location_id: number;
-        donation_type: string;
-        appointment: string;
-        status: string;
-        enable_joining: boolean;
-        id: number;
-    }
+    
 
     const [isToggled, setIsToggled] = useState(false);
     const [activeAppointment, setActiveAppointment] = useState<Appointment | null>(null);
@@ -85,31 +79,14 @@ export default function Donate() {
     };
 
     useEffect(() => {
-        const initialize = async () => {
-            if (user.id) {
-                fetchDonationsThrottled(user.id, async (donations) => {
-                    const futureDonations = donations.filter((donation : Appointment) =>
-                        moment(`${donation.date}T${donation.time}`).isAfter(moment())
-                    );
-    
-                    if (futureDonations.length > 0) {
-                        const firstAppointment = futureDonations[0];
-                        setActiveAppointment(firstAppointment);
-    
-                        // Fetch location name for the active appointment
-                        const locationName = await fetchLocationName(
-                            parseInt(firstAppointment.hospital.split(": ")[1])
-                        );
-                        setActiveAppointmentLocationName(locationName);
-                    }
-    
-                    const allLocs = await fetchAllLocations();
-                    setAllLocations(allLocs);
-                });
-            }
-        };
-    
-        initialize();
+        if (user.id) {
+            initializeActiveAppointment(
+                user.id,
+                setActiveAppointment,
+                setActiveAppointmentLocationName,
+                setAllLocations
+            );
+        }
     }, [user]);
 
     useEffect(() => {
@@ -137,55 +114,25 @@ export default function Donate() {
     };
 
     useEffect(() => {
-        const fetchFriendsAppointments = async () => {
-            try {
-                const friendsDonationsResponse = await axios.get(
-                    `https://sanquin-api.onrender.com/donations/user/${user.id}/friends`
-                );
-                const donations = friendsDonationsResponse.data.data;
-
-                const tempMarkedDates: Record<string, { dots: { color: string }[] }> = {};
-
-                donations.forEach((donation: FriendDonation) => {
-                    const appointmentDate = moment(donation.appointment).format("YYYY-MM-DD");
-                    if (!tempMarkedDates[appointmentDate]) {
-                        tempMarkedDates[appointmentDate] = {
-                            dots: [{ color: "#FFC0CB" }],
-                        };
-                    }
-                });
-
-                setMarkedDates(tempMarkedDates);
-                setFriendsDonations(donations);
-            } catch (error) {
-                console.error("Error fetching friends' appointments:", error);
-            }
-        };
-
-        fetchFriendsAppointments();
+        if (user.id) {
+            fetchFriendsAppointments(user.id, setFriendsDonations, setMarkedDates);
+        }
     }, [user]);
-
+    
     const handleDateSelection = async (date: string) => {
         setSelectedDate(date);
-        const donation = friendsDonations.find(
-            (d: FriendDonation) => moment(d.appointment).format("YYYY-MM-DD") === date
-        );
-
+    
+        const donation = findDonationByDate(friendsDonations, date);
+    
         if (donation) {
             try {
-                const userResponse = await axios.get(
-                    `https://sanquin-api.onrender.com/users/id/${donation.user_id}`
-                );
-                const userData = Object.fromEntries(userResponse.data.data);
-
+                const { username } = await fetchUserDetails(donation.user_id);
                 const locationName = await fetchLocationName(donation.location_id);
-                setSelectedFriendInfo(
-                    `${userData.username} is donating on this date at ${locationName} at ${moment(
-                        donation.appointment
-                    ).format("HH:mm")}!`
-                );
+    
+                const info = formatFriendDonationInfo(username, locationName, donation.appointment);
+                setSelectedFriendInfo(info);
             } catch (error) {
-                console.error("Error fetching friend details:", error);
+                console.error("Error handling date selection:", error);
                 setSelectedFriendInfo(null);
             }
         } else {

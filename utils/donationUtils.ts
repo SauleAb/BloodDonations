@@ -4,6 +4,7 @@ import { getDistance } from "geolib";
 import { TimeSlot } from '@/types/TimeSlot';
 import { Location } from '@/types/Location'
 import { Appointment } from '@/types/Appointment';
+import { FriendDonation } from '@/types/FriendDonation';
 
 export const getNextDonationDetails = () => {
     const nextDonationAvailable = moment().add(7, "days").startOf("day");
@@ -76,9 +77,9 @@ const fetchWithRetry = async (url: string, options = {}, retries = 3) => {
             const response = await axios.get(url, options);
             return response.data;
         } catch (error) {
-            if (i === retries - 1) throw error; // Throw error if all retries fail
+            if (i === retries - 1) throw error; 
             console.warn(`Retrying... (${i + 1}/${retries})`);
-            await new Promise((resolve) => setTimeout(resolve, 1000)); // Wait before retrying
+            await new Promise((resolve) => setTimeout(resolve, 1000));
         }
     }
 };
@@ -92,6 +93,97 @@ export const fetchDonationsThrottled = async (userId: string, callback: (arg0: A
             callback(donations); 
         }
     }, 500); 
+};
+
+export const fetchLocationName = async (locationId: number): Promise<string> => {
+    try {
+        const response = await axios.get(
+            `https://sanquin-api.onrender.com/donations/location/${locationId}/name`
+        );
+        return response.data.data.name;
+    } catch (error) {
+        console.error(`Error fetching location name for location ID ${locationId}:`, error);
+        return `Location ID: ${locationId}`;
+    }
+};
+
+export const fetchUserDetails = async (userId: number): Promise<{ username: string }> => {
+    try {
+        const response = await axios.get(`https://sanquin-api.onrender.com/users/id/${userId}`);
+        return { username: response.data.data?.username || "Unknown User" };
+    } catch (error) {
+        console.error(`Error fetching user details for user ID ${userId}:`, error);
+        return { username: "Unknown User" };
+    }
+};
+
+export const findDonationByDate = (donations: FriendDonation[], date: string): FriendDonation | undefined => {
+    return donations.find((donation) =>
+        moment(donation.appointment).isSame(moment(date), "day")
+    );
+};
+
+export const formatFriendDonationInfo = (
+    username: string,
+    locationName: string,
+    appointment: string
+): string => {
+    return `${username} is donating at ${locationName} on ${moment(appointment).format("HH:mm")}!`;
+};
+
+export const initializeActiveAppointment = async (
+    userId: string,
+    setActiveAppointment: (appointment: Appointment | null) => void,
+    setActiveAppointmentLocationName: (name: string | null) => void,
+    setAllLocations: (locations: Location[]) => void
+) => {
+    try {
+        const donations = await fetchUserDonations(userId);
+        const futureDonations = donations.filter((donation: Appointment) =>
+            moment(`${donation.date}T${donation.time}`).isAfter(moment())
+        );
+
+        if (futureDonations.length > 0) {
+            const firstAppointment = futureDonations[0];
+            setActiveAppointment(firstAppointment);
+
+            const locationName = await fetchLocationName(
+                parseInt(firstAppointment.hospital.split(": ")[1])
+            );
+            setActiveAppointmentLocationName(locationName);
+        }
+
+        const allLocs = await fetchAllLocations();
+        setAllLocations(allLocs);
+    } catch (error) {
+        console.error("Error initializing active appointment:", error);
+    }
+};
+
+export const fetchFriendsAppointments = async (
+    userId: string,
+    setFriendsDonations: (donations: any[]) => void,
+    setMarkedDates: (dates: Record<string, { dots: { color: string }[] }>) => void
+) => {
+    try {
+        const response = await axios.get(
+            `https://sanquin-api.onrender.com/donations/user/${userId}/friends`
+        );
+        const donations = response.data.data;
+
+        const tempMarkedDates: Record<string, { dots: { color: string }[] }> = {};
+        donations.forEach((donation: any) => {
+            const appointmentDate = moment(donation.appointment).format("YYYY-MM-DD");
+            if (!tempMarkedDates[appointmentDate]) {
+                tempMarkedDates[appointmentDate] = { dots: [{ color: "#FFC0CB" }] };
+            }
+        });
+
+        setMarkedDates(tempMarkedDates);
+        setFriendsDonations(donations);
+    } catch (error) {
+        console.error("Error fetching friends' appointments:", error);
+    }
 };
 
 export const fetchUserDonations = async (userId: string): Promise<Appointment[]> => {
