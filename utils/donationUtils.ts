@@ -12,7 +12,6 @@ export const getNextDonationDetails = () => {
     return { nextDonationAvailable, nextDonationText };
 };
 
-// Fetch user details by email
 export const fetchUserByEmail = async (email: string, password: string) => {
     const response = await axios.get(`https://sanquin-api.onrender.com/users/email/${email}?password=${password}`);
     if (response.status === 200 && response.data) {
@@ -21,7 +20,6 @@ export const fetchUserByEmail = async (email: string, password: string) => {
     throw new Error("Error fetching user");
 };
 
-// Fetch all locations
 export const fetchAllLocations = async () => {
     const response = await axios.get("https://sanquin-api.onrender.com/donations/location/all");
     if (response.status === 200) {
@@ -30,7 +28,6 @@ export const fetchAllLocations = async () => {
     throw new Error("Error fetching all locations");
 };
 
-// Fetch locations by city
 export const fetchCityLocations = async (city: string) => {
     const response = await axios.get(`https://sanquin-api.onrender.com/donations/location/${city}`);
     if (response.status === 200) {
@@ -39,7 +36,6 @@ export const fetchCityLocations = async (city: string) => {
     throw new Error("Error fetching city locations");
 };
 
-// Filter locations within radius
 export const filterLocationsWithinRadius = (cityLocations: any[], allLocations: any[], radius: string) => {
     const radiusInMeters = parseInt(radius) * 1000;
     const selectedCityCoordinates = cityLocations.length
@@ -78,14 +74,13 @@ const fetchWithRetry = async (url: string, options = {}, retries = 3) => {
             return response.data;
         } catch (error) {
             if (i === retries - 1) throw error; 
-            console.warn(`Retrying... (${i + 1}/${retries})`);
             await new Promise((resolve) => setTimeout(resolve, 1000));
         }
     }
 };
 
 let donationFetchTimeout: string | number | NodeJS.Timeout | undefined;
-export const fetchDonationsThrottled = async (userId: string, callback: (arg0: Appointment[]) => void) => {
+export const fetchDonationsThrottled = async (userId: number, callback: (arg0: Appointment[]) => void) => {
     clearTimeout(donationFetchTimeout);
     donationFetchTimeout = setTimeout(async () => {
         const donations = await fetchUserDonations(userId);
@@ -117,6 +112,50 @@ export const fetchUserDetails = async (userId: number): Promise<{ username: stri
     }
 };
 
+export const joinFriendAppointment = async (
+    userId: string,
+    friendDonation: FriendDonation,
+    locations: Location[]
+): Promise<Appointment | null> => {
+    try {
+        const location = locations.find((loc) => loc.id === friendDonation.location_id);
+
+        if (!location) {
+            console.error("Location not found for the friend's donation.");
+            return null;
+        }
+
+        const appointmentData = {
+            amount: friendDonation.amount,
+            user_id: userId,
+            location_id: friendDonation.location_id,
+            donation_type: friendDonation.donation_type,
+            appointment: friendDonation.appointment,
+            status: "pending",
+            enable_joining: friendDonation.enable_joining,
+        };
+
+        const response = await axios.post("https://sanquin-api.onrender.com/donations/", appointmentData);
+
+        if (response.status === 200 && response.data?.data?.id) {
+            return {
+                id: response.data.data.id,
+                hospital: location.name,
+                date: moment(friendDonation.appointment).format("YYYY-MM-DD"),
+                time: moment(friendDonation.appointment).format("HH:mm"),
+            };
+        } else {
+            console.error("Unexpected response from API:", response.status, response.data);
+            return null;
+        }
+    } catch (error) {
+        console.error("Error joining friend's appointment:", error);
+        return null;
+    }
+};
+
+
+
 export const findDonationByDate = (donations: FriendDonation[], date: string): FriendDonation | undefined => {
     return donations.find((donation) =>
         moment(donation.appointment).isSame(moment(date), "day")
@@ -132,7 +171,7 @@ export const formatFriendDonationInfo = (
 };
 
 export const initializeActiveAppointment = async (
-    userId: string,
+    userId: number,
     setActiveAppointment: (appointment: Appointment | null) => void,
     setActiveAppointmentLocationName: (name: string | null) => void,
     setAllLocations: (locations: Location[]) => void
@@ -186,7 +225,7 @@ export const fetchFriendsAppointments = async (
     }
 };
 
-export const fetchUserDonations = async (userId: string): Promise<Appointment[]> => {
+export const fetchUserDonations = async (userId: number): Promise<Appointment[]> => {
     try {
         if (!userId) {
             console.error("User ID is not defined. Skipping donation fetch.");
@@ -210,15 +249,24 @@ export const fetchUserDonations = async (userId: string): Promise<Appointment[]>
                 time: moment(donation.appointment).format("HH:mm"),
             }));
         } else {
-            console.warn("Unexpected response format:", JSON.stringify(response));
             return []; 
         }
-    } catch (error) {
-        console.error("Error fetching user donations:", error);
-        return []; 
+    } catch (error: unknown) {
+        if (axios.isAxiosError(error)) {
+            if (error.response?.status === 500) {
+                return [];
+            }
+
+            console.error(
+                "Error fetching user donations:",
+                error.response?.data || error.message
+            );
+        } else {
+            console.error("An unknown error occurred:", error);
+        }
+        return [];
     }
 };
-
 
 
 export const cancelDonation = async (donationId: number): Promise<boolean> => {

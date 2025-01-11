@@ -102,6 +102,13 @@ const donateStyles = StyleSheet.create({
         fontSize: 15,
         marginVertical: 8,
         textAlign: "left",
+        flex: 1,
+    },
+    friendDonationWrapper: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        marginVertical: 10,
     },
 });
 

@@ -27,6 +27,7 @@ import {
     findDonationByDate,
     fetchUserDetails,
     formatFriendDonationInfo,
+    joinFriendAppointment,
 } from "@/utils/donationUtils";
 import moment from "moment";
 import { Appointment } from "@/types/Appointment";
@@ -44,12 +45,14 @@ export default function Donate() {
         selectedCity,
         selectedRadius,
         selectedTime,
+        inputValue,
         selectedHospital,
         setSelectedDate,
         setSelectedCity,
         setSelectedRadius,
         setSelectedTime,
         setSelectedHospital,
+        setInputValue,
         resetFields,
     } = useDonationForm();
     
@@ -59,11 +62,11 @@ export default function Donate() {
     const [activeAppointmentLocationName, setActiveAppointmentLocationName] = useState<string | null>(null);
     const [locations, setLocations] = useState<Location[]>([]);
     const [allLocations, setAllLocations] = useState<Location[]>([]);
-    const [inputValue, setInputValue] = useState("");
     const [suggestions, setSuggestions] = useState<string[]>([]);
     const [markedDates, setMarkedDates] = useState({});
     const [friendsDonations, setFriendsDonations] = useState<FriendDonation[]>([]);
     const [selectedFriendInfo, setSelectedFriendInfo] = useState<string | null>(null);
+    const [selectedFriendDonation, setSelectedFriendDonation] = useState<FriendDonation | null>(null);
     const { user } = useUser();
 
     const fetchLocationName = async (locationId: number): Promise<string> => {
@@ -120,9 +123,11 @@ export default function Donate() {
     }, [user]);
     
     const handleDateSelection = async (date: string) => {
+        console.log("Date selected:", date);
         setSelectedDate(date);
     
         const donation = findDonationByDate(friendsDonations, date);
+        console.log("Found donation:", donation);
     
         if (donation) {
             try {
@@ -130,23 +135,44 @@ export default function Donate() {
                 const locationName = await fetchLocationName(donation.location_id);
     
                 const info = formatFriendDonationInfo(username, locationName, donation.appointment);
+                console.log("Friend donation info:", info);
+    
                 setSelectedFriendInfo(info);
+                setSelectedFriendDonation(donation);
             } catch (error) {
                 console.error("Error handling date selection:", error);
                 setSelectedFriendInfo(null);
+                setSelectedFriendDonation(null);
             }
         } else {
             setSelectedFriendInfo(null);
+            setSelectedFriendDonation(null);
+        }
+    };
+    
+    
+    const joinFriend = async () => {
+        if (!user.id || !selectedFriendDonation || !locations.length) return;
+    
+        const appointment = await joinFriendAppointment(user.id, selectedFriendDonation, locations);
+    
+        if (appointment) {
+            setActiveAppointment(appointment);
+            setSelectedFriendInfo(null); 
+            resetFields();
+        } else {
+            console.error("Failed to join friend's appointment.");
         }
     };
 
     const cancelDonationHandler = async () => {
+        console.log(activeAppointment);
         if (!activeAppointment || !activeAppointment.id) return;
     
         const success = await cancelDonation(activeAppointment.id);
         if (success) {
-            setActiveAppointment(null); 
             resetFields();
+            setActiveAppointment(null); 
         } else {
             console.error("Failed to cancel the donation");
         }
@@ -257,9 +283,12 @@ export default function Donate() {
                                                             {selectedDate}
                                                         </CommonText>
                                                         {selectedFriendInfo && (
-                                                            <CommonText style={donateStyles.friendDonationInfo}>
-                                                                {selectedFriendInfo}
-                                                            </CommonText>
+                                                            <View style={donateStyles.friendDonationWrapper}>
+                                                            <CommonText style={donateStyles.friendDonationInfo}>{selectedFriendInfo}</CommonText>
+                                                            <CommonButton size="small" onPress={joinFriend}>
+                                                                Join!
+                                                            </CommonButton>
+                                                        </View>
                                                         )}
                                                         <CommonText bold style={donateStyles.title}>
                                                             Available locations
