@@ -1,8 +1,8 @@
 import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
 import Constants from 'expo-constants';
+import axios from 'axios';
 
-// Set the notification handler
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
         shouldShowAlert: true,
@@ -11,7 +11,6 @@ Notifications.setNotificationHandler({
     }),
 });
 
-// Function to register for push notifications
 export async function registerForPushNotificationsAsync() {
     let token;
 
@@ -44,16 +43,64 @@ export async function registerForPushNotificationsAsync() {
     return token;
 }
 
-
-
-// Function to listen for incoming notifications
 export function addNotificationReceivedListener(
     callback: (notification: Notifications.Notification) => void
 ) {
     return Notifications.addNotificationReceivedListener(callback);
 }
 
-// Function to remove notification listener
 export function removeNotificationListener(listener: Notifications.Subscription) {
     Notifications.removeNotificationSubscription(listener);
 }
+
+interface APINotification {
+    title: string;
+    content: string;
+    user_id: number;
+    id: number;
+    created_at: string;
+    retrieved: boolean;
+}
+
+export const fetchNewNotifications = async (userId: number): Promise<APINotification[]> => {
+    try {
+        const response = await axios.get(`https://sanquin-api.onrender.com/users/${userId}/new-notifications`);
+        if (response.status === 200 && Array.isArray(response.data.data)) {
+            return response.data.data;
+        }
+        return [];
+    } catch (error) {
+        if (axios.isAxiosError(error) && error.response?.status === 500) {
+            return [];
+        }
+        console.error("Unexpected error fetching new notifications:", error);
+        return [];
+    }
+};
+
+
+let pollingInterval: NodeJS.Timeout | null = null;
+
+export const startNotificationPolling = (userId: number) => {
+    if (pollingInterval) return;
+
+    pollingInterval = setInterval(async () => {
+        const newNotifications = await fetchNewNotifications(userId);
+        newNotifications.forEach(async (notification) => {
+            await Notifications.scheduleNotificationAsync({
+                content: {
+                    title: notification.title,
+                    body: notification.content,
+                },
+                trigger: null, 
+            });
+        });
+    }, 5000); 
+};
+
+export const stopNotificationPolling = () => {
+    if (pollingInterval) {
+        clearInterval(pollingInterval);
+        pollingInterval = null;
+    }
+};
