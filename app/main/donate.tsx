@@ -57,7 +57,7 @@ export default function Donate() {
     } = useDonationForm();
     
 
-    const [isToggled, setIsToggled] = useState(false);
+    const [isToggled, setIsToggled] = useState(true);
     const [activeAppointment, setActiveAppointment] = useState<Appointment | null>(null);
     const [activeAppointmentLocationName, setActiveAppointmentLocationName] = useState<string | null>(null);
     const [locations, setLocations] = useState<Location[]>([]);
@@ -123,11 +123,9 @@ export default function Donate() {
     }, [user]);
     
     const handleDateSelection = async (date: string) => {
-        console.log("Date selected:", date);
         setSelectedDate(date);
     
         const donation = findDonationByDate(friendsDonations, date);
-        console.log("Found donation:", donation);
     
         if (donation) {
             try {
