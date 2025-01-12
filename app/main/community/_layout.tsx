@@ -16,6 +16,13 @@ export default function CommunityLayout() {
           headerShown: true,
         }}
       />
+            <Stack.Screen
+        name="FriendRequestsScreen"
+        options={{
+          title: "Friend Requests",
+          headerShown: true,
+        }}
+      />
     </Stack>
   );
 }
