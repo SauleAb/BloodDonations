@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { View, FlatList } from "react-native";
-import { StyleSheet } from 'react-native';
+import { StyleSheet } from "react-native";
 import { Calendar } from "react-native-calendars";
 import InputField from "@/components/common/CommonInputField";
 import CommonBackground from "@/components/common/CommonBackground";
@@ -12,16 +12,22 @@ import { useDonationForm } from "@/hooks/useDonationForm";
 import calendarStyles from "@/app/styles/CalendarStyle";
 import commonStyles from "@/app/styles/CommonStyles";
 import { IconNames } from "@/components/common/CommonIcons";
-import { useUser } from '@/components/UserContext';
-import { Location } from '@/types/Location';
+import { useUser } from "@/components/UserContext";
+import { Location } from "@/types/Location";
 import {
-    fetchUserByEmail,
     fetchAllLocations,
     fetchCityLocations,
     filterLocationsWithinRadius,
     getAvailableTimesForSelectedDay,
     handleRequestAppointment,
     handleTextChange,
+    cancelDonation,
+    initializeActiveAppointment,
+    fetchFriendsAppointments,
+    findDonationByDate,
+    fetchUserDetails,
+    formatFriendDonationInfo,
+    joinFriendAppointment,
 } from "@/utils/donationUtils";
 import moment from "moment";
 import { Appointment } from "@/types/Appointment";
@@ -29,6 +35,9 @@ import CustomInput from "@/components/common/CommonInputField";
 import CalendarContent from "@/components/CalendarComponent";
 import CommonContentSwitch from "@/components/common/CommonContentSwitch";
 import { TimeSlot } from "@/types/TimeSlot";
+import CancelButton from "@/components/common/CommonCancelButton";
+import axios from "axios";
+import { FriendDonation } from "@/types/FriendDonation";
 
 export default function Donate() {
     const {
@@ -36,30 +45,61 @@ export default function Donate() {
         selectedCity,
         selectedRadius,
         selectedTime,
+        inputValue,
         selectedHospital,
         setSelectedDate,
         setSelectedCity,
         setSelectedRadius,
         setSelectedTime,
         setSelectedHospital,
+        setInputValue,
         resetFields,
     } = useDonationForm();
+    
 
-    const [isToggled, setIsToggled] = useState(false);
+    const [isToggled, setIsToggled] = useState(true);
     const [activeAppointment, setActiveAppointment] = useState<Appointment | null>(null);
+    const [activeAppointmentLocationName, setActiveAppointmentLocationName] = useState<string | null>(null);
     const [locations, setLocations] = useState<Location[]>([]);
     const [allLocations, setAllLocations] = useState<Location[]>([]);
-    const [inputValue, setInputValue] = useState("");
     const [suggestions, setSuggestions] = useState<string[]>([]);
-    const [userId, setUserId] = useState<string | null>(null);
+    const [markedDates, setMarkedDates] = useState({});
+    const [friendsDonations, setFriendsDonations] = useState<FriendDonation[]>([]);
+    const [selectedFriendInfo, setSelectedFriendInfo] = useState<string | null>(null);
+    const [selectedFriendDonation, setSelectedFriendDonation] = useState<FriendDonation | null>(null);
     const { user } = useUser();
 
+    const fetchLocationName = async (locationId: number): Promise<string> => {
+        try {
+            const response = await axios.get(
+                `https://sanquin-api.onrender.com/donations/location/${locationId}/name`
+            );
+            return response.data.data.name;
+        } catch (error) {
+            console.error(`Error fetching location name for location ID ${locationId}:`, error);
+            return `Location ID: ${locationId}`;
+        }
+    };
+
     useEffect(() => {
-        const initializeUser = async () => {
-            const userEntity = await fetchUserByEmail(user.email, user.password);
-            if (userEntity) setUserId(userEntity.id);
-        };
-        initializeUser();
+        const intervalId = setInterval(() => {
+            if (user.id) {
+                fetchFriendsAppointments(user.id, setFriendsDonations, setMarkedDates);
+            }
+        }, 5000);
+
+        return () => clearInterval(intervalId);
+    }, [user]);
+
+    useEffect(() => {
+        if (user.id) {
+            initializeActiveAppointment(
+                user.id,
+                setActiveAppointment,
+                setActiveAppointmentLocationName,
+                setAllLocations
+            );
+        }
     }, [user]);
 
     useEffect(() => {
@@ -86,13 +126,85 @@ export default function Donate() {
         setSuggestions(handleTextChange(text, allLocations));
     };
 
+    useEffect(() => {
+        if (user.id) {
+            fetchFriendsAppointments(user.id, setFriendsDonations, setMarkedDates);
+        }
+    }, [user]);
+    
+    const handleDateSelection = async (date: string) => {
+        setSelectedDate(date);
+    
+        const donation = findDonationByDate(friendsDonations, date);
+    
+        if (donation) {
+            try {
+                const { username } = await fetchUserDetails(donation.user_id);
+                const locationName = await fetchLocationName(donation.location_id);
+    
+                const info = formatFriendDonationInfo(username, locationName, donation.appointment);
+                console.log("Friend donation info:", info);
+    
+                setSelectedFriendInfo(info);
+                setSelectedFriendDonation(donation);
+            } catch (error) {
+                console.error("Error handling date selection:", error);
+                setSelectedFriendInfo(null);
+                setSelectedFriendDonation(null);
+            }
+        } else {
+            setSelectedFriendInfo(null);
+            setSelectedFriendDonation(null);
+        }
+    };
+    
+    
+    const joinFriend = async () => {
+        if (!user.id || !selectedFriendDonation || !locations.length) return;
+    
+        const appointment = await joinFriendAppointment(user.id, selectedFriendDonation, locations);
+    
+        if (appointment) {
+            setActiveAppointment(appointment);
+            setSelectedFriendInfo(null); 
+            resetFields();
+        } else {
+            console.error("Failed to join friend's appointment.");
+        }
+    };
+
+    const cancelDonationHandler = async () => {
+        console.log(activeAppointment);
+        if (!activeAppointment || !activeAppointment.id) return;
+    
+        const success = await cancelDonation(activeAppointment.id);
+        if (success) {
+            resetFields();
+            setActiveAppointment(null); 
+        } else {
+            console.error("Failed to cancel the donation");
+        }
+    };
+
     const requestAppointment = async () => {
-        if (selectedHospital && selectedDate && selectedTime && userId) {
-            const appointment = await handleRequestAppointment(userId, locations, selectedHospital, selectedDate, selectedTime);
+        if (selectedHospital && selectedDate && selectedTime && user.id) {
+            const appointment = await handleRequestAppointment(
+                user.id,
+                locations,
+                selectedHospital,
+                selectedDate,
+                selectedTime,
+                isToggled
+            );
+
             if (appointment) {
                 setActiveAppointment(appointment);
                 resetFields();
+            } else {
+                console.error("Failed to create appointment.");
             }
+        } else {
+            console.error("Missing required fields for appointment creation.");
         }
     };
 
@@ -107,11 +219,19 @@ export default function Donate() {
                     ListHeaderComponent={
                         <View style={styles.fullWidthContent}>
                             {activeAppointment ? (
-                                <CommonContent
-                                    titleText="Next Donation"
-                                    contentText={`Scheduled at ${activeAppointment.hospital} on ${activeAppointment.date} at ${activeAppointment.time}.`}
-                                    icon={IconNames.BloodDonated}
-                                />
+                                <>
+                                    <CommonContent
+                                        titleText="Next Donation"
+                                        contentText={`Scheduled at ${
+                                            activeAppointmentLocationName || activeAppointment.hospital
+                                        } on ${activeAppointment.date} at ${activeAppointment.time}.`}
+                                        icon={IconNames.BloodDonated}
+                                    />
+                                    <CancelButton
+                                        onConfirm={cancelDonationHandler}
+                                        onCancel={() => console.log("Cancellation aborted")}
+                                    />
+                                </>
                             ) : (
                                 <CommonContent
                                     titleText="You are eligible to donate again!"
@@ -148,15 +268,17 @@ export default function Donate() {
                                             <View style={donateStyles.calendarWrapper}>
                                                 <Calendar
                                                     onDayPress={(day: { dateString: string }) =>
-                                                        setSelectedDate(day.dateString)
+                                                        handleDateSelection(day.dateString)
                                                     }
                                                     markedDates={{
+                                                        ...markedDates,
                                                         [selectedDate]: {
                                                             selected: true,
                                                             marked: true,
                                                             selectedColor: "#00BFFF",
                                                         },
                                                     }}
+                                                    markingType="multi-dot"
                                                     theme={calendarStyles.calendar}
                                                     minDate={moment().format("YYYY-MM-DD")}
                                                     disableAllTouchEventsForDisabledDays={true}
@@ -168,6 +290,14 @@ export default function Donate() {
                                                         <CommonText bold style={donateStyles.selectedDateText}>
                                                             {selectedDate}
                                                         </CommonText>
+                                                        {selectedFriendInfo && (
+                                                            <View style={donateStyles.friendDonationWrapper}>
+                                                            <CommonText style={donateStyles.friendDonationInfo}>{selectedFriendInfo}</CommonText>
+                                                            <CommonButton size="small" onPress={joinFriend}>
+                                                                Join!
+                                                            </CommonButton>
+                                                        </View>
+                                                        )}
                                                         <CommonText bold style={donateStyles.title}>
                                                             Available locations
                                                         </CommonText>
@@ -192,7 +322,12 @@ export default function Donate() {
                                                         ))}
                                                         <View style={donateStyles.row}>
                                                             <CommonText>Let others join you</CommonText>
-                                                            <CommonContentSwitch initialValue={false} onToggle={setIsToggled} />
+                                                            <CommonContentSwitch
+                                                                initialValue={true}
+                                                                onToggle={(value) => {
+                                                                    setIsToggled(value);
+                                                                }}
+                                                            />
                                                         </View>
 
                                                         {selectedHospital && (
@@ -261,16 +396,17 @@ export default function Donate() {
     );
 }
 
+
 const styles = StyleSheet.create({
-fullWidthContainer: { 
-    flexGrow: 1,
-    width: "100%",
-},
-fullWidthContent: {
-    flex: 1,
-    width: "100%",
-    alignSelf: "center",
-    justifyContent: "center",
-    alignItems: "center",
-},
-})
+    fullWidthContainer: {
+        flexGrow: 1,
+        width: "100%",
+    },
+    fullWidthContent: {
+        flex: 1,
+        width: "100%",
+        alignSelf: "center",
+        justifyContent: "center",
+        alignItems: "center",
+    },
+});

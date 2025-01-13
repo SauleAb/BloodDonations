@@ -5,6 +5,7 @@ export const useDonationForm = () => {
     const [selectedCity, setSelectedCity] = useState<string>("");
     const [selectedRadius, setSelectedRadius] = useState<string>("");
     const [selectedTime, setSelectedTime] = useState<string>("");
+    const [inputValue, setInputValue] = useState<string>("");
     const [selectedHospital, setSelectedHospital] = useState<string | null>(null);
 
     const resetFields = () => {
@@ -13,6 +14,7 @@ export const useDonationForm = () => {
         setSelectedRadius("");
         setSelectedTime("");
         setSelectedHospital("");
+        setInputValue("");
     };
 
     return {
@@ -21,11 +23,13 @@ export const useDonationForm = () => {
         selectedRadius,
         selectedTime,
         selectedHospital,
+        inputValue,
         setSelectedDate,
         setSelectedCity,
         setSelectedRadius,
         setSelectedTime,
         setSelectedHospital,
+        setInputValue,
         resetFields,
     };
 };

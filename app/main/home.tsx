@@ -6,8 +6,20 @@ import HomeScreenBottom from "@/components/home/HomeScreenBottom";
 import commonStyles from "../styles/CommonStyles";
 import { homeScreenContent } from "@/constants/HomeData";
 import CommonContent from "@/components/common/CommonContent";
+import { useUser } from "@/components/UserContext";
+import { startNotificationPolling, stopNotificationPolling } from "@/utils/notificationUtils";
 
 export default function Home() {
+    const {user} = useUser();
+    const userId = user.id;
+    
+      useEffect(() => {
+        startNotificationPolling(userId);
+    
+        return () => {
+          stopNotificationPolling();
+        };
+      }, [userId]);
     useEffect(() => {
         const backAction = () => {
             return true;

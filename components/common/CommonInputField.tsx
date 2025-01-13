@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
     },
     suggestionsContainer: {
         maxHeight: 170,
-        marginTop: 5,
+        marginTop: 0,
         backgroundColor: '#fff',
         borderRadius: 5,
         borderWidth: 1,

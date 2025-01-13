@@ -9,7 +9,9 @@ import commonStyles from './styles/CommonStyles';
 import {
     registerForPushNotificationsAsync,
     addNotificationReceivedListener,
-    removeNotificationListener
+    removeNotificationListener,
+    startNotificationPolling,
+    stopNotificationPolling
 } from '@/utils/notificationUtils';
  
 const { height } = Dimensions.get('window');

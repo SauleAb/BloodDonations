@@ -7,7 +7,7 @@ const UserContext = createContext();
 
 // User Provider Component
 export const UserProvider = ({ children }) => {
-    const [user, setUser] = useState(null);
+    const [user, setUser] = useState(defaultUser);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -15,17 +15,22 @@ export const UserProvider = ({ children }) => {
             try {
                 const storedUser = await AsyncStorage.getItem('user');
                 if (storedUser) {
+                    console.log('Loaded User:', JSON.parse(storedUser));
                     setUser(JSON.parse(storedUser));
+                } else {
+                    console.log('No user found in storage. Using default user.');
+                    setUser(defaultUser);
                 }
             } catch (error) {
-                console.error('Error loading user data', error);
+                console.error('Error loading user data:', error);
+                setUser(defaultUser);
             } finally {
                 setLoading(false);
             }
         };
         loadUserData();
     }, []);
-
+    
     const login = async (userData) => {
         try {
             // Save only the currently logged-in user

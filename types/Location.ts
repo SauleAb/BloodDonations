@@ -7,5 +7,5 @@ export type Location = {
     longitude: number;
     address: string;
     timeslots: TimeSlot[];
-    id: string;
+    id: number;
 };
