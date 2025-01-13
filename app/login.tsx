@@ -55,8 +55,6 @@ export default function Login() {
                 id: userObject.id || defaultUser.id,
             };
 
-            console.log("Final User Data:", userData);
-
             login(userData);
             await AsyncStorage.setItem('user', JSON.stringify(userData));
             router.replace('/main/home');
