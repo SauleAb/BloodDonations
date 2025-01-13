@@ -45,13 +45,6 @@ export default function Login() {
             }
     
             const data = await response.json();
-            console.log("API Data:", data.data);
-    
-            if (!data?.data || !Array.isArray(data.data)) {
-                Alert.alert('Login Error', 'Invalid response from server.');
-                return;
-            }
-    
             const userObject = Object.fromEntries(data.data);
     
             if (!userObject.id) {
@@ -63,10 +56,9 @@ export default function Login() {
                 ...defaultUser,
                 ...userObject,
             };
-    
-            console.log("Final User Data:", userData);
-    
-            await login(userData); // Calls the login function in UserContext
+
+            login(userData);
+            await AsyncStorage.setItem('user', JSON.stringify(userData));
             router.replace('/main/home');
         } catch (error) {
             console.error('Error:', error);

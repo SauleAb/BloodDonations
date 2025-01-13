@@ -11,8 +11,6 @@ import { startNotificationPolling, stopNotificationPolling } from "@/utils/notif
 
 export default function Home() {
     const {user} = useUser();
-    console.log(user);
-
     const userId = user.id;
     
       useEffect(() => {
