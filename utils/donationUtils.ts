@@ -105,7 +105,6 @@ export const fetchLocationName = async (locationId: number): Promise<string> => 
 export const fetchUserDetails = async (userId: number): Promise<{ username: string }> => {
     try {
         const response = await axios.get(`https://sanquin-api.onrender.com/users/id/${userId}`);
-        console.log("fetchUserDetails response:", response.data);
         const userArray = response.data?.data;
         if (Array.isArray(userArray)) {
             const usernameEntry = userArray.find((entry) => entry[0] === "username");
@@ -121,7 +120,7 @@ export const fetchUserDetails = async (userId: number): Promise<{ username: stri
 };
 
 export const joinFriendAppointment = async (
-    userId: string,
+    userId: number,
     friendDonation: FriendDonation,
     locations: Location[]
 ): Promise<Appointment | null> => {
@@ -145,9 +144,11 @@ export const joinFriendAppointment = async (
 
         const response = await axios.post("https://sanquin-api.onrender.com/donations/", appointmentData);
 
-        if (response.status === 200 && response.data?.data?.id) {
+        if (response.status === 200) {
+            const responseData = Object.fromEntries(response.data.data);
+
             return {
-                id: response.data.data.id,
+                id: responseData.id,
                 hospital: location.name,
                 date: moment(friendDonation.appointment).format("YYYY-MM-DD"),
                 time: moment(friendDonation.appointment).format("HH:mm"),
@@ -162,8 +163,6 @@ export const joinFriendAppointment = async (
     }
 };
 
-
-
 export const findDonationByDate = (donations: FriendDonation[], date: string): FriendDonation | undefined => {
     return donations.find((donation) =>
         moment(donation.appointment).isSame(moment(date), "day")
@@ -175,7 +174,7 @@ export const formatFriendDonationInfo = (
     locationName: string,
     appointment: string
 ): string => {
-    return `${username} is donating at ${locationName} on ${moment(appointment).format("HH:mm")}!`;
+    return `${username.toUpperCase()} is donating at ${locationName} on ${moment(appointment).format("HH:mm")}!`;
 };
 
 export const initializeActiveAppointment = async (
