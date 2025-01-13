@@ -29,15 +29,13 @@ export default function Login() {
             Alert.alert('Error', 'Please fill out all fields');
             return;
         }
-
+    
         const _email = email.replace(/@/g, "%40");
         const url = `https://sanquin-api.onrender.com/users/email/${_email}?password=${password}`;
-
+    
         try {
-            const response = await fetch(url, {
-                method: 'GET',
-            });
-
+            const response = await fetch(url, { method: 'GET' });
+    
             if (response.status === 404) {
                 Alert.alert('Login Error', 'Incorrect credentials, please try again.');
                 return;
@@ -45,26 +43,37 @@ export default function Login() {
                 Alert.alert('Login Error', 'Something went wrong, please try again later.');
                 return;
             }
-
+    
             const data = await response.json();
+            console.log("API Data:", data.data);
+    
+            if (!data?.data || !Array.isArray(data.data)) {
+                Alert.alert('Login Error', 'Invalid response from server.');
+                return;
+            }
+    
             const userObject = Object.fromEntries(data.data);
-
+    
+            if (!userObject.id) {
+                Alert.alert('Login Error', 'User ID is missing in the response.');
+                return;
+            }
+    
             const userData = {
-                ...userObject,
                 ...defaultUser,
-                id: userObject.id || defaultUser.id,
+                ...userObject,
             };
-
+    
             console.log("Final User Data:", userData);
-
-            login(userData);
-            await AsyncStorage.setItem('user', JSON.stringify(userData));
+    
+            await login(userData); // Calls the login function in UserContext
             router.replace('/main/home');
         } catch (error) {
             console.error('Error:', error);
+            Alert.alert('Login Error', 'An unexpected error occurred.');
         }
     };
-
+    
     return (
         <View style={commonStyles.container}>
             <CommonBackground style={loginStyles.backgroundImage} titleText={"Welcome to Sanquin!"} logoVisible={true}>

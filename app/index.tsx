@@ -13,21 +13,10 @@ import {
     startNotificationPolling,
     stopNotificationPolling
 } from '@/utils/notificationUtils';
-import { useUser } from '@/components/UserContext';
  
 const { height } = Dimensions.get('window');
  
 export default function HomeScreen() {
-    const { user } = useUser();
-    const userId = user.id;
-    
-      useEffect(() => {
-        startNotificationPolling(userId);
-    
-        return () => {
-          stopNotificationPolling();
-        };
-      }, [userId]);
     useEffect(() => {
         registerForPushNotificationsAsync().then(token => {
             console.log("Push notification token:", token);
