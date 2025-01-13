@@ -10,10 +10,10 @@ import FriendContent from "@/components/FriendContent";
 import InputField from "@/components/common/CommonInputField";
 import commonStyles from "@/app/styles/CommonStyles";
 
-import FriendRequestsIcon from "@/assets/icons/Gift.png";
-import RefreshIcon from "@/assets/icons/uber.png";
-import AddFriendIcon from "@/assets/icons/Gift.png";
-import RequestSentIcon from "@/assets/icons/uber.png";
+import FriendRequestsIcon from "@/assets/icons/add-friend.png";
+import RefreshIcon from "@/assets/icons/refresh-page-option.png";
+import AddFriendIcon from "@/assets/icons/add-user.png";
+import RequestSentIcon from "@/assets/icons/add-friend.png";
 
 const achievements = [
   {
@@ -135,14 +135,12 @@ export default function Community() {
       console.log("Send friend request response body:", textBody);
 
       if (resp.ok) {
-        Alert.alert("Success", `Friend request sent to ${targetId}.`);
         setSentFriendRequests((prev) => new Set(prev).add(targetId));
       } else {
         throw new Error(`Friend request failed, status ${resp.status}`);
       }
     } catch (err: any) {
       console.error("Error sending friend request:", err);
-      Alert.alert("Error", err.message);
     }
   }
 

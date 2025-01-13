@@ -7,8 +7,8 @@ import CommonButton from "@/components/common/CommonButton";
 import CommonBackground from "@/components/common/CommonBackground";
 import FriendContent from "@/components/FriendContent";
 
-import AcceptIcon from "@/assets/icons/Gift.png";
-import DeclineIcon from "@/assets/icons/uber.png";
+import AcceptIcon from "@/assets/icons/check.png";
+import DeclineIcon from "@/assets/icons/multiply.png";
 import commonStyles from "@/app/styles/CommonStyles";
 
 type FriendRequestItem = {
@@ -123,10 +123,8 @@ export default function FriendRequestsScreen() {
         throw new Error(`Accept request failed with status ${resp.status}`);
       }
 
-      Alert.alert("Success", `Friend request from user #${senderId} accepted!`);
       setRequests((prev) => prev.filter((r) => r.sender_id !== senderId));
     } catch (err: any) {
-      Alert.alert("Error", err.message);
       console.error("Error accepting friend request:", err);
     }
   }
@@ -156,10 +154,8 @@ export default function FriendRequestsScreen() {
         );
       }
 
-      Alert.alert("Success", `Friend request from user #${senderId} declined!`);
       setRequests((prev) => prev.filter((r) => r.sender_id !== senderId));
     } catch (err: any) {
-      Alert.alert("Error", err.message);
       console.error("Error declining friend request:", err);
     }
   }
@@ -243,7 +239,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   title: {
-    fontSize: 22,
+    fontSize: 18,
     fontWeight: "bold",
     marginBottom: 16,
   },
@@ -257,13 +253,16 @@ const styles = StyleSheet.create({
   },
   requestContainer: {
     marginVertical: 8,
+    marginHorizontal: 16,
     paddingVertical: 8,
+    paddingHorizontal: 8,
     borderBottomWidth: 1,
     borderColor: "#ccc",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
   },
+  
   actionButtonsContainer: {
     flexDirection: "row",
     alignItems: "center",
