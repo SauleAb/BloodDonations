@@ -82,6 +82,16 @@ export default function Donate() {
     };
 
     useEffect(() => {
+        const intervalId = setInterval(() => {
+            if (user.id) {
+                fetchFriendsAppointments(user.id, setFriendsDonations, setMarkedDates);
+            }
+        }, 5000);
+
+        return () => clearInterval(intervalId);
+    }, [user]);
+
+    useEffect(() => {
         if (user.id) {
             initializeActiveAppointment(
                 user.id,
