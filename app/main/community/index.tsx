@@ -1,5 +1,3 @@
-// src/components/Community.tsx
-
 import React, { useState, useEffect } from "react";
 import {
   View,

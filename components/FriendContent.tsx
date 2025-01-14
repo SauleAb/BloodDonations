@@ -1,5 +1,3 @@
-// src/components/FriendContent.tsx
-
 import React from "react";
 import { StyleSheet, TouchableOpacity, View, Image } from "react-native";
 import CommonText from "@/components/common/CommonText";

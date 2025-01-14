@@ -1,7 +1,4 @@
-// src/contexts/FriendRequestContext.tsx
-
 import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { FriendRequest } from '../types/types';
 
 interface FriendRequestContextType {
   sentFriendRequests: Set<number>;

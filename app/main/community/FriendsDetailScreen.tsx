@@ -201,23 +201,12 @@ export default function FriendsDetailScreen() {
     <CommonBackground logoVisible={true} mainPage={false}>
       <View style={styles.container}>
         <Text style={styles.title}>Friend Details</Text>
-        <Text style={styles.text}>ID: {friend.id ?? "N/A"}</Text>
         <Text style={styles.text}>First Name: {friend.first_name ?? "N/A"}</Text>
         <Text style={styles.text}>Last Name: {friend.last_name ?? "N/A"}</Text>
         <Text style={styles.text}>Username: {friend.username ?? "N/A"}</Text>
         <Text style={styles.text}>Email: {friend.email ?? "N/A"}</Text>
         <Text style={styles.text}>Birthdate: {friend.birthdate ?? "N/A"}</Text>
         <Text style={styles.text}>City: {friend.city ?? "N/A"}</Text>
-        <Text style={styles.text}>
-          Current Points: {friend.current_points ?? "N/A"}
-        </Text>
-        <Text style={styles.text}>
-          Total Points: {friend.total_points ?? "N/A"}
-        </Text>
-        <Text style={styles.text}>Role: {friend.role ?? "N/A"}</Text>
-        <Text style={styles.text}>
-          Created At: {friend.created_at ?? "N/A"}
-        </Text>
 
         {isFriend ? (
           <View style={styles.statusContainer}>
