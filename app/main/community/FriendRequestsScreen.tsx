@@ -1,15 +1,25 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, ActivityIndicator, Alert, StyleSheet, TouchableOpacity, Image, } from "react-native";
+import { 
+  View, 
+  Text, 
+  ActivityIndicator, 
+  Alert, 
+  StyleSheet, 
+  TouchableOpacity, 
+  Image 
+} from "react-native";
 import { useUser } from "@/components/UserContext";
 import { useRouter } from "expo-router";
 import CommonScrollElement from "@/components/common/CommonScrollElement";
 import CommonButton from "@/components/common/CommonButton";
 import CommonBackground from "@/components/common/CommonBackground";
 import FriendContent from "@/components/FriendContent";
-
 import AcceptIcon from "@/assets/icons/check.png";
 import DeclineIcon from "@/assets/icons/multiply.png";
+import RequestSentIcon from "@/assets/icons/add-friend.png"; // Ensure this path is correct
 import commonStyles from "@/app/styles/CommonStyles";
+import { FriendRequest } from "@/types/types"; // Ensure correct path
+import { useFriendRequests } from "@/components/FriendRequestsContext"; // Corrected path
 
 type FriendRequestItem = {
   id: string;
@@ -32,6 +42,15 @@ export default function FriendRequestsScreen() {
   const [requests, setRequests] = useState<FriendRequestItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const { 
+    sentFriendRequests, 
+    receivedFriendRequests, 
+    addSentFriendRequest, 
+    addReceivedFriendRequest, 
+    removeSentFriendRequest, 
+    removeReceivedFriendRequest 
+  } = useFriendRequests();
 
   useEffect(() => {
     if (!loggedInUserId) {
@@ -117,25 +136,30 @@ export default function FriendRequestsScreen() {
     try {
       const resp = await fetch(url, { method: "PUT" });
       const textBody = await resp.text();
-      console.log("Accept friend response body:", textBody);
+      console.log("Accept friend request response body:", textBody);
 
       if (!resp.ok) {
         throw new Error(`Accept request failed with status ${resp.status}`);
       }
 
+      // Update context and local state
+      removeReceivedFriendRequest(Number(senderId));
       setRequests((prev) => prev.filter((r) => r.sender_id !== senderId));
+
+      Alert.alert("Success", "Friend request accepted!");
     } catch (err: any) {
       console.error("Error accepting friend request:", err);
+      Alert.alert("Error", err.message);
     }
   }
 
   async function handleDecline(senderId: string) {
     if (!loggedInUserId) return;
 
-    // Maybe check if it's "pending"
     const requestItem = requests.find((r) => r.sender_id === senderId);
     if (requestItem && requestItem.status !== "pending") {
       console.warn(`Cannot decline: status is ${requestItem.status}, not "pending".`);
+      Alert.alert("Cannot Decline", "This friend request is no longer pending.");
       return;
     }
 
@@ -154,9 +178,13 @@ export default function FriendRequestsScreen() {
         );
       }
 
+      removeReceivedFriendRequest(Number(senderId));
       setRequests((prev) => prev.filter((r) => r.sender_id !== senderId));
+
+      Alert.alert("Success", "Friend request declined.");
     } catch (err: any) {
       console.error("Error declining friend request:", err);
+      Alert.alert("Error", err.message);
     }
   }
 
@@ -197,7 +225,6 @@ export default function FriendRequestsScreen() {
                   }
                 />
                 <View style={styles.actionButtonsContainer}>
-                  {/* Accept Button */}
                   <TouchableOpacity
                     onPress={() => handleAccept(req.sender_id)}
                     style={styles.acceptButton}
@@ -206,7 +233,6 @@ export default function FriendRequestsScreen() {
                     <Image source={AcceptIcon} style={styles.actionIcon} />
                   </TouchableOpacity>
 
-                  {/* Decline Button */}
                   <TouchableOpacity
                     onPress={() => handleDecline(req.sender_id)}
                     style={styles.declineButton}

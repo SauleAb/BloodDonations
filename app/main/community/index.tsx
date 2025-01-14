@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, ActivityIndicator, Alert, StyleSheet, TouchableOpacity, Image,} from "react-native";
+import {
+  View,
+  Text,
+  ActivityIndicator,
+  Alert,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+} from "react-native";
 import { useRouter } from "expo-router";
 import { useUser } from "@/components/UserContext";
 import CommonBackground from "@/components/common/CommonBackground";
@@ -9,22 +17,24 @@ import AchievementCard from "@/components/AchievementCard";
 import FriendContent from "@/components/FriendContent";
 import InputField from "@/components/common/CommonInputField";
 import commonStyles from "@/app/styles/CommonStyles";
-
 import FriendRequestsIcon from "@/assets/icons/add-friend.png";
 import RefreshIcon from "@/assets/icons/refresh-page-option.png";
-import AddFriendIcon from "@/assets/icons/add-user.png";
-import RequestSentIcon from "@/assets/icons/add-friend.png";
+import RequestSentIcon from "@/assets/icons/add-friend.png"; // Ensure this path is correct
+import AddFriendIcon from "@/assets/icons/add-user.png"; // Ensure this path is correct
+import { FriendRequest, FriendObject } from "@/types/types";
+import { useFriendRequests } from "@/components/FriendRequestsContext";
 
-const achievements = [
-  {
-    user: { name: "MockUser", profileColor: "#40b6ff" },
-    achievementTime: "2 days ago",
-    achievementText: "Donated for the third time!",
-    celebrates: 5,
-  },
-];
+interface Achievement {
+  user: {
+    name: string;
+    profileColor: string;
+  };
+  achievementTime: string;
+  achievementText: string;
+  celebrates: number;
+}
 
-type FriendUser = {
+interface FriendUser {
   id: number;
   first_name: string;
   last_name: string;
@@ -36,7 +46,16 @@ type FriendUser = {
   role?: string;
   created_at?: string;
   username?: string;
-};
+}
+
+const mockAchievements: Achievement[] = [
+  {
+    user: { name: "MockUser", profileColor: "#40b6ff" },
+    achievementTime: "2 days ago",
+    achievementText: "Donated for the third time!",
+    celebrates: 5,
+  },
+];
 
 export default function Community() {
   const router = useRouter();
@@ -51,7 +70,14 @@ export default function Community() {
   const [loadingSuggestions, setLoadingSuggestions] = useState(false);
   const [suggestionsError, setSuggestionsError] = useState<string | null>(null);
 
-  const [sentFriendRequests, setSentFriendRequests] = useState<Set<number>>(new Set());
+  const { 
+    sentFriendRequests, 
+    receivedFriendRequests, 
+    addSentFriendRequest, 
+    addReceivedFriendRequest, 
+    removeSentFriendRequest, 
+    removeReceivedFriendRequest 
+  } = useFriendRequests();
 
   const [activeTab, setActiveTab] = useState<"feed" | "friends">("feed");
   const [search, setSearch] = useState("");
@@ -60,6 +86,7 @@ export default function Community() {
     if (loggedInUserId) {
       fetchFriends(loggedInUserId);
       fetchSuggestions(loggedInUserId);
+      fetchFriendRequests(loggedInUserId);
     }
   }, [loggedInUserId]);
 
@@ -100,7 +127,8 @@ export default function Community() {
         const url = `https://sanquin-api.onrender.com/users/id/${id}`;
         const r = await fetch(url);
         if (!r.ok) {
-          throw new Error(`User ${id} fetch failed. Status: ${r.status}`);
+          // Skip users that cannot be fetched
+          return null;
         }
         const data = await r.json();
         let userData = data.data;
@@ -112,7 +140,7 @@ export default function Community() {
 
       const settled = await Promise.allSettled(promises);
       const successful = settled
-        .filter((res) => res.status === "fulfilled")
+        .filter((res) => res.status === "fulfilled" && res.value !== null)
         .map((res: any) => res.value);
 
       setSuggestions(successful);
@@ -124,23 +152,28 @@ export default function Community() {
     }
   }
 
-  async function sendFriendRequest(targetId: number) {
-    if (!loggedInUserId) return;
-    const url = `https://sanquin-api.onrender.com/users/${loggedInUserId}/friends/${targetId}`;
-    console.log("Sending friend request to:", url);
-
+  async function fetchFriendRequests(userId: number) {
     try {
-      const resp = await fetch(url, { method: "POST" });
-      const textBody = await resp.text();
-      console.log("Send friend request response body:", textBody);
-
-      if (resp.ok) {
-        setSentFriendRequests((prev) => new Set(prev).add(targetId));
-      } else {
-        throw new Error(`Friend request failed, status ${resp.status}`);
+      const url = `https://sanquin-api.onrender.com/users/${userId}/friend-requests`;
+      const resp = await fetch(url);
+      if (!resp.ok) {
+        console.warn(`Friend requests fetch failed with status ${resp.status}`);
+        return;
       }
+      const result = await resp.json();
+      const rawData = result?.data;
+      if (!Array.isArray(rawData)) return;
+
+      rawData.forEach((req: FriendRequest) => {
+        if (req.sender_id === String(userId)) {
+          addSentFriendRequest(Number(req.receiver_id));
+        }
+        if (req.receiver_id === String(userId) && req.status === "pending") {
+          addReceivedFriendRequest(Number(req.sender_id));
+        }
+      });
     } catch (err: any) {
-      console.error("Error sending friend request:", err);
+      console.error("Error fetching friend requests:", err);
     }
   }
 
@@ -153,13 +186,14 @@ export default function Community() {
     if (loggedInUserId) {
       fetchFriends(loggedInUserId);
       fetchSuggestions(loggedInUserId);
+      fetchFriendRequests(loggedInUserId);
     }
   };
 
   function renderFeed() {
     return (
       <CommonScrollElement>
-        {achievements.map((ach, i) => (
+        {mockAchievements.map((ach: Achievement, i: number) => (
           <AchievementCard
             key={i}
             user={ach.user}
@@ -227,44 +261,41 @@ export default function Community() {
         <Text style={styles.sectionTitle}>Friend Suggestions</Text>
         {loadingSuggestions && <ActivityIndicator size="large" />}
         {suggestionsError && <Text style={styles.errorText}>{suggestionsError}</Text>}
+        {finalSuggestions.length === 0 && !loadingSuggestions && (
+          <Text style={styles.noDataText}>No suggestions available.</Text>
+        )}
         {finalSuggestions
           .filter((u) => {
             const fullName = `${u.first_name} ${u.last_name}`.toLowerCase();
             return fullName.includes(search.toLowerCase());
           })
-          .map((sugg) => (
-            <View key={`sugg-${sugg.id}`} style={styles.suggestionContainer}>
+          .map((sugg) => {
+            const isSent = sentFriendRequests.has(sugg.id);
+            const isReceived = receivedFriendRequests.has(sugg.id);
+            return (
               <FriendContent
+                key={`sugg-${sugg.id}`}
                 id={String(sugg.id)}
                 name={`${sugg.first_name} ${sugg.last_name}`}
-                onPress={(id) =>
-                  router.push(`/main/community/FriendsDetailScreen?id=${id}`)
+                onPress={() =>
+                  router.push(`/main/community/FriendsDetailScreen?id=${sugg.id}`)
+                }
+                rightButton={
+                  isSent ? (
+                    <View style={styles.statusContainer}>
+                      <Image source={RequestSentIcon} style={styles.statusIcon} />
+                      <Text style={styles.statusText}>Request Sent</Text>
+                    </View>
+                  ) : isReceived ? (
+                    <View style={styles.statusContainer}>
+                      <Image source={RequestSentIcon} style={styles.statusIcon} />
+                      <Text style={styles.statusText}>Request Received</Text>
+                    </View>
+                  ) : null
                 }
               />
-              <TouchableOpacity
-                onPress={() => sendFriendRequest(sugg.id)}
-                disabled={sentFriendRequests.has(sugg.id)}
-                style={[
-                  styles.addButton,
-                  sentFriendRequests.has(sugg.id) && styles.addButtonDisabled,
-                ]}
-                accessibilityLabel={
-                  sentFriendRequests.has(sugg.id)
-                    ? "Friend request sent"
-                    : "Add Friend"
-                }
-              >
-                <Image
-                  source={
-                    sentFriendRequests.has(sugg.id)
-                      ? RequestSentIcon
-                      : AddFriendIcon
-                  }
-                  style={styles.addButtonIcon}
-                />
-              </TouchableOpacity>
-            </View>
-          ))}
+            );
+          })}
       </CommonScrollElement>
     );
   }
@@ -274,19 +305,19 @@ export default function Community() {
   }
 
   return (
-    <View style={commonStyles.container}>
-      <CommonBackground logoVisible={true} mainPage={true}>
+    <CommonBackground logoVisible={true} mainPage={true}>
+      <View style={commonStyles.container}>
         {renderContent()}
-      </CommonBackground>
-      <SecondaryNavBar
-        tabs={[
-          { key: "feed", label: "Feed" },
-          { key: "friends", label: "Friends" },
-        ]}
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-      />
-    </View>
+        <SecondaryNavBar
+          tabs={[
+            { key: "feed", label: "Feed" },
+            { key: "friends", label: "Friends" },
+          ]}
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+        />
+      </View>
+    </CommonBackground>
   );
 }
 
@@ -313,24 +344,50 @@ const styles = StyleSheet.create({
   },
   suggestionContainer: {
     marginVertical: 8,
+    padding: 10,
+    borderRadius: 8,
+    backgroundColor: "#f0f0f0",
+  },
+  statusContainer: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
+    marginTop: 20,
   },
-  addButton: {
-    width: 30,
-    height: 30,
-    backgroundColor: "#40b6ff",
-    borderRadius: 15, // Make it circular
+  statusIcon: {
+    width: 20,
+    height: 20,
+    resizeMode: "contain",
+    marginRight: 5,
+  },
+  statusText: {
+    color: "#555",
+    fontSize: 14,
+  },
+  actionButtonsContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 20,
+  },
+  acceptButton: {
+    width: 40,
+    height: 40,
+    backgroundColor: "#4CAF50",
+    borderRadius: 20,
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 10,
+  },
+  declineButton: {
+    width: 40,
+    height: 40,
+    backgroundColor: "#F44336",
+    borderRadius: 20,
     alignItems: "center",
     justifyContent: "center",
   },
-  addButtonDisabled: {
-    backgroundColor: "#a0a0a0",
-  },
-  addButtonIcon: {
-    width: 18,
-    height: 18,
+  actionIcon: {
+    width: 24,
+    height: 24,
     resizeMode: "contain",
   },
   headerButtonsContainer: {
@@ -347,14 +404,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginRight: 10,
-  },
-  refreshButton: {
-    width: 40,
-    height: 40,
-    backgroundColor: "#2196F3", // Blue for Refresh
-    borderRadius: 8,
-    alignItems: "center",
-    justifyContent: "center",
   },
   iconImage: {
     width: 24,
