@@ -1,12 +1,12 @@
+// src/components/FriendRequestsScreen.tsx
+
 import React, { useEffect, useState } from "react";
-import { 
-  View, 
-  Text, 
-  ActivityIndicator, 
-  Alert, 
-  StyleSheet, 
-  TouchableOpacity, 
-  Image 
+import {
+  View,
+  Text,
+  ActivityIndicator,
+  StyleSheet,
+  SafeAreaView
 } from "react-native";
 import { useUser } from "@/components/UserContext";
 import { useRouter } from "expo-router";
@@ -14,12 +14,8 @@ import CommonScrollElement from "@/components/common/CommonScrollElement";
 import CommonButton from "@/components/common/CommonButton";
 import CommonBackground from "@/components/common/CommonBackground";
 import FriendContent from "@/components/FriendContent";
-import AcceptIcon from "@/assets/icons/check.png";
-import DeclineIcon from "@/assets/icons/multiply.png";
-import RequestSentIcon from "@/assets/icons/add-friend.png"; // Ensure this path is correct
 import commonStyles from "@/app/styles/CommonStyles";
-import { FriendRequest } from "@/types/types"; // Ensure correct path
-import { useFriendRequests } from "@/components/FriendRequestsContext"; // Corrected path
+import { useFriendRequests } from "@/components/FriendRequestsContext";
 
 type FriendRequestItem = {
   id: string;
@@ -43,13 +39,8 @@ export default function FriendRequestsScreen() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const { 
-    sentFriendRequests, 
-    receivedFriendRequests, 
-    addSentFriendRequest, 
-    addReceivedFriendRequest, 
-    removeSentFriendRequest, 
-    removeReceivedFriendRequest 
+  const {
+    removeReceivedFriendRequest,
   } = useFriendRequests();
 
   useEffect(() => {
@@ -66,62 +57,50 @@ export default function FriendRequestsScreen() {
       setError(null);
 
       const url = `https://sanquin-api.onrender.com/users/${userId}/friend-requests`;
-      console.log("Fetching friend requests from:", url);
       const resp = await fetch(url);
+      const result = await resp.json();
 
-      if (!resp.ok) {
-        console.warn(`Friend requests fetch failed with status ${resp.status}`);
-        if (resp.status === 500) {
+      if (resp.ok) {
+        const rawData = result?.data;
+        if (!Array.isArray(rawData)) {
           setRequests([]);
           setLoading(false);
           return;
         }
-        throw new Error(`Fetch friend requests failed. Status ${resp.status}`);
-      }
+        const baseRequests: FriendRequestItem[] = rawData.map((req: any, index: number) => ({
+          id: `${req.sender_id}-${req.created_at}-${index}`,
+          ...req,
+        }));
 
-      const result = await resp.json();
-      console.log("Raw friend-requests response:", result);
-
-      const rawData = result?.data;
-      if (!Array.isArray(rawData)) {
-        setRequests([]);
-        setLoading(false);
-        return;
-      }
-
-      const baseRequests: FriendRequestItem[] = rawData.map((req: any, index: number) => ({
-        id: `${req.sender_id}-${req.created_at}-${index}`, // Unique key
-        ...req,
-      }));
-
-      const withUserInfo = await Promise.all(
-        baseRequests.map(async (reqItem) => {
-          const senderNum = parseInt(reqItem.sender_id, 10);
-          if (!senderNum) {
-            return reqItem;
-          }
-
-          const userResp = await fetch(`https://sanquin-api.onrender.com/users/id/${senderNum}`);
-          if (!userResp.ok) {
-            console.warn(
-              `Could not fetch user for sender_id ${senderNum}, status: ${userResp.status}`
+        const withUserInfo = await Promise.all(
+          baseRequests.map(async (reqItem) => {
+            const senderNum = parseInt(reqItem.sender_id, 10);
+            if (!senderNum) {
+              return reqItem;
+            }
+            const userResp = await fetch(
+              `https://sanquin-api.onrender.com/users/id/${senderNum}`
             );
-            return reqItem;
-          }
+            if (!userResp.ok) {
+              return reqItem;
+            }
+            const userResult = await userResp.json();
+            let userData = userResult?.data;
+            if (Array.isArray(userData)) {
+              userData = Object.fromEntries(userData);
+            }
+            return { ...reqItem, senderUser: userData };
+          })
+        );
 
-          const userResult = await userResp.json();
-          let userData = userResult?.data;
-          if (Array.isArray(userData)) {
-            userData = Object.fromEntries(userData);
-          }
-          return { ...reqItem, senderUser: userData };
-        })
-      );
-
-      setRequests(withUserInfo);
-    } catch (err: any) {
-      console.error("Error fetching friend requests:", err);
-      setError(err.message);
+        setRequests(withUserInfo);
+      } else if (resp.status === 500 && result.message === "No friend requests found") {
+        setRequests([]);
+      } else {
+        setRequests([]);
+      }
+    } catch {
+      setRequests([]);
     } finally {
       setLoading(false);
     }
@@ -129,62 +108,33 @@ export default function FriendRequestsScreen() {
 
   async function handleAccept(senderId: string) {
     if (!loggedInUserId) return;
-
     const url = `https://sanquin-api.onrender.com/users/${senderId}/friends/${loggedInUserId}?status=accepted`;
-    console.log("Accepting friend request at:", url);
-
     try {
       const resp = await fetch(url, { method: "PUT" });
-      const textBody = await resp.text();
-      console.log("Accept friend request response body:", textBody);
-
       if (!resp.ok) {
-        throw new Error(`Accept request failed with status ${resp.status}`);
+        setError("Error accepting friend request.");
+        return;
       }
-
-      // Update context and local state
       removeReceivedFriendRequest(Number(senderId));
       setRequests((prev) => prev.filter((r) => r.sender_id !== senderId));
-
-      Alert.alert("Success", "Friend request accepted!");
-    } catch (err: any) {
-      console.error("Error accepting friend request:", err);
-      Alert.alert("Error", err.message);
+    } catch {
+      setError("Error accepting friend request.");
     }
   }
 
   async function handleDecline(senderId: string) {
     if (!loggedInUserId) return;
-
-    const requestItem = requests.find((r) => r.sender_id === senderId);
-    if (requestItem && requestItem.status !== "pending") {
-      console.warn(`Cannot decline: status is ${requestItem.status}, not "pending".`);
-      Alert.alert("Cannot Decline", "This friend request is no longer pending.");
-      return;
-    }
-
     const url = `https://sanquin-api.onrender.com/users/${loggedInUserId}/friends/${senderId}?status=blocked`;
-    console.log("Declining friend request at:", url);
-
     try {
       const resp = await fetch(url, { method: "PUT" });
       if (!resp.ok) {
-        let errorText: string | undefined;
-        try {
-          errorText = await resp.text();
-        } catch (e) {}
-        throw new Error(
-          `Decline request failed with status ${resp.status}, body: ${errorText}`
-        );
+        setError("Error declining friend request.");
+        return;
       }
-
       removeReceivedFriendRequest(Number(senderId));
       setRequests((prev) => prev.filter((r) => r.sender_id !== senderId));
-
-      Alert.alert("Success", "Friend request declined.");
-    } catch (err: any) {
-      console.error("Error declining friend request:", err);
-      Alert.alert("Error", err.message);
+    } catch {
+      setError("Error declining friend request.");
     }
   }
 
@@ -204,8 +154,7 @@ export default function FriendRequestsScreen() {
 
           {loading && <ActivityIndicator size="large" />}
           {error && <Text style={styles.errorText}>{error}</Text>}
-
-          {(!loading && requests.length === 0 && !error) && (
+          {!loading && requests.length === 0 && !error && (
             <Text style={styles.noDataText}>No friend requests found.</Text>
           )}
 
@@ -216,32 +165,32 @@ export default function FriendRequestsScreen() {
               : `User #${senderNum}`;
 
             return (
-              <View key={req.id} style={styles.requestContainer}>
+              <SafeAreaView style={styles.safeArea} edges={['left', 'right']}>
+              <View style={styles.requestContainer} key={req.id}>
                 <FriendContent
                   id={String(req.sender_id)}
                   name={`${displayName}`.trim() || `User #${senderNum}`}
+                  status="request_received"
                   onPress={(id) =>
-                    router.push(`/main/community/FriendsDetailScreen?id=${id}`)
+                    router.push(`/main/community/FriendsDetailScreen?id=${id}&isFriend=false`)
                   }
                 />
                 <View style={styles.actionButtonsContainer}>
-                  <TouchableOpacity
-                    onPress={() => handleAccept(req.sender_id)}
+                  <CommonButton
                     style={styles.acceptButton}
-                    accessibilityLabel={`Accept friend request from ${displayName}`}
+                    onPress={() => handleAccept(req.sender_id)}
                   >
-                    <Image source={AcceptIcon} style={styles.actionIcon} />
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    onPress={() => handleDecline(req.sender_id)}
+                    <Text style={{ color: "#fff" }}>Accept</Text>
+                  </CommonButton>
+                  <CommonButton
                     style={styles.declineButton}
-                    accessibilityLabel={`Decline friend request from ${displayName}`}
+                    onPress={() => handleDecline(req.sender_id)}
                   >
-                    <Image source={DeclineIcon} style={styles.actionIcon} />
-                  </TouchableOpacity>
+                    <Text style={{ color: "#fff" }}>Decline</Text>
+                  </CommonButton>
                 </View>
               </View>
+              </SafeAreaView>
             );
           })}
 
@@ -252,17 +201,16 @@ export default function FriendRequestsScreen() {
       </CommonBackground>
     </View>
   );
+  
 }
 
 const styles = StyleSheet.create({
   placeholderContainer: {
     flex: 1,
-    padding: 20,
     justifyContent: "center",
     alignItems: "center",
   },
   scrollContent: {
-    padding: 20,
   },
   title: {
     fontSize: 18,
@@ -280,11 +228,8 @@ const styles = StyleSheet.create({
   requestContainer: {
     marginVertical: 8,
     marginHorizontal: 16,
-    paddingVertical: 8,
-    paddingHorizontal: 8,
     borderBottomWidth: 1,
     borderColor: "#ccc",
-    flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
   },
@@ -294,8 +239,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   acceptButton: {
-    width: 30,
-    height: 30,
+    width: 1,
+    height: 1,
     backgroundColor: "#4CAF50", 
     borderRadius: 15, 
     alignItems: "center",
@@ -303,8 +248,8 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   declineButton: {
-    width: 30,
-    height: 30,
+    width: 1,
+    height: 1,
     backgroundColor: "#F44336",
     borderRadius: 15,
     alignItems: "center",
@@ -318,4 +263,9 @@ const styles = StyleSheet.create({
   backButton: {
     marginTop: 20,
   },
+  safeArea: {
+    paddingHorizontal: 20,
+    flex: 1,
+    paddingHorizontal: 20,
+  }
 });

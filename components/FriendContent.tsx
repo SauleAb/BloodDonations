@@ -1,8 +1,14 @@
+// src/components/FriendContent.tsx
+
 import React from "react";
 import { StyleSheet, TouchableOpacity, View, Image } from "react-native";
 import CommonText from "@/components/common/CommonText";
 
-export type RelationshipStatus = "friend" | "friend_suggestion" | "request_sent" | "request_received";
+export type RelationshipStatus =
+  | "friend"
+  | "friend_suggestion"
+  | "request_sent"
+  | "request_received";
 
 interface FriendContentProps {
   id: string;
@@ -35,68 +41,40 @@ const FriendContent: React.FC<FriendContentProps> = ({
           <TouchableOpacity
             onPress={onAddFriend}
             style={styles.actionButton}
-            accessibilityLabel={`Add ${name} as a friend`}
           >
-            <Image source={require("@/assets/icons/add-user.png")} style={styles.actionIcon} />
+            <Image
+              source={require("@/assets/icons/add-user.png")}
+              style={styles.actionIcon}
+            />
           </TouchableOpacity>
         );
       }
       break;
     case "request_sent":
-      statusText = "Request Sent";
+      statusText = "Friend Request Sent";
       if (onCancelRequest) {
         actionButton = (
           <TouchableOpacity
             onPress={onCancelRequest}
             style={styles.actionButton}
-            accessibilityLabel={`Cancel friend request to ${name}`}
-          >
-            <Image source={require("@/assets/icons/multiply.png")} style={styles.actionIcon} />
-          </TouchableOpacity>
-        );
-      }
-      break;
-    case "request_received":
-      statusText = "Request Received";
-      actionButton = (
-        <View style={styles.actionButtonsContainer}>
-          {/* Accept Button */}
-          <TouchableOpacity
-            onPress={() => {}}
-            style={styles.acceptButton}
-            accessibilityLabel={`Accept friend request from ${name}`}
-          >
-            <Image
-              source={require("@/assets/icons/check.png")}
-              style={styles.actionIcon}
-            />
-          </TouchableOpacity>
-
-          {/* Decline Button */}
-          <TouchableOpacity
-            onPress={() => {}}
-            style={styles.declineButton}
-            accessibilityLabel={`Decline friend request from ${name}`}
           >
             <Image
               source={require("@/assets/icons/multiply.png")}
               style={styles.actionIcon}
             />
           </TouchableOpacity>
-        </View>
-      );
+        );
+      }
+      break;
+    case "request_received":
+      statusText = "Friend Request Received";
       break;
     default:
       statusText = "";
   }
 
   return (
-    <TouchableOpacity
-      onPress={() => onPress(id)}
-      style={styles.container}
-      accessibilityLabel={`View details of ${name}`}
-      accessibilityRole="button"
-    >
+    <TouchableOpacity onPress={() => onPress(id)} style={styles.container}>
       <View style={styles.greyBar}>
         <CommonText style={styles.label}>{statusText}</CommonText>
       </View>
@@ -110,17 +88,15 @@ const FriendContent: React.FC<FriendContentProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    width: "90%",
+    width: "100%",
     marginBottom: 20,
   },
   greyBar: {
     backgroundColor: "rgba(223,223,223,0.5)",
     height: 30,
-    justifyContent: "space-between",
-    alignItems: "center",
-    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "flex-start",
     paddingHorizontal: 20,
-    borderRadius: 0,
   },
   label: {
     fontSize: 16,
@@ -131,7 +107,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     paddingVertical: 15,
     paddingHorizontal: 18,
-    borderRadius: 0,
+    borderRadius: 8,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",

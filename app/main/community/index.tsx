@@ -1,9 +1,10 @@
+// src/components/Community.tsx
+
 import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
   ActivityIndicator,
-  Alert,
   StyleSheet,
   TouchableOpacity,
   Image,
@@ -14,14 +15,14 @@ import CommonBackground from "@/components/common/CommonBackground";
 import SecondaryNavBar from "@/components/common/CommonSecondaryNavBar";
 import CommonScrollElement from "@/components/common/CommonScrollElement";
 import AchievementCard from "@/components/AchievementCard";
-import FriendContent from "@/components/FriendContent";
+import FriendContent, { RelationshipStatus } from "@/components/FriendContent";
 import InputField from "@/components/common/CommonInputField";
 import commonStyles from "@/app/styles/CommonStyles";
+
 import FriendRequestsIcon from "@/assets/icons/add-friend.png";
 import RefreshIcon from "@/assets/icons/refresh-page-option.png";
-import RequestSentIcon from "@/assets/icons/add-friend.png"; // Ensure this path is correct
-import AddFriendIcon from "@/assets/icons/add-user.png"; // Ensure this path is correct
-import { FriendRequest, FriendObject } from "@/types/types";
+
+import { FriendRequest, FriendUser } from "@/types/types";
 import { useFriendRequests } from "@/components/FriendRequestsContext";
 
 interface Achievement {
@@ -32,20 +33,6 @@ interface Achievement {
   achievementTime: string;
   achievementText: string;
   celebrates: number;
-}
-
-interface FriendUser {
-  id: number;
-  first_name: string;
-  last_name: string;
-  email?: string;
-  city?: string;
-  birthdate?: string;
-  current_points?: number;
-  total_points?: number;
-  role?: string;
-  created_at?: string;
-  username?: string;
 }
 
 const mockAchievements: Achievement[] = [
@@ -70,13 +57,13 @@ export default function Community() {
   const [loadingSuggestions, setLoadingSuggestions] = useState(false);
   const [suggestionsError, setSuggestionsError] = useState<string | null>(null);
 
-  const { 
-    sentFriendRequests, 
-    receivedFriendRequests, 
-    addSentFriendRequest, 
-    addReceivedFriendRequest, 
-    removeSentFriendRequest, 
-    removeReceivedFriendRequest 
+  const {
+    sentFriendRequests,
+    receivedFriendRequests,
+    addSentFriendRequest,
+    addReceivedFriendRequest,
+    removeSentFriendRequest,
+    removeReceivedFriendRequest,
   } = useFriendRequests();
 
   const [activeTab, setActiveTab] = useState<"feed" | "friends">("feed");
@@ -105,11 +92,9 @@ export default function Community() {
       } else if (resp.status === 500 && result.message === "No friends found") {
         setFriends([]);
       } else {
-        throw new Error(`Friends fetch failed with status ${resp.status}`);
+        setFriends([]);
       }
-    } catch (err: any) {
-      console.error("Error fetching user friends:", err);
-      setFriendError(err.message);
+    } catch {
       setFriends([]);
     } finally {
       setLoadingFriends(false);
@@ -127,7 +112,6 @@ export default function Community() {
         const url = `https://sanquin-api.onrender.com/users/id/${id}`;
         const r = await fetch(url);
         if (!r.ok) {
-          // Skip users that cannot be fetched
           return null;
         }
         const data = await r.json();
@@ -144,9 +128,7 @@ export default function Community() {
         .map((res: any) => res.value);
 
       setSuggestions(successful);
-    } catch (err: any) {
-      console.error("Error fetching suggestions:", err);
-      setSuggestionsError(err.message);
+    } catch {
     } finally {
       setLoadingSuggestions(false);
     }
@@ -156,24 +138,25 @@ export default function Community() {
     try {
       const url = `https://sanquin-api.onrender.com/users/${userId}/friend-requests`;
       const resp = await fetch(url);
-      if (!resp.ok) {
-        console.warn(`Friend requests fetch failed with status ${resp.status}`);
-        return;
-      }
       const result = await resp.json();
-      const rawData = result?.data;
-      if (!Array.isArray(rawData)) return;
 
-      rawData.forEach((req: FriendRequest) => {
-        if (req.sender_id === String(userId)) {
-          addSentFriendRequest(Number(req.receiver_id));
-        }
-        if (req.receiver_id === String(userId) && req.status === "pending") {
-          addReceivedFriendRequest(Number(req.sender_id));
-        }
-      });
-    } catch (err: any) {
-      console.error("Error fetching friend requests:", err);
+      if (resp.ok) {
+        const rawData = result?.data;
+        if (!Array.isArray(rawData)) return;
+        rawData.forEach((req: FriendRequest) => {
+          if (req.sender_id === String(userId)) {
+            addSentFriendRequest(Number(req.receiver_id));
+          }
+          if (req.receiver_id === String(userId) && req.status === "pending") {
+            addReceivedFriendRequest(Number(req.sender_id));
+          }
+        });
+      } else if (resp.status === 500 && result.message === "No friend requests found") {
+        // Do nothing, no friend requests
+      } else {
+      }
+    } catch {
+      // Do nothing
     }
   }
 
@@ -200,7 +183,7 @@ export default function Community() {
             achievementTime={ach.achievementTime}
             achievementText={ach.achievementText}
             celebrates={ach.celebrates}
-            onCongratulate={() => console.log("Celebrated!")}
+            onCongratulate={() => {}}
           />
         ))}
       </CommonScrollElement>
@@ -214,16 +197,11 @@ export default function Community() {
           <TouchableOpacity
             style={styles.iconButton}
             onPress={() => router.push("/main/community/FriendRequestsScreen")}
-            accessibilityLabel="View Friend Requests"
           >
             <Image source={FriendRequestsIcon} style={styles.iconImage} />
           </TouchableOpacity>
 
-          <TouchableOpacity
-            style={styles.iconButton}
-            onPress={handleRefresh}
-            accessibilityLabel="Refresh Friends and Suggestions"
-          >
+          <TouchableOpacity style={styles.iconButton} onPress={handleRefresh}>
             <Image source={RefreshIcon} style={styles.iconImage} />
           </TouchableOpacity>
         </View>
@@ -251,8 +229,9 @@ export default function Community() {
               <FriendContent
                 id={String(friend.id)}
                 name={`${friend.first_name} ${friend.last_name}`}
+                status="friend"
                 onPress={(id) =>
-                  router.push(`/main/community/FriendsDetailScreen?id=${id}`)
+                  router.push(`/main/community/FriendsDetailScreen?id=${id}&isFriend=true`)
                 }
               />
             </View>
@@ -272,26 +251,32 @@ export default function Community() {
           .map((sugg) => {
             const isSent = sentFriendRequests.has(sugg.id);
             const isReceived = receivedFriendRequests.has(sugg.id);
+            let status: RelationshipStatus = "friend_suggestion";
+            if (isSent) status = "request_sent";
+            if (isReceived) status = "request_received";
+
             return (
               <FriendContent
                 key={`sugg-${sugg.id}`}
                 id={String(sugg.id)}
                 name={`${sugg.first_name} ${sugg.last_name}`}
+                status={status}
                 onPress={() =>
                   router.push(`/main/community/FriendsDetailScreen?id=${sugg.id}`)
                 }
-                rightButton={
-                  isSent ? (
-                    <View style={styles.statusContainer}>
-                      <Image source={RequestSentIcon} style={styles.statusIcon} />
-                      <Text style={styles.statusText}>Request Sent</Text>
-                    </View>
-                  ) : isReceived ? (
-                    <View style={styles.statusContainer}>
-                      <Image source={RequestSentIcon} style={styles.statusIcon} />
-                      <Text style={styles.statusText}>Request Received</Text>
-                    </View>
-                  ) : null
+                onAddFriend={
+                  isSent
+                    ? undefined
+                    : () => {
+                        addSentFriendRequest(Number(sugg.id));
+                      }
+                }
+                onCancelRequest={
+                  isSent
+                    ? () => {
+                        removeSentFriendRequest(Number(sugg.id));
+                      }
+                    : undefined
                 }
               />
             );
@@ -399,7 +384,7 @@ const styles = StyleSheet.create({
   iconButton: {
     width: 40,
     height: 40,
-    backgroundColor: "#4CAF50", // Green for Friend Requests
+    backgroundColor: "#4CAF50",
     borderRadius: 8,
     alignItems: "center",
     justifyContent: "center",
