@@ -40,6 +40,8 @@ const styles = StyleSheet.create({
         alignItems: "center",
         backgroundColor: "#ffffff",
         paddingVertical: 10,
+        borderTopWidth: 1,
+        borderTopColor: "#DDDDDD"
     },
     navButton: {
         paddingVertical: 5,
