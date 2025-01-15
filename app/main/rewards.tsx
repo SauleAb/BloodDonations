@@ -102,7 +102,7 @@ export default function Rewards() {
         } else if (activeTab === "challenges") {
             return (
                 <CommonScrollElement>
-                    <CommonContent titleText={"Challenges"} contentText={"Your Challenges"} />
+                    <CommonContent titleText={"Challenges"} showContent={false} />
                     {userChallenges.length > 0 ? (
                         userChallenges.map((challenge, index) => (
                             <CommonContent
@@ -117,7 +117,7 @@ export default function Rewards() {
                             contentText={"Join a new challenge!"}
                         />
                     )}
-                    <CommonContent titleText={"Challenges"} contentText={"Other Challenges"} />
+                    <CommonContent titleText={"Challenges"} showContent={false} />
                     {otherChallenges.length > 0 ? (
                         otherChallenges.map((challenge, index) => (
                             <CommonContent
