@@ -9,25 +9,42 @@ export type RightTextItem =
     | { type: 'switch'; switchValue: boolean; onToggle: () => void }
     | { type: 'expandableContent'; details: { left: string; right: string; }[]; title?: string; };
 
+type ButtonConfig = {
+    label: string;
+    onPressOn: () => void;
+    onPressOff: () => void;
+};
+
 type CommonContentProps = {
     titleText: string;
+    challengeTitleText?: string;
+    challengeDescriptionText?: string;
     contentText?: string | React.ReactNode;
     icon?: IconNames;
     contentTextSize?: 'small' | 'large';
     rightText?: RightTextItem | RightTextItem[];
     children?: React.ReactNode;
     showContent?: boolean;
+    buttons?: ButtonConfig[];
 };
 
 const CommonContent: React.FC<CommonContentProps> = ({
-                                                         titleText,
-                                                         contentText,
-                                                         icon,
-                                                         contentTextSize = 'large',
-                                                         rightText,
-                                                         showContent = true,
-                                                     }) => {
+    titleText,
+    challengeTitleText,
+    challengeDescriptionText,
+    contentText,
+    icon,
+    contentTextSize = 'large',
+    rightText,
+    showContent = true,
+    buttons = [],
+ }) => {
     const [expandedIndices, setExpandedIndices] = useState<number[]>([]);
+    const [isContentVisibleChallenge, setContentVisibleChallenge] = useState(!challengeTitleText);
+    const [buttonStates, setButtonStates] = useState<boolean[]>(
+        buttons.map(() => false)
+    );
+
     const iconSource = icon ? iconMap[icon] : null;
     const contentTextStyle =
         contentTextSize === 'small' ? styles.contentTextSmall : styles.contentTextLarge;
@@ -38,6 +55,18 @@ const CommonContent: React.FC<CommonContentProps> = ({
         } else {
             setExpandedIndices([...expandedIndices, index]);
         }
+    };
+
+    const handleButtonPress = (index: number) => {
+        const isOn = buttonStates[index];
+        if (isOn) {
+            buttons[index].onPressOff();
+        } else {
+            buttons[index].onPressOn();
+        }
+        setButtonStates(prevStates =>
+            prevStates.map((state, i) => (i === index ? !state : state))
+        );
     };
 
     const renderRightItem = (item: RightTextItem | undefined, index: number) => {
@@ -71,15 +100,27 @@ const CommonContent: React.FC<CommonContentProps> = ({
                 <CommonText style={styles.label}>{titleText}</CommonText>
                 {iconSource && <Image source={iconSource} style={styles.icon} />}
             </View>
-            {showContent && (
+            {challengeTitleText && (
+                <TouchableOpacity
+                    style={[styles.challengeTitleContainer, styles.shadow]}
+                    onPress={() => setContentVisibleChallenge(!isContentVisibleChallenge)}
+                    activeOpacity={1}
+                >
+                    <CommonText style={styles.contentTextLarge}>{challengeTitleText}</CommonText>
+                    <CommonText style={styles.rightText}>{challengeDescriptionText}</CommonText>
+                </TouchableOpacity>
+            )}
+            {showContent && isContentVisibleChallenge && (
                 <View style={[styles.contentWrapper, styles.shadow]}>
                     {leftTextLines.length > 0 && rightTextItems.length > 0 ? (
+
                         leftTextLines.map((leftText: string, index: number) => {
                             const rightItem = rightTextItems[index];
                             const isExpandable = rightItem && typeof rightItem === 'object' && rightItem.type === 'expandableContent';
                             const isExpanded = isExpandable && expandedIndices.includes(index);
 
                             return (
+
                                 <View key={index}>
                                     <View style={styles.row}>
                                         <CommonText style={styles.leftText}>{leftText}</CommonText>
@@ -107,8 +148,33 @@ const CommonContent: React.FC<CommonContentProps> = ({
                             )}
                         </View>
                     )}
+
+                    {buttons.length > 0 && (
+                        <View style={[styles.buttonContainer]}>
+                            {buttons.map((button, index) => (
+                                <TouchableOpacity
+                                    key={index}
+                                    style={[
+                                        styles.button,
+                                        buttonStates[index] ? styles.buttonOn : styles.buttonOff,
+                                    ]}
+                                    onPress={() => handleButtonPress(index)}
+                                >
+                                    <CommonText
+                                        style={[
+                                            styles.buttonText,
+                                            buttonStates[index] ? styles.buttonOnText : styles.buttonOffText,
+                                        ]}
+                                    >
+                                        {button.label}
+                                    </CommonText>
+                                </TouchableOpacity>
+                            ))}
+                        </View>
+                    )}
                 </View>
             )}
+
         </View>
     );
 };
@@ -125,6 +191,45 @@ const styles = StyleSheet.create({
         alignItems: 'flex-start',
         paddingHorizontal: 20,
         paddingVertical: 4,
+    },
+    challengeTitleContainer: {
+        backgroundColor: '#FFFFFF',
+        paddingVertical: 8,
+        paddingTop: 10,
+        paddingHorizontal: 20,
+    },
+    challengeTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#404040',
+    },
+    buttonContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        backgroundColor: '#ffffff',
+        paddingVertical: 10,
+    },
+    button: {
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderRadius: 8,
+    },
+    buttonOn: {
+        backgroundColor: '#4CAF50',
+    },
+    buttonOff: {
+        backgroundColor: '#D32F2F',
+    },
+    buttonText: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        textAlign: 'center',
+    },
+    buttonOnText: {
+        color: '#FFFFFF',
+    },
+    buttonOffText: {
+        color: '#FFFFFF',
     },
     label: {
         fontSize: 16,
