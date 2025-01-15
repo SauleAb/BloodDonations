@@ -1,3 +1,4 @@
+// CommonContent.tsx
 import React, { useState } from 'react';
 import { StyleSheet, View, Image, TouchableOpacity } from 'react-native';
 import CommonText from "@/components/common/CommonText";
@@ -9,25 +10,41 @@ export type RightTextItem =
     | { type: 'switch'; switchValue: boolean; onToggle: () => void }
     | { type: 'expandableContent'; details: { left: string; right: string; }[]; title?: string; };
 
+type ButtonConfig = {
+    label: string;
+    isOn?: boolean;
+    onPressOn?: () => void;
+    onPressOff?: () => void;
+    action?: () => Promise<void>;
+};
+
 type CommonContentProps = {
     titleText: string;
+    challengeTitleText?: string;
+    challengeDescriptionText?: string;
     contentText?: string | React.ReactNode;
     icon?: IconNames;
     contentTextSize?: 'small' | 'large';
     rightText?: RightTextItem | RightTextItem[];
     children?: React.ReactNode;
     showContent?: boolean;
+    buttons?: ButtonConfig[];
 };
 
 const CommonContent: React.FC<CommonContentProps> = ({
                                                          titleText,
+                                                         challengeTitleText,
+                                                         challengeDescriptionText,
                                                          contentText,
                                                          icon,
                                                          contentTextSize = 'large',
                                                          rightText,
                                                          showContent = true,
+                                                         buttons = [],
                                                      }) => {
     const [expandedIndices, setExpandedIndices] = useState<number[]>([]);
+    const [isContentVisibleChallenge, setContentVisibleChallenge] = useState(!challengeTitleText);
+
     const iconSource = icon ? iconMap[icon] : null;
     const contentTextStyle =
         contentTextSize === 'small' ? styles.contentTextSmall : styles.contentTextLarge;
@@ -45,11 +62,9 @@ const CommonContent: React.FC<CommonContentProps> = ({
         if (typeof item === 'string') {
             return <CommonText style={styles.rightText}>{item}</CommonText>;
         }
-
         if (item.type === 'switch') {
             return <CommonContentSwitch initialValue={item.switchValue} onToggle={item.onToggle} />;
         }
-
         if (item.type === 'expandableContent') {
             const isExpanded = expandedIndices.includes(index);
             return (
@@ -58,7 +73,6 @@ const CommonContent: React.FC<CommonContentProps> = ({
                 </TouchableOpacity>
             );
         }
-
         return null;
     };
 
@@ -71,12 +85,23 @@ const CommonContent: React.FC<CommonContentProps> = ({
                 <CommonText style={styles.label}>{titleText}</CommonText>
                 {iconSource && <Image source={iconSource} style={styles.icon} />}
             </View>
-            {showContent && (
+            {challengeTitleText && (
+                <TouchableOpacity
+                    style={[styles.challengeTitleContainer, styles.shadow]}
+                    onPress={() => setContentVisibleChallenge(!isContentVisibleChallenge)}
+                    activeOpacity={1}
+                >
+                    <CommonText style={styles.contentTextLarge}>{challengeTitleText}</CommonText>
+                    <CommonText style={styles.rightText}>{challengeDescriptionText}</CommonText>
+                </TouchableOpacity>
+            )}
+            {showContent && isContentVisibleChallenge && (
                 <View style={[styles.contentWrapper, styles.shadow]}>
                     {leftTextLines.length > 0 && rightTextItems.length > 0 ? (
                         leftTextLines.map((leftText: string, index: number) => {
                             const rightItem = rightTextItems[index];
-                            const isExpandable = rightItem && typeof rightItem === 'object' && rightItem.type === 'expandableContent';
+                            const isExpandable =
+                                rightItem && typeof rightItem === 'object' && rightItem.type === 'expandableContent';
                             const isExpanded = isExpandable && expandedIndices.includes(index);
 
                             return (
@@ -107,6 +132,31 @@ const CommonContent: React.FC<CommonContentProps> = ({
                             )}
                         </View>
                     )}
+
+                    {buttons.length > 0 && (
+                        <View style={styles.buttonContainer}>
+                            {buttons.map((button, index) => {
+                                const isOn = button.isOn || false;
+                                return (
+                                    <TouchableOpacity
+                                        key={index}
+                                        style={[styles.button, isOn ? styles.buttonOn : styles.buttonOff]}
+                                        onPress={() => {
+                                            if (isOn) {
+                                                button.onPressOff?.();
+                                            } else {
+                                                button.onPressOn?.();
+                                            }
+                                        }}
+                                    >
+                                        <CommonText style={[styles.buttonText, isOn ? styles.buttonOnText : styles.buttonOffText]}>
+                                            {button.label}
+                                        </CommonText>
+                                    </TouchableOpacity>
+                                );
+                            })}
+                        </View>
+                    )}
                 </View>
             )}
         </View>
@@ -125,6 +175,51 @@ const styles = StyleSheet.create({
         alignItems: 'flex-start',
         paddingHorizontal: 20,
         paddingVertical: 4,
+    },
+    challengeTitleContainer: {
+        backgroundColor: '#FFFFFF',
+        paddingVertical: 8,
+        paddingTop: 10,
+        paddingHorizontal: 20,
+    },
+    challengeTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#404040',
+    },
+    buttonContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        backgroundColor: '#ffffff',
+        paddingVertical: 10,
+    },
+    button: {
+        backgroundColor: "#e3e3e3",
+        paddingVertical: 5,
+        justifyContent: 'center',
+        alignItems: 'center',
+        flexDirection: 'row',
+        width: '40%',
+        borderRadius: 8,
+        borderWidth: 1,
+        borderColor: 'white',
+    },
+    buttonOn: {
+        backgroundColor: 'white',
+        borderWidth: 1,
+        borderColor: 'black',
+    },
+    buttonOff: {},
+    buttonText: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        textAlign: 'center',
+    },
+    buttonOnText: {
+        color: '#000000',
+    },
+    buttonOffText: {
+        color: '#000000',
     },
     label: {
         fontSize: 16,
@@ -205,7 +300,7 @@ const styles = StyleSheet.create({
     detailRight: {
         fontSize: 14,
         color: '#404040',
-    }
+    },
 });
 
 export default CommonContent;
