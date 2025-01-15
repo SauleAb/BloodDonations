@@ -6,11 +6,6 @@ import { Location } from '@/types/Location'
 import { Appointment } from '@/types/Appointment';
 import { FriendDonation } from '@/types/FriendDonation';
 
-export const getNextDonationDetails = () => {
-    const nextDonationAvailable = moment().add(7, "days").startOf("day");
-    const nextDonationText = `${moment.duration(nextDonationAvailable.diff(moment())).humanize()} away`;
-    return { nextDonationAvailable, nextDonationText };
-};
 
 export const fetchUserByEmail = async (email: string, password: string) => {
     const response = await axios.get(`https://sanquin-api.onrender.com/users/email/${email}?password=${password}`);
@@ -124,7 +119,7 @@ export const joinFriendAppointment = async (
     friendDonation: FriendDonation,
     locations: Location[]
 ): Promise<Appointment | null> => {
-    try {
+    try {locations
         const location = locations.find((loc) => loc.id === friendDonation.location_id);
 
         if (!location) {
@@ -135,7 +130,7 @@ export const joinFriendAppointment = async (
         const appointmentData = {
             amount: friendDonation.amount,
             user_id: userId,
-            location_id: friendDonation.location_id,
+            location_id: location.id,
             donation_type: friendDonation.donation_type,
             appointment: friendDonation.appointment,
             status: "pending",
@@ -150,8 +145,10 @@ export const joinFriendAppointment = async (
             return {
                 id: responseData.id,
                 hospital: location.name,
+                hospital_id: location.id,
                 date: moment(friendDonation.appointment).format("YYYY-MM-DD"),
                 time: moment(friendDonation.appointment).format("HH:mm"),
+                status: "pending", 
             };
         } else {
             console.error("Unexpected response from API:", response.status, response.data);
@@ -186,17 +183,18 @@ export const initializeActiveAppointment = async (
     try {
         const donations = await fetchUserDonations(userId);
         const futureDonations = donations.filter((donation: Appointment) =>
-            moment(`${donation.date}T${donation.time}`).isAfter(moment())
+            moment(`${donation.date}T${donation.time}`).isAfter(moment()) &&
+            donation.status === "pending"
         );
-
         if (futureDonations.length > 0) {
             const firstAppointment = futureDonations[0];
-            setActiveAppointment(firstAppointment);
-
-            const locationName = await fetchLocationName(
-                parseInt(firstAppointment.hospital.split(": ")[1])
-            );
-            setActiveAppointmentLocationName(locationName);
+            if (firstAppointment.hospital_id) {
+                firstAppointment.hospital = await fetchLocationName(firstAppointment.hospital_id);
+                setActiveAppointmentLocationName(firstAppointment.hospital);
+                setActiveAppointment(firstAppointment);
+            } else {
+                console.error("Future donation lacks hospital_id:", firstAppointment);
+            }
         }
 
         const allLocs = await fetchAllLocations();
@@ -235,7 +233,6 @@ export const fetchFriendsAppointments = async (
 export const fetchUserDonations = async (userId: number): Promise<Appointment[]> => {
     try {
         if (!userId) {
-            console.error("User ID is not defined. Skipping donation fetch.");
             return [];
         }
         const response = await fetchWithRetry(
@@ -244,16 +241,18 @@ export const fetchUserDonations = async (userId: number): Promise<Appointment[]>
         if (response.status === 200 && Array.isArray(response.data)) {
             return response.data.map((donation: any) => ({
                 id: donation.id,
-                hospital: `Hospital ID: ${donation.location_id}`, 
+                hospital_id: donation.location_id, 
                 date: moment(donation.appointment).format("YYYY-MM-DD"),
                 time: moment(donation.appointment).format("HH:mm"),
+                status: donation.status,
             }));
         } else if (response.status === 200 && Array.isArray(response.data.data)) {
             return response.data.data.map((donation: any) => ({
                 id: donation.id,
-                hospital: `Hospital ID: ${donation.location_id}`, 
+                hospital_id: donation.location_id, 
                 date: moment(donation.appointment).format("YYYY-MM-DD"),
                 time: moment(donation.appointment).format("HH:mm"),
+                status: donation.status,
             }));
         } else {
             return []; 
@@ -280,7 +279,6 @@ export const cancelDonation = async (donationId: number): Promise<boolean> => {
     try {
         const response = await axios.delete(`https://sanquin-api.onrender.com/donations/${donationId}`);
         if (response.status === 200) {
-            console.log("Donation canceled successfully");
             return true;
         }
         throw new Error("Error canceling donation");
@@ -290,10 +288,22 @@ export const cancelDonation = async (donationId: number): Promise<boolean> => {
     }
 };
 
+export const fetchTotalBloodDonated = async (userId: number): Promise<number> => {
+    try {
+        const donations = await fetchUserDonations(userId);
+        const completedDonations = donations.filter(donation => donation.status === "completed");
+        const totalBloodDonated = completedDonations.length * 500;
+        return totalBloodDonated;
+    } catch (error) {
+        console.error("Error calculating total blood donated:", error);
+        return 0;
+    }
+};
+
+
 const fetchUserFriends = async (userId: number): Promise<{ id: string; pushToken: string }[]> => {
     try {
         const response = await axios.get(`https://sanquin-api.onrender.com/users/${userId}/friends`);
-        console.log("fetchUserFriends response:", response.data);
         return response.data.data;
     } catch (error) {
         console.error("Error fetching user friends:", error);
@@ -303,6 +313,7 @@ const fetchUserFriends = async (userId: number): Promise<{ id: string; pushToken
 
 export const handleRequestAppointment = async (
     userId: number,
+    username: string,
     locations: Location[],
     selectedHospital: string,
     selectedDate: string,
@@ -331,7 +342,8 @@ export const handleRequestAppointment = async (
         const response = await axios.post("https://sanquin-api.onrender.com/donations/", appointmentData);
 
         if (response.status === 200) {
-            const responseData = response.data.data;
+            const responseData = Object.fromEntries(response.data.data); // Convert array to object
+
             if (enableJoining) {
                 const friends = await fetchUserFriends(userId);
 
@@ -342,16 +354,18 @@ export const handleRequestAppointment = async (
                     createNotification(
                         Number(friend.id),
                         "Join a Donation!",
-                        `Your friend has scheduled a donation at ${selectedHospital} on ${selectedDate} at ${selectedTime}. Join them!`
+                        `${username} has scheduled a donation at ${selectedHospital} on ${selectedDate} at ${selectedTime}. Join them!`
                     );
                 });
             }
 
             return {
                 id: responseData.id,
-                hospital: selectedHospital,
+                hospital: location.name,
+                hospital_id: location.id,
                 date: selectedDate,
                 time: selectedTime,
+                status: "pending"
             };
         } else {
             console.error("Unexpected response from API:", response.status, response.data);
@@ -362,6 +376,7 @@ export const handleRequestAppointment = async (
         return null;
     }
 };
+
 
 export const handleTextChange = (text: string, allLocations: Location[]) => {
     return allLocations
@@ -376,7 +391,6 @@ const createNotification = async (userId: number, title: string, content: string
             content,
             user_id: userId,
         });
-        console.log(`Notification sent to user ID ${userId}`);
     } catch (error) {
         console.error(`Error sending notification to user ID ${userId}:`, error);
     }

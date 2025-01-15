@@ -110,6 +110,39 @@ export default function Donate() {
         initializeLocations();
     }, []);
 
+    const completeDonation = async () => {
+        if (!activeAppointment || !activeAppointment.id) {
+            console.error("No active appointment to complete.");
+            return;
+        }
+    
+        const updatedDonationData = {
+            amount: 500, 
+            user_id: user.id, 
+            location_id: activeAppointment.hospital_id,
+            donation_type: "blood", 
+            appointment: `${activeAppointment.date}T${activeAppointment.time}:00.000Z`,
+            status: "completed",
+            enable_joining: true, 
+        };
+    
+        try {
+            const response = await axios.put(
+                `https://sanquin-api.onrender.com/donations/${activeAppointment.id}`,
+                updatedDonationData
+            );
+    
+            if (response.status === 200) {
+                setActiveAppointment(null);
+                resetFields();
+            } else {
+                console.error("Unexpected response from the API:", response);
+            }
+        } catch (error) {
+            console.error("Error completing the donation:", error);
+        }
+    };
+
     useEffect(() => {
         const fetchLocations = async () => {
             if (selectedCity && selectedRadius) {
@@ -143,8 +176,6 @@ export default function Donate() {
                 const locationName = await fetchLocationName(donation.location_id);
     
                 const info = formatFriendDonationInfo(username, locationName, donation.appointment);
-                console.log("Friend donation info:", info);
-    
                 setSelectedFriendInfo(info);
                 setSelectedFriendDonation(donation);
             } catch (error) {
@@ -161,7 +192,6 @@ export default function Donate() {
     
     const joinFriend = async () => {
         if (!user.id || !selectedFriendDonation || !locations.length) return;
-    
         const appointment = await joinFriendAppointment(user.id, selectedFriendDonation, locations);
     
         if (appointment) {
@@ -174,7 +204,6 @@ export default function Donate() {
     };
 
     const cancelDonationHandler = async () => {
-        console.log(activeAppointment);
         if (!activeAppointment || !activeAppointment.id) return;
     
         const success = await cancelDonation(activeAppointment.id);
@@ -190,15 +219,17 @@ export default function Donate() {
         if (selectedHospital && selectedDate && selectedTime && user.id) {
             const appointment = await handleRequestAppointment(
                 user.id,
+                user.username,
                 locations,
                 selectedHospital,
                 selectedDate,
                 selectedTime,
-                isToggled
+                isToggled,
             );
 
             if (appointment) {
                 setActiveAppointment(appointment);
+                setActiveAppointmentLocationName(appointment.hospital);
                 resetFields();
             } else {
                 console.error("Failed to create appointment.");
@@ -223,7 +254,7 @@ export default function Donate() {
                                     <CommonContent
                                         titleText="Next Donation"
                                         contentText={`Scheduled at ${
-                                            activeAppointmentLocationName || activeAppointment.hospital
+                                            activeAppointment.hospital
                                         } on ${activeAppointment.date} at ${activeAppointment.time}.`}
                                         icon={IconNames.BloodDonated}
                                     />
@@ -231,6 +262,12 @@ export default function Donate() {
                                         onConfirm={cancelDonationHandler}
                                         onCancel={() => console.log("Cancellation aborted")}
                                     />
+                                    <CommonButton
+                                        style={donateStyles.completeDonationButton} 
+                                        onPress={completeDonation}
+                                    >
+                                        Complete Donation
+                                    </CommonButton>
                                 </>
                             ) : (
                                 <CommonContent

@@ -1,37 +1,24 @@
-import React, {useEffect} from "react";
-import {BackHandler, View} from "react-native";
+import React, { useEffect } from "react";
+import { BackHandler, View } from "react-native";
 import CommonBackground from "@/components/common/CommonBackground";
 import CommonScrollElement from "@/components/common/CommonScrollElement";
 import HomeScreenBottom from "@/components/home/HomeScreenBottom";
 import commonStyles from "../styles/CommonStyles";
-import { homeScreenContent } from "@/constants/HomeData";
+import { useHomeScreenData } from "@/constants/HomeData";
 import CommonContent from "@/components/common/CommonContent";
 import { useUser } from "@/components/UserContext";
 import { startNotificationPolling, stopNotificationPolling } from "@/utils/notificationUtils";
 
 export default function Home() {
-    const {user} = useUser();
-    const userId = user.id;
-    
-      useEffect(() => {
-        startNotificationPolling(userId);
-    
-        return () => {
-          stopNotificationPolling();
-        };
-      }, [userId]);
+    const { user } = useUser();
+    const userId = user?.id || 0; 
+
+    const homeScreenContent = useHomeScreenData(userId);
+
     useEffect(() => {
-        const backAction = () => {
-            return true;
-        };
-
-        const backHandler = BackHandler.addEventListener(
-            'hardwareBackPress',
-            backAction
-        );
-
-        return () => backHandler.remove();
-    }, []);
+        if (userId) startNotificationPolling(userId);
+        return () => stopNotificationPolling();
+    }, [userId]);
 
     return (
         <View style={commonStyles.container}>
