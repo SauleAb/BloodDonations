@@ -1,16 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { IconNames } from "@/components/common/CommonIcons";
 import {
-    fetchTotalBloodDonated,
     fetchUserDonations,
 } from "@/utils/donationUtils";
 import moment from "moment";
-
-const targetDate = new Date("2024-12-31T23:59:59");
-
-type HomeScreenContentProps = {
-    userId: number;
-};
 
 export const useHomeScreenData = (userId: number) => {
     const [totalBloodDonated, setTotalBloodDonated] = useState(0);
@@ -38,7 +31,7 @@ export const useHomeScreenData = (userId: number) => {
                 const nextDonation = pendingDonations[0];
                 const timeRemaining = moment(`${nextDonation.date}T${nextDonation.time}`).fromNow();
                 setNextDonationMessage(`Next donation ${timeRemaining}`);
-            } else {
+            } else if (completedDonations.length > 0) {
                 const lastCompletedDonation = completedDonations.sort(
                     (a, b) => moment(b.date).valueOf() - moment(a.date).valueOf()
                 )[0];
@@ -54,6 +47,8 @@ export const useHomeScreenData = (userId: number) => {
                 } else {
                     setNextDonationMessage("Register to donate!");
                 }
+            } else {
+                setNextDonationMessage("Register to donate!");
             }
         };
 

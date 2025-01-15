@@ -192,7 +192,7 @@ export default function Donate() {
     
     const joinFriend = async () => {
         if (!user.id || !selectedFriendDonation || !locations.length) return;
-        const appointment = await joinFriendAppointment(user.id, selectedFriendDonation, locations);
+        const appointment = await joinFriendAppointment(user.id, selectedFriendDonation, allLocations);
     
         if (appointment) {
             setActiveAppointment(appointment);

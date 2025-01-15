@@ -121,7 +121,6 @@ export const joinFriendAppointment = async (
 ): Promise<Appointment | null> => {
     try {locations
         const location = locations.find((loc) => loc.id === friendDonation.location_id);
-
         if (!location) {
             console.error("Location not found for the friend's donation.");
             return null;
