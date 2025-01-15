@@ -110,6 +110,11 @@ const donateStyles = StyleSheet.create({
         justifyContent: "space-between",
         marginVertical: 10,
     },
+    completeDonationButton: {
+        marginTop: 250,
+        padding: 15,
+        alignSelf: "center",
+    },
 });
 
 export default donateStyles;

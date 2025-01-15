@@ -15,7 +15,6 @@ export const UserProvider = ({ children }) => {
             try {
                 const storedUser = await AsyncStorage.getItem('user');
                 if (storedUser) {
-                    console.log('Loaded User:', JSON.parse(storedUser));
                     setUser(JSON.parse(storedUser));
                 } else {
                     console.log('No user found in storage. Using default user.');
@@ -33,7 +32,6 @@ export const UserProvider = ({ children }) => {
     
     const login = async (userData) => {
         try {
-            // Save only the currently logged-in user
             const userToLogin = { ...defaultUser, ...userData };
 
             setUser(userToLogin); // Update state
