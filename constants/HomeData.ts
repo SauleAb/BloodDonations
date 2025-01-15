@@ -3,6 +3,7 @@ import { IconNames } from "@/components/common/CommonIcons";
 import {
     fetchUserDonations,
 } from "@/utils/donationUtils";
+import { getPoints } from "@/utils/rewardsUtils";
 import moment from "moment";
 
 export const useHomeScreenData = (userId: number) => {
@@ -14,41 +15,47 @@ export const useHomeScreenData = (userId: number) => {
         if (!userId) return;
 
         const calculateData = async () => {
-            const donations = await fetchUserDonations(userId);
+            try {
+                // Fetch user donations
+                const donations = await fetchUserDonations(userId);
 
-            // Blood donated
-            const completedDonations = donations.filter((donation) => donation.status === "completed");
-            const totalBlood = completedDonations.length * 500;
-            setTotalBloodDonated(totalBlood);
+                // Blood donated
+                const completedDonations = donations.filter((donation) => donation.status === "completed");
+                const totalBlood = completedDonations.length * 500;
+                setTotalBloodDonated(totalBlood);
 
-            // Rewards points
-            const totalRewards = completedDonations.length * 200;
-            setTotalRewardsPoints(totalRewards);
+                // Fetch latest points
+                const { currentPoints } = await getPoints(userId);
+                setTotalRewardsPoints(currentPoints);
 
-            // Next donation message
-            const pendingDonations = donations.filter((donation) => donation.status === "pending");
-            if (pendingDonations.length > 0) {
-                const nextDonation = pendingDonations[0];
-                const timeRemaining = moment(`${nextDonation.date}T${nextDonation.time}`).fromNow();
-                setNextDonationMessage(`Next donation ${timeRemaining}`);
-            } else if (completedDonations.length > 0) {
-                const lastCompletedDonation = completedDonations.sort(
-                    (a, b) => moment(b.date).valueOf() - moment(a.date).valueOf()
-                )[0];
+                // Next donation message
+                const pendingDonations = donations.filter((donation) => donation.status === "pending");
+                if (pendingDonations.length > 0) {
+                    const nextDonation = pendingDonations[0];
+                    const timeRemaining = moment(`${nextDonation.date}T${nextDonation.time}`).fromNow();
+                    setNextDonationMessage(`Next donation ${timeRemaining}`);
+                } else if (completedDonations.length > 0) {
+                    const lastCompletedDonation = completedDonations.sort(
+                        (a, b) => moment(b.date).valueOf() - moment(a.date).valueOf()
+                    )[0];
 
-                if (lastCompletedDonation) {
-                    const oneMonthLater = moment(lastCompletedDonation.date).add(1, "month");
-                    if (oneMonthLater.isBefore(moment())) {
-                        setNextDonationMessage("Register to donate!");
+                    if (lastCompletedDonation) {
+                        const oneMonthLater = moment(lastCompletedDonation.date).add(1, "month");
+                        if (oneMonthLater.isBefore(moment())) {
+                            setNextDonationMessage("Register to donate!");
+                        } else {
+                            const timeUntilEligible = oneMonthLater.fromNow();
+                            setNextDonationMessage(`Can sign up for a new donation ${timeUntilEligible}`);
+                        }
                     } else {
-                        const timeUntilEligible = oneMonthLater.fromNow();
-                        setNextDonationMessage(`Can sign up for a new donation ${timeUntilEligible}`);
+                        setNextDonationMessage("Register to donate!");
                     }
                 } else {
                     setNextDonationMessage("Register to donate!");
                 }
-            } else {
-                setNextDonationMessage("Register to donate!");
+            } catch (error) {
+                console.error("Error calculating home screen data:", error);
+                setNextDonationMessage("Error loading data");
             }
         };
 
