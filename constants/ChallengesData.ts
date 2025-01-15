@@ -1,5 +1,4 @@
 import {IconNames} from "@/components/common/CommonIcons";
-import {RightTextItem} from "@/components/common/CommonContent";
 
 export const getChallengesData = () => [
     {

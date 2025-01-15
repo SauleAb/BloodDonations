@@ -210,15 +210,23 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
     },
     button: {
-        paddingVertical: 10,
-        paddingHorizontal: 20,
+        backgroundColor: "#e3e3e3",
+        paddingVertical: 5,
+        justifyContent: 'center',
+        alignItems: 'center',
+        flexDirection: 'row',
+        width: '40%',
+        marginTop: 0,
         borderRadius: 8,
+        borderWidth: 1,
+        borderColor: 'white',
     },
     buttonOn: {
-        backgroundColor: '#4CAF50',
+        backgroundColor: 'white',
+        borderWidth: 1,
+        borderColor: 'black',
     },
     buttonOff: {
-        backgroundColor: '#D32F2F',
     },
     buttonText: {
         fontSize: 16,
@@ -226,10 +234,10 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     buttonOnText: {
-        color: '#FFFFFF',
+        color: '#000000',
     },
     buttonOffText: {
-        color: '#FFFFFF',
+        color: '#000000',
     },
     label: {
         fontSize: 16,
