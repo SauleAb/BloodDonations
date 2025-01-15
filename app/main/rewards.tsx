@@ -1,4 +1,5 @@
-import React, {useEffect, useState} from "react";
+// Rewards.tsx
+import React, {useEffect, useState, useCallback} from "react";
 import { View } from "react-native";
 import CommonBackground from "@/components/common/CommonBackground";
 import CommonContent from "@/components/common/CommonContent";
@@ -8,44 +9,64 @@ import { rewardsStyles } from "../styles/RewardsStyle";
 import commonStyles from "../styles/CommonStyles";
 import { rewardPairs } from "@/utils/rewardsUtils";
 import { useUser } from '@/components/UserContext';
-import {iconMap, IconNames} from "@/components/common/CommonIcons";
+import {IconNames} from "@/components/common/CommonIcons";
 import SecondaryNavBar from "@/components/common/CommonSecondaryNavBar";
-import {getChallengesData} from "@/constants/ChallengesData";
-import {fetchOtherChallenges, fetchUserChallenges} from "@/utils/challengesUtils";
-import CommonText from "@/components/common/CommonText";
-
-const validateTextSize = (size: any): "small" | "large" | undefined => {
-    return size === "small" || size === "large" ? size : undefined;
-};
+import {
+    fetchOtherChallenges,
+    fetchUserChallenges,
+    joinChallenge,
+    leaveChallenge,
+} from "@/utils/challengesUtils";
 
 export default function Rewards() {
     const [activeTab, setActiveTab] = useState<'rewards' | 'challenges'>('rewards');
     const { user } = useUser();
 
-    //Rewards
     const rewardPairsList = rewardPairs();
 
-    //Challenges
     const [userChallenges, setUserChallenges] = useState<any[]>([]);
     const [otherChallenges, setOtherChallenges] = useState<any[]>([]);
+
+    const loadChallenges = useCallback(async () => {
+        const { raw: rawUserChallenges, transformed: transformedUserChallenges } = await fetchUserChallenges(user.id);
+        setUserChallenges(transformedUserChallenges);
+
+        const userChallengeIds = new Set(rawUserChallenges.map((challenge) => challenge.id));
+        const otherChallengesData = await fetchOtherChallenges(userChallengeIds, user.id);
+        setOtherChallenges(otherChallengesData);
+    }, [user.id]);
+
     useEffect(() => {
-        const userId = user.id;
-
-        async function loadChallenges() {
-            // Fetch user challenges
-            const { raw: rawUserChallenges, transformed: transformedUserChallenges } = await fetchUserChallenges(userId);
-            setUserChallenges(transformedUserChallenges);
-
-            // Extract IDs from raw data
-            const userChallengeIds = new Set(rawUserChallenges.map(challenge => challenge.id));
-
-            // Fetch other challenges and filter
-            const otherChallengesData = await fetchOtherChallenges(userChallengeIds);
-            setOtherChallenges(otherChallengesData);
-        }
-
         loadChallenges();
-    }, []);
+    }, [loadChallenges]);
+
+    const handleJoin = async (challengeId: number) => {
+        await joinChallenge(challengeId, user.id);
+        await loadChallenges();
+    };
+
+    const handleLeave = async (challengeId: number) => {
+        await leaveChallenge(challengeId, user.id);
+        await loadChallenges();
+    };
+
+    const getTransformedButtons = (challenge: any) => {
+        const isOn = challenge.buttons?.[0]?.label === "Leave";
+        return [
+            {
+                label: isOn ? "Leave" : "Join",
+                isOn: isOn,
+                onPressOn: async () => {
+                    // If currently "OFF", pressing it means "Join"
+                    await handleJoin(challenge.id);
+                },
+                onPressOff: async () => {
+                    // If currently "ON", pressing it means "Leave"
+                    await handleLeave(challenge.id);
+                },
+            },
+        ];
+    };
 
     const renderContent = () => {
         if (activeTab === "rewards") {
@@ -77,33 +98,44 @@ export default function Rewards() {
                         ))}
                     </CommonScrollElement>
                 </View>
-            )
+            );
         } else if (activeTab === "challenges") {
-            const challengesContent = getChallengesData();
             return (
                 <CommonScrollElement>
-                    <CommonContent titleText={"Challenges"} contentText={"Your Challenges"}></CommonContent>
+                    <CommonContent titleText={"Challenges"} contentText={"Your Challenges"} />
                     {userChallenges.length > 0 ? (
-                        userChallenges.map((item, index) => (
-                            <CommonContent key={index} {...item} />
+                        userChallenges.map((challenge, index) => (
+                            <CommonContent
+                                key={index}
+                                {...challenge}
+                                buttons={getTransformedButtons(challenge)}
+                            />
                         ))
                     ) : (
-                        <CommonContent titleText={"You don't have any challenges yet"} contentText={"Join a new challenge!"} />
+                        <CommonContent
+                            titleText={"You don't have any challenges yet"}
+                            contentText={"Join a new challenge!"}
+                        />
                     )}
-                    <CommonContent titleText={"Challenges"} contentText={"Other Challenges"}></CommonContent>
+                    <CommonContent titleText={"Challenges"} contentText={"Other Challenges"} />
                     {otherChallenges.length > 0 ? (
-                        otherChallenges.map((item, index) => (
-                            <CommonContent key={index} {...item} />
+                        otherChallenges.map((challenge, index) => (
+                            <CommonContent
+                                key={index}
+                                {...challenge}
+                                buttons={getTransformedButtons(challenge)}
+                            />
                         ))
                     ) : (
-                        <CommonText>Loading...</CommonText>
+                        <CommonContent
+                            titleText={"No challenges"}
+                            contentText={"Check in for new challenges soon!"}
+                        />
                     )}
                 </CommonScrollElement>
-            )
+            );
         }
-    }
-
-
+    };
 
     return (
         <View style={commonStyles.container}>

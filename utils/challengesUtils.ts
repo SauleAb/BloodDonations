@@ -1,5 +1,5 @@
 import axios from "axios";
-import {useUser} from "@/components/UserContext";
+import user from "@/components/user";
 
 const API_BASE_URL = "https://sanquin-api.onrender.com";
 
@@ -15,35 +15,43 @@ export type Challenge = {
     total_contributions: number;
 };
 
-export async function fetchUserChallenges(userId: number): Promise<{ raw: Challenge[]; transformed: any[] }> {
+export async function fetchUserChallenges(
+    userId: number,
+): Promise<{ raw: Challenge[]; transformed: any[] }> {
     try {
         const response = await axios.get(`${API_BASE_URL}/challenges/user/${userId}`);
         if (response.status === 200) {
             const userChallenges: Challenge[] = response.data.data;
+
             return {
                 raw: userChallenges,
-                transformed: transformChallenges(userChallenges),
+                transformed: transformChallenges(userChallenges, () => true, userId),
             };
         } else {
             console.error("Failed to fetch user challenges:", response.data.message);
             return { raw: [], transformed: [] };
         }
     } catch (error) {
-        console.log("Error fetching user challenges:", error); //Api response is 500 automatically throws error if no challenges of the user is found.
-        console.log("Error most likely cause by the user not having any challenges");
+        console.log("Error fetching user challenges:", error);
+        console.log("Error most likely occurring from the user not having any challenges, and the API responding with HTTP code 500");
         return { raw: [], transformed: [] };
     }
 }
 
-export async function fetchOtherChallenges(userChallengeIds: Set<number>): Promise<any[]> {
+export async function fetchOtherChallenges(
+    userChallengeIds: Set<number>,
+    userId: number,
+): Promise<any[]> {
     try {
         const response = await axios.get(`${API_BASE_URL}/challenges/`);
         if (response.status === 200) {
+
             const allChallenges: Challenge[] = response.data.data;
+
             const filteredChallenges = allChallenges.filter(
                 (challenge: Challenge) => !userChallengeIds.has(challenge.id)
             );
-            return transformChallenges(filteredChallenges);
+            return transformChallenges(filteredChallenges, (challenge) => false, userId);
         } else {
             console.error("Failed to fetch all challenges:", response.data.message);
             return [];
@@ -54,27 +62,69 @@ export async function fetchOtherChallenges(userChallengeIds: Set<number>): Promi
     }
 }
 
-function transformChallenges(challenges: Challenge[]): any[] {
-    return challenges.map((challenge) => ({
-        titleText: "Challenge",
-        challengeTitleText: challenge.title,
-        challengeDescriptionText: challenge.description,
-        contentText: "Location\nGoal\nCurrent Donations\nRewards If Completed\nEnd Date",
-        icon: "BloodDrop",
-        contentTextSize: "small",
-        rightText: [
-            challenge.location || "N/A",
-            challenge.goal?.toString() || "N/A",
-            challenge.total_contributions?.toString() || "N/A",
-            `${challenge.reward_points} Points` || "N/A",
-            new Date(challenge.end).toLocaleDateString() || "N/A",
-        ],
-        buttons: [
-            {
-                label: "Join",
-                onPressOn: () => console.log(`Joined: ${challenge.title}`),
-                onPressOff: () => console.log(`Left: ${challenge.title}`),
-            },
-        ],
-    }));
+export async function joinChallenge(challengeId: number, userId: number) {
+    try {
+        const response = await axios.post(`${API_BASE_URL}/challenges/${challengeId}/user/${userId}`);
+        if (response.status === 200) {
+            console.log("Successfully joined challenge:", challengeId);
+        } else {
+            console.error("Error joining challenge:", response.data.message);
+        }
+    } catch (error) {
+        console.error("Error joining challenge:", error);
+    }
+}
+
+export async function leaveChallenge(challengeId: number, userId: number) {
+    try {
+        const response = await axios.delete(`${API_BASE_URL}/challenges/${challengeId}/user/${userId}`);
+        if (response.status === 200) {
+            console.log("Successfully left challenge:", challengeId);
+        } else {
+            console.error("Error leaving challenge:", response.data.message);
+        }
+    } catch (error) {
+        console.error("Error leaving challenge:", error);
+    }
+}
+
+export function transformChallenges(
+    challenges: Challenge[],
+    isJoinedGetter: (challenge: Challenge) => boolean,
+    userId: number
+): any[] {
+    return challenges.map((challenge) => {
+        const isJoined = isJoinedGetter(challenge);
+        return {
+            id: challenge.id,
+            titleText: "Challenge",
+            challengeTitleText: challenge.title,
+            challengeDescriptionText: challenge.description,
+            contentText: "Location\nGoal\nCurrent Donations\nRewards If Completed\nEnd Date",
+            icon: "BloodDrop",
+            contentTextSize: "small",
+            rightText: [
+                challenge.location || "N/A",
+                challenge.goal?.toString() || "N/A",
+                challenge.total_contributions?.toString() || "N/A",
+                `${challenge.reward_points} Points` || "N/A",
+                new Date(challenge.end).toLocaleDateString() || "N/A",
+            ],
+            buttons: [
+                {
+                    label: isJoined ? "Leave" : "Join",
+                    isOn: isJoined,
+                    action: isJoined
+                        ? async () => {
+                            await leaveChallenge(challenge.id, userId);
+                            console.log("Challenge left:", challenge.id);
+                        }
+                        : async () => {
+                            await joinChallenge(challenge.id, userId);
+                            console.log("Challenge joined:", challenge.id);
+                        },
+                },
+            ],
+        };
+    });
 }

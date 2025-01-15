@@ -1,3 +1,4 @@
+// CommonContent.tsx
 import React, { useState } from 'react';
 import { StyleSheet, View, Image, TouchableOpacity } from 'react-native';
 import CommonText from "@/components/common/CommonText";
@@ -11,8 +12,10 @@ export type RightTextItem =
 
 type ButtonConfig = {
     label: string;
-    onPressOn: () => void;
-    onPressOff: () => void;
+    isOn?: boolean;
+    onPressOn?: () => void;
+    onPressOff?: () => void;
+    action?: () => Promise<void>;
 };
 
 type CommonContentProps = {
@@ -29,21 +32,18 @@ type CommonContentProps = {
 };
 
 const CommonContent: React.FC<CommonContentProps> = ({
-    titleText,
-    challengeTitleText,
-    challengeDescriptionText,
-    contentText,
-    icon,
-    contentTextSize = 'large',
-    rightText,
-    showContent = true,
-    buttons = [],
- }) => {
+                                                         titleText,
+                                                         challengeTitleText,
+                                                         challengeDescriptionText,
+                                                         contentText,
+                                                         icon,
+                                                         contentTextSize = 'large',
+                                                         rightText,
+                                                         showContent = true,
+                                                         buttons = [],
+                                                     }) => {
     const [expandedIndices, setExpandedIndices] = useState<number[]>([]);
     const [isContentVisibleChallenge, setContentVisibleChallenge] = useState(!challengeTitleText);
-    const [buttonStates, setButtonStates] = useState<boolean[]>(
-        buttons.map(() => false)
-    );
 
     const iconSource = icon ? iconMap[icon] : null;
     const contentTextStyle =
@@ -57,28 +57,14 @@ const CommonContent: React.FC<CommonContentProps> = ({
         }
     };
 
-    const handleButtonPress = (index: number) => {
-        const isOn = buttonStates[index];
-        if (isOn) {
-            buttons[index].onPressOff();
-        } else {
-            buttons[index].onPressOn();
-        }
-        setButtonStates(prevStates =>
-            prevStates.map((state, i) => (i === index ? !state : state))
-        );
-    };
-
     const renderRightItem = (item: RightTextItem | undefined, index: number) => {
         if (!item) return null;
         if (typeof item === 'string') {
             return <CommonText style={styles.rightText}>{item}</CommonText>;
         }
-
         if (item.type === 'switch') {
             return <CommonContentSwitch initialValue={item.switchValue} onToggle={item.onToggle} />;
         }
-
         if (item.type === 'expandableContent') {
             const isExpanded = expandedIndices.includes(index);
             return (
@@ -87,7 +73,6 @@ const CommonContent: React.FC<CommonContentProps> = ({
                 </TouchableOpacity>
             );
         }
-
         return null;
     };
 
@@ -113,14 +98,13 @@ const CommonContent: React.FC<CommonContentProps> = ({
             {showContent && isContentVisibleChallenge && (
                 <View style={[styles.contentWrapper, styles.shadow]}>
                     {leftTextLines.length > 0 && rightTextItems.length > 0 ? (
-
                         leftTextLines.map((leftText: string, index: number) => {
                             const rightItem = rightTextItems[index];
-                            const isExpandable = rightItem && typeof rightItem === 'object' && rightItem.type === 'expandableContent';
+                            const isExpandable =
+                                rightItem && typeof rightItem === 'object' && rightItem.type === 'expandableContent';
                             const isExpanded = isExpandable && expandedIndices.includes(index);
 
                             return (
-
                                 <View key={index}>
                                     <View style={styles.row}>
                                         <CommonText style={styles.leftText}>{leftText}</CommonText>
@@ -150,31 +134,31 @@ const CommonContent: React.FC<CommonContentProps> = ({
                     )}
 
                     {buttons.length > 0 && (
-                        <View style={[styles.buttonContainer]}>
-                            {buttons.map((button, index) => (
-                                <TouchableOpacity
-                                    key={index}
-                                    style={[
-                                        styles.button,
-                                        buttonStates[index] ? styles.buttonOn : styles.buttonOff,
-                                    ]}
-                                    onPress={() => handleButtonPress(index)}
-                                >
-                                    <CommonText
-                                        style={[
-                                            styles.buttonText,
-                                            buttonStates[index] ? styles.buttonOnText : styles.buttonOffText,
-                                        ]}
+                        <View style={styles.buttonContainer}>
+                            {buttons.map((button, index) => {
+                                const isOn = button.isOn || false;
+                                return (
+                                    <TouchableOpacity
+                                        key={index}
+                                        style={[styles.button, isOn ? styles.buttonOn : styles.buttonOff]}
+                                        onPress={() => {
+                                            if (isOn) {
+                                                button.onPressOff?.();
+                                            } else {
+                                                button.onPressOn?.();
+                                            }
+                                        }}
                                     >
-                                        {button.label}
-                                    </CommonText>
-                                </TouchableOpacity>
-                            ))}
+                                        <CommonText style={[styles.buttonText, isOn ? styles.buttonOnText : styles.buttonOffText]}>
+                                            {button.label}
+                                        </CommonText>
+                                    </TouchableOpacity>
+                                );
+                            })}
                         </View>
                     )}
                 </View>
             )}
-
         </View>
     );
 };
@@ -216,7 +200,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         flexDirection: 'row',
         width: '40%',
-        marginTop: 0,
         borderRadius: 8,
         borderWidth: 1,
         borderColor: 'white',
@@ -226,8 +209,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: 'black',
     },
-    buttonOff: {
-    },
+    buttonOff: {},
     buttonText: {
         fontSize: 16,
         fontWeight: 'bold',
@@ -318,7 +300,7 @@ const styles = StyleSheet.create({
     detailRight: {
         fontSize: 14,
         color: '#404040',
-    }
+    },
 });
 
 export default CommonContent;
