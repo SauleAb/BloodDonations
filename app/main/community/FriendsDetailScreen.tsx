@@ -12,6 +12,8 @@ import FriendIcon from "@/assets/icons/friend.png";
 import { useUser } from "@/components/UserContext";
 import { FriendObject } from "@/types/types";
 import { useFriendRequests } from "@/components/FriendRequestsContext";
+import CommonContent from "@/components/common/CommonContent";
+import CommonScrollElement from "@/components/common/CommonScrollElement";
 
 export default function FriendsDetailScreen() {
   const { id, isFriend } = useLocalSearchParams();
@@ -197,16 +199,18 @@ export default function FriendsDetailScreen() {
     );
   }
 
+  const dateWithoutTime = (friend.birthdate).toString().split('T')[0];
+
   return (
-    <CommonBackground logoVisible={true} mainPage={false}>
+    <CommonBackground logoVisible={true} mainPage={true}>
+      <CommonScrollElement>
       <View style={styles.container}>
-        <Text style={styles.title}>Friend Details</Text>
-        <Text style={styles.text}>First Name: {friend.first_name ?? "N/A"}</Text>
-        <Text style={styles.text}>Last Name: {friend.last_name ?? "N/A"}</Text>
-        <Text style={styles.text}>Username: {friend.username ?? "N/A"}</Text>
-        <Text style={styles.text}>Email: {friend.email ?? "N/A"}</Text>
-        <Text style={styles.text}>Birthdate: {friend.birthdate ?? "N/A"}</Text>
-        <Text style={styles.text}>City: {friend.city ?? "N/A"}</Text>
+        <CommonContent titleText={'First Name'} contentText={friend.first_name ?? 'N/A'} />
+        <CommonContent titleText={'Last Name'} contentText={friend.last_name ?? 'N/A'} />
+        <CommonContent titleText={'Username'} contentText={friend.username ?? 'N/A'} />
+        <CommonContent titleText={'Email'} contentText={friend.email ?? 'N/A'} />
+        <CommonContent titleText={'Birth Date'} contentText = {dateWithoutTime} />
+        <CommonContent titleText={'City'} contentText={friend.city ?? 'N/A'} />
 
         {isFriend ? (
           <View style={styles.statusContainer}>
@@ -272,6 +276,7 @@ export default function FriendsDetailScreen() {
           </TouchableOpacity>
         )}
       </View>
+      </CommonScrollElement>
     </CommonBackground>
   );
 }
