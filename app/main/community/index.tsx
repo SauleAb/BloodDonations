@@ -16,10 +16,8 @@ import AchievementCard from "@/components/AchievementCard";
 import FriendContent, { RelationshipStatus } from "@/components/FriendContent";
 import InputField from "@/components/common/CommonInputField";
 import commonStyles from "@/app/styles/CommonStyles";
-
 import FriendRequestsIcon from "@/assets/icons/add-friend.png";
 import RefreshIcon from "@/assets/icons/refresh-page-option.png";
-
 import { FriendRequest, FriendUser } from "@/types/types";
 import { useFriendRequests } from "@/components/FriendRequestsContext";
 
@@ -49,11 +47,9 @@ export default function Community() {
 
   const [friends, setFriends] = useState<FriendUser[]>([]);
   const [loadingFriends, setLoadingFriends] = useState(false);
-  const [friendError, setFriendError] = useState<string | null>(null);
 
   const [suggestions, setSuggestions] = useState<FriendUser[]>([]);
   const [loadingSuggestions, setLoadingSuggestions] = useState(false);
-  const [suggestionsError, setSuggestionsError] = useState<string | null>(null);
 
   const {
     sentFriendRequests,
@@ -61,7 +57,6 @@ export default function Community() {
     addSentFriendRequest,
     addReceivedFriendRequest,
     removeSentFriendRequest,
-    removeReceivedFriendRequest,
   } = useFriendRequests();
 
   const [activeTab, setActiveTab] = useState<"feed" | "friends">("feed");
@@ -78,7 +73,6 @@ export default function Community() {
   async function fetchFriends(userId: number) {
     try {
       setLoadingFriends(true);
-      setFriendError(null);
 
       const url = `https://sanquin-api.onrender.com/users/${userId}/friends`;
       const resp = await fetch(url);
@@ -102,8 +96,6 @@ export default function Community() {
   async function fetchSuggestions(userId: number) {
     try {
       setLoadingSuggestions(true);
-      setSuggestionsError(null);
-
       const userIds = Array.from({ length: 100 }, (_, i) => i + 1).filter((id) => id !== userId);
 
       const promises = userIds.map(async (id) => {
@@ -213,7 +205,6 @@ export default function Community() {
 
         <Text style={styles.sectionTitle}>My Friends</Text>
         {loadingFriends && <ActivityIndicator size="large" />}
-        {friendError && <Text style={styles.errorText}>{friendError}</Text>}
         {friends.length === 0 && !loadingFriends && (
           <Text style={styles.noDataText}>No friends found.</Text>
         )}
@@ -237,7 +228,6 @@ export default function Community() {
 
         <Text style={styles.sectionTitle}>Friend Suggestions</Text>
         {loadingSuggestions && <ActivityIndicator size="large" />}
-        {suggestionsError && <Text style={styles.errorText}>{suggestionsError}</Text>}
         {finalSuggestions.length === 0 && !loadingSuggestions && (
           <Text style={styles.noDataText}>No suggestions available.</Text>
         )}
@@ -261,20 +251,6 @@ export default function Community() {
                 status={status}
                 onPress={() =>
                   router.push(`/main/community/FriendsDetailScreen?id=${sugg.id}`)
-                }
-                onAddFriend={
-                  isSent
-                    ? undefined
-                    : () => {
-                        addSentFriendRequest(Number(sugg.id));
-                      }
-                }
-                onCancelRequest={
-                  isSent
-                    ? () => {
-                        removeSentFriendRequest(Number(sugg.id));
-                      }
-                    : undefined
                 }
               />
             );
@@ -309,10 +285,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     marginTop: 20,
-    marginBottom: 10,
-  },
-  errorText: {
-    color: "red",
     marginBottom: 10,
   },
   noDataText: {
@@ -350,23 +322,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginTop: 20,
-  },
-  acceptButton: {
-    width: 40,
-    height: 40,
-    backgroundColor: "#4CAF50",
-    borderRadius: 20,
-    alignItems: "center",
-    justifyContent: "center",
-    marginRight: 10,
-  },
-  declineButton: {
-    width: 40,
-    height: 40,
-    backgroundColor: "#F44336",
-    borderRadius: 20,
-    alignItems: "center",
-    justifyContent: "center",
   },
   actionIcon: {
     width: 24,

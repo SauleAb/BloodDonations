@@ -1,5 +1,3 @@
-// src/components/FriendsDetailScreen.tsx
-
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity, Image } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -88,6 +86,7 @@ export default function FriendsDetailScreen() {
 
       if (resp.ok) {
         addSentFriendRequest(targetId);
+        console.log(error)
       } else {
         setError("Error sending friend request.");
       }
@@ -112,7 +111,6 @@ export default function FriendsDetailScreen() {
       if (resp.ok) {
         removeSentFriendRequest(targetId);
       } else {
-        setError("Error canceling friend request.");
       }
     } catch {
       setError("Error canceling friend request.");
@@ -154,16 +152,12 @@ export default function FriendsDetailScreen() {
 
     setActionLoading(true);
     try {
-      const url = `https://sanquin-api.onrender.com/users/${senderId}/friends/${loggedInUserId}?status=declined`;
-      const resp = await fetch(url, { method: "PUT" });
-      if (resp.ok) {
         removeReceivedFriendRequest(senderId);
         router.back();
-      } else {
-        setError("Error declining friend request.");
-      }
     } catch {
       setError("Error declining friend request.");
+      console.log(error);
+
     } finally {
       setActionLoading(false);
     }

@@ -122,13 +122,7 @@ export default function FriendRequestsScreen() {
 
   async function handleDecline(senderId: string) {
     if (!loggedInUserId) return;
-    const url = `https://sanquin-api.onrender.com/users/${loggedInUserId}/friends/${senderId}?status=blocked`;
     try {
-      const resp = await fetch(url, { method: "PUT" });
-      if (!resp.ok) {
-        setError("Error declining friend request.");
-        return;
-      }
       removeReceivedFriendRequest(Number(senderId));
       setRequests((prev) => prev.filter((r) => r.sender_id !== senderId));
     } catch {
