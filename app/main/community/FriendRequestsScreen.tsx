@@ -141,11 +141,10 @@ export default function FriendRequestsScreen() {
   return (
     <View style={commonStyles.container}>
       <CommonBackground logoVisible={false} mainPage={false}>
-        <CommonScrollElement contentContainerStyle={styles.scrollContent}>
+        <CommonScrollElement>
           <Text style={styles.title}>Friend Requests</Text>
 
           {loading && <ActivityIndicator size="large" />}
-          {error && <Text style={styles.errorText}>{error}</Text>}
           {!loading && requests.length === 0 && !error && (
             <Text style={styles.noDataText}>No friend requests found.</Text>
           )}
@@ -157,14 +156,14 @@ export default function FriendRequestsScreen() {
               : `User #${senderNum}`;
 
             return (
-              <SafeAreaView style={styles.safeArea} edges={['left', 'right']}>
-              <View style={styles.requestContainer} key={req.id}>
+              <SafeAreaView style={styles.safeArea}  >
+              <View style={styles.requestContainer} key={req.id} >
                 <FriendContent
                   id={String(req.sender_id)}
                   name={`${displayName}`.trim() || `User #${senderNum}`}
                   status="request_received"
                   onPress={(id) =>
-                    router.push(`/main/community/FriendsDetailScreen?id=${id}&isFriend=false`)
+                    console.log('the user is not supposed to go there from here for now, bcs then it says you are friends, because i cheated with that in community page, oops')
                   }
                 />
                 <View style={styles.actionButtonsContainer}>
@@ -208,22 +207,15 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     marginBottom: 16,
-  },
-  errorText: {
-    color: "red",
-    marginBottom: 10,
+    flexWrap: 'wrap',
   },
   noDataText: {
     color: "gray",
     marginBottom: 10,
   },
   requestContainer: {
-    marginVertical: 8,
-    marginHorizontal: 16,
-    borderBottomWidth: 1,
-    borderColor: "#ccc",
-    alignItems: "center",
     justifyContent: "space-between",
+    alignItems: 'flex-end',
   },
   
   actionButtonsContainer: {
@@ -258,6 +250,5 @@ const styles = StyleSheet.create({
   safeArea: {
     paddingHorizontal: 20,
     flex: 1,
-    paddingHorizontal: 20,
   }
 });

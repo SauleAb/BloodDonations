@@ -48,6 +48,12 @@ export default function Community() {
   const [friends, setFriends] = useState<FriendUser[]>([]);
   const [loadingFriends, setLoadingFriends] = useState(false);
 
+  const [receivedRequestsUsers, setReceivedRequestsUsers] = useState<FriendUser[]>([]);
+  const [loadingRequests, setLoadingRequests] = useState(false);
+
+  const [sentRequestUsers, setSentRequestsUsers] = useState<FriendUser[]>([]);
+  const [loadingSents, setLoadingSents] = useState(false)
+
   const [suggestions, setSuggestions] = useState<FriendUser[]>([]);
   const [loadingSuggestions, setLoadingSuggestions] = useState(false);
 
@@ -126,30 +132,72 @@ export default function Community() {
 
   async function fetchFriendRequests(userId: number) {
     try {
+      setLoadingRequests(true);
+      setLoadingSents(true);
       const url = `https://sanquin-api.onrender.com/users/${userId}/friend-requests`;
       const resp = await fetch(url);
       const result = await resp.json();
-
       if (resp.ok) {
         const rawData = result?.data;
         if (!Array.isArray(rawData)) return;
-        rawData.forEach((req: FriendRequest) => {
-          if (req.sender_id === String(userId)) {
-            addSentFriendRequest(Number(req.receiver_id));
-          }
-          if (req.receiver_id === String(userId) && req.status === "pending") {
-            addReceivedFriendRequest(Number(req.sender_id));
-          }
+        const pendingRequestsFromOthers = rawData.filter(
+          (req: FriendRequest) =>
+            Number(req.receiver_id) === userId && req.status === "pending"
+        );
+        const pendingRequestsToOthers = rawData.filter(
+          (req: FriendRequest) =>
+            Number(req.sender_id) === userId && req.status === "pending"
+        );
+        const senderPromises = pendingRequestsFromOthers.map(async (req) => {
+          const senderId = Number(req.sender_id);
+          const userResp = await fetch(
+            `https://sanquin-api.onrender.com/users/id/${senderId}`
+          );
+          if (!userResp.ok) return null;
+          const userDataJSON = await userResp.json();
+          return Array.isArray(userDataJSON.data)
+            ? Object.fromEntries(userDataJSON.data)
+            : userDataJSON.data;
         });
+        const settledSenders = await Promise.allSettled(senderPromises);
+        const foundSenders = settledSenders
+          .filter((res) => res.status === "fulfilled" && res.value !== null)
+          .map((res: any) => res.value);
+        setReceivedRequestsUsers(foundSenders);
+        const receiverPromises = pendingRequestsToOthers.map(async (req) => {
+          const receiverId = Number(req.receiver_id);
+          const userResp = await fetch(
+            `https://sanquin-api.onrender.com/users/id/${receiverId}`
+          );
+          if (!userResp.ok) return null;
+          const userDataJSON = await userResp.json();
+          return Array.isArray(userDataJSON.data)
+            ? Object.fromEntries(userDataJSON.data)
+            : userDataJSON.data;
+        });
+        const settledReceivers = await Promise.allSettled(receiverPromises);
+        const foundReceivers = settledReceivers
+          .filter((res) => res.status === "fulfilled" && res.value !== null)
+          .map((res: any) => res.value);
+        setSentRequestsUsers(foundReceivers);
       } else if (resp.status === 500 && result.message === "No friend requests found") {
-        // Do nothing, no friend requests
+        setReceivedRequestsUsers([]);
+        setSentRequestsUsers([]);
       } else {
+        setReceivedRequestsUsers([]);
+        setSentRequestsUsers([]);
       }
     } catch {
-      // Do nothing
+      setReceivedRequestsUsers([]);
+      setSentRequestsUsers([]);
+    } finally {
+      setLoadingRequests(false);
+      setLoadingSents(false);
     }
   }
 
+  
+  
   const friendIds = friends.map((f) => f.id);
   const finalSuggestions = suggestions.filter(
     (u) => u.id && !friendIds.includes(u.id) && u.id !== loggedInUserId
@@ -190,19 +238,18 @@ export default function Community() {
           >
             <Image source={FriendRequestsIcon} style={styles.iconImage} />
           </TouchableOpacity>
-
           <TouchableOpacity style={styles.iconButton} onPress={handleRefresh}>
             <Image source={RefreshIcon} style={styles.iconImage} />
           </TouchableOpacity>
         </View>
-
+  
         <InputField
           placeholder="Search..."
           value={search}
           onChangeText={setSearch}
           style={styles.searchField}
         />
-
+  
         <Text style={styles.sectionTitle}>My Friends</Text>
         {loadingFriends && <ActivityIndicator size="large" />}
         {friends.length === 0 && !loadingFriends && (
@@ -225,7 +272,49 @@ export default function Community() {
               />
             </View>
           ))}
-
+  
+        <Text style={styles.sectionTitle}>Received Friend Requests</Text>
+        {loadingRequests && <ActivityIndicator size="large" />}
+        {receivedRequestsUsers.length === 0 && !loadingRequests && (
+          <Text style={styles.noDataText}>No pending requests.</Text>
+        )}
+        {receivedRequestsUsers
+          .filter((reqUser) => {
+            const fullName = `${reqUser.first_name} ${reqUser.last_name}`.toLowerCase();
+            return fullName.includes(search.toLowerCase());
+          })
+          .map((reqUser) => (
+            <View key={`req-${reqUser.id}`} style={styles.friendContainer}>
+              <FriendContent
+                id={String(reqUser.id)}
+                name={`${reqUser.first_name} ${reqUser.last_name}`}
+                status="request_received"
+                onPress={(id) => router.push(`/main/community/FriendsDetailScreen?id=${id}`)}
+              />
+            </View>
+          ))}
+  
+        <Text style={styles.sectionTitle}>Sent Friend Requests</Text>
+        {loadingSents && <ActivityIndicator size="large" />}
+        {sentRequestUsers.length === 0 && !loadingSents && (
+          <Text style={styles.noDataText}>No sent requests.</Text>
+        )}
+        {sentRequestUsers
+          .filter((reqUser) => {
+            const fullName = `${reqUser.first_name} ${reqUser.last_name}`.toLowerCase();
+            return fullName.includes(search.toLowerCase());
+          })
+          .map((reqUser) => (
+            <View key={`sent-${reqUser.id}`} style={styles.friendContainer}>
+              <FriendContent
+                id={String(reqUser.id)}
+                name={`${reqUser.first_name} ${reqUser.last_name}`}
+                status="request_sent"
+                onPress={(id) => router.push(`/main/community/FriendsDetailScreen?id=${id}`)}
+              />
+            </View>
+          ))}
+  
         <Text style={styles.sectionTitle}>Friend Suggestions</Text>
         {loadingSuggestions && <ActivityIndicator size="large" />}
         {finalSuggestions.length === 0 && !loadingSuggestions && (
@@ -242,7 +331,6 @@ export default function Community() {
             let status: RelationshipStatus = "friend_suggestion";
             if (isSent) status = "request_sent";
             if (isReceived) status = "request_received";
-
             return (
               <FriendContent
                 key={`sugg-${sugg.id}`}
@@ -258,6 +346,8 @@ export default function Community() {
       </CommonScrollElement>
     );
   }
+  
+
 
   function renderContent() {
     return activeTab === "feed" ? renderFeed() : renderFriendsTab();
@@ -265,7 +355,7 @@ export default function Community() {
 
   return (
     <CommonBackground logoVisible={true} mainPage={true}>
-      <View style={commonStyles.container}>
+      <View>
         {renderContent()}
         <SecondaryNavBar
           tabs={[
@@ -299,8 +389,6 @@ const styles = StyleSheet.create({
   },
   suggestionContainer: {
     marginVertical: 8,
-    padding: 10,
-    borderRadius: 8,
     backgroundColor: "#f0f0f0",
   },
   statusContainer: {
@@ -338,7 +426,6 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     backgroundColor: "#4CAF50",
-    borderRadius: 8,
     alignItems: "center",
     justifyContent: "center",
     marginRight: 10,
@@ -354,6 +441,5 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   searchField: {
-    marginBottom: 20,
   },
 });
