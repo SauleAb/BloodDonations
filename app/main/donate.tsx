@@ -38,6 +38,7 @@ import { TimeSlot } from "@/types/TimeSlot";
 import CancelButton from "@/components/common/CommonCancelButton";
 import axios from "axios";
 import { FriendDonation } from "@/types/FriendDonation";
+import { updateUserPoints } from "@/utils/rewardsUtils";
 
 export default function Donate() {
     const {
@@ -133,6 +134,7 @@ export default function Donate() {
             );
     
             if (response.status === 200) {
+                await updateUserPoints(user.id, 200, false);
                 setActiveAppointment(null);
                 resetFields();
             } else {

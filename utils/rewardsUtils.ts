@@ -1,4 +1,5 @@
 import { rewards } from "@/constants/RewardsData";
+import axios from "axios";
 import { Int32 } from "react-native/Libraries/Types/CodegenTypes";
 
 const url = `https://sanquin-api.onrender.com/users/`;
@@ -12,29 +13,74 @@ export const rewardPairs = () => {
     return pairs;
 };
 
-export async function getPoints(userId: Int32): Promise<number | null> {
-    const _url = url + userId;
+export async function getPoints(userId: number): Promise<{ currentPoints: number; totalPoints: number }> {
+    const endpoint = `https://sanquin-api.onrender.com/users/id/${userId}`;
 
     try {
-        const response = await fetch(_url);
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
+        const response = await axios.get(endpoint);
 
-        const data = await response.json();
-        return data.data?.current_points ?? null;
+        if (response.status === 200 && response.data?.data) {
+            const data = Object.fromEntries(response.data.data);
+            return {
+                currentPoints: data.current_points,
+                totalPoints: data.total_points,
+            };
+        }
+        throw new Error("Failed to fetch points");
     } catch (error) {
-        console.error('There was a problem with the fetch operation:', error);
-        return null;
+        console.error("Error fetching reward points:", error);
+        throw error;
     }
 }
 
-export async function redeem(currentPoints: number, rewardCost: number): Promise<boolean> {
-    if (currentPoints >= rewardCost) {
-        // Simulate an API call or perform any required logic here
-        console.log("Redeeming reward...");
-        return true; // Reward is successfully redeemed
-    } else {
-        return false; // Not enough points
+
+
+export const updateUserPoints = async (
+    userId: number,
+    points: number,
+    subtract: boolean
+): Promise<{ currentPoints: number; totalPoints: number }> => {
+    try {
+        const response = await axios.put(
+            `https://sanquin-api.onrender.com/users/update/${userId}/points/${points}?subtract=${subtract}`
+        );
+        if (response.status === 200 && response.data?.data) {
+            const data = Object.fromEntries(response.data.data);
+            return {
+                currentPoints: data.current_points,
+                totalPoints: data.total_points,
+            };
+        }
+        throw new Error("Failed to update points");
+    } catch (error) {
+        if (axios.isAxiosError(error) && error.response) {
+            console.error(
+                `Error updating points: ${error.response.status} - ${JSON.stringify(error.response.data)}`
+            );
+        } else {
+            console.error("Error updating points:", error);
+        }
+        throw error;
+    }
+};
+
+export async function redeem(userId: number, points: number): Promise<boolean> {
+    try {
+        const response = await axios.put(
+            `https://sanquin-api.onrender.com/users/update/${userId}/points/${points}?subtract=true`
+        );
+        if (response.status === 200 && response.data?.data) {
+            return true;
+        }
+        return false;
+    } catch (error) {
+        if (axios.isAxiosError(error) && error.response) {
+            console.error(
+                `Error redeeming points: ${error.response.status} - ${JSON.stringify(error.response.data)}`
+            );
+        } else {
+            console.error("Error redeeming points:", error);
+        }
+        return false;
     }
 }

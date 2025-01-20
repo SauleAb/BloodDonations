@@ -18,7 +18,7 @@ const CommonRewardBox: React.FC<CommonRewardBoxProps> = ({ titleText, icon, amou
     const [isLoading, setIsLoading] = useState(false);
     const iconSource = iconMap[icon];
 
-    const { user, setUser } = useUser(); // Include setUser
+    const { user, setUser } = useUser(); 
 
     const handlePress = () => {
         setErrorMessage('');
@@ -28,19 +28,17 @@ const CommonRewardBox: React.FC<CommonRewardBoxProps> = ({ titleText, icon, amou
     const handleConfirm = async () => {
         setErrorMessage('');
         setIsLoading(true);
-
+    
         const price = parseInt(amountText);
-
+    
         try {
-            const success = await redeem(user.rewardPoints, price); // Pass current points directly
+            const success = await redeem(user.id, price); 
             if (success) {
                 const updatedPoints = user.rewardPoints - price;
-
-                // Update the user context with new points
+    
                 setUser({ ...user, rewardPoints: updatedPoints });
-
+    
                 setIsModalVisible(false);
-                onPress && onPress();
             } else {
                 setErrorMessage('You do not have enough points to redeem this reward.');
             }
