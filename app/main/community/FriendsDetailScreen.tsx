@@ -12,6 +12,7 @@ import { FriendObject } from "@/types/types";
 import { useFriendRequests } from "@/components/FriendRequestsContext";
 import CommonContent from "@/components/common/CommonContent";
 import CommonScrollElement from "@/components/common/CommonScrollElement";
+import { createNotification } from "@/utils/notificationUtils";
 
 export default function FriendsDetailScreen() {
   const { id, isFriend } = useLocalSearchParams();
@@ -86,6 +87,11 @@ export default function FriendsDetailScreen() {
 
       if (resp.ok) {
         addSentFriendRequest(targetId);
+        createNotification(
+          targetId,
+          "New Friend Request",
+          `${user.username} has sent you a friend request!`
+        );
         console.log(error)
       } else {
         setError("Error sending friend request.");
@@ -132,6 +138,11 @@ export default function FriendsDetailScreen() {
       const resp = await fetch(url, { method: "PUT" });
       if (resp.ok) {
         removeReceivedFriendRequest(senderId);
+        createNotification(
+          senderId,
+          "New Friend Request",
+          `${user.username} has sent you a friend request!`
+        );
         router.back();
       } else {
         setError("Error accepting friend request.");

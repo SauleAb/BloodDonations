@@ -5,6 +5,7 @@ import { TimeSlot } from '@/types/TimeSlot';
 import { Location } from '@/types/Location'
 import { Appointment } from '@/types/Appointment';
 import { FriendDonation } from '@/types/FriendDonation';
+import { createNotification } from './notificationUtils';
 
 
 export const fetchUserByEmail = async (email: string, password: string) => {
@@ -341,7 +342,7 @@ export const handleRequestAppointment = async (
         const response = await axios.post("https://sanquin-api.onrender.com/donations/", appointmentData);
 
         if (response.status === 200) {
-            const responseData = Object.fromEntries(response.data.data); // Convert array to object
+            const responseData = Object.fromEntries(response.data.data); 
 
             if (enableJoining) {
                 const friends = await fetchUserFriends(userId);
@@ -383,15 +384,5 @@ export const handleTextChange = (text: string, allLocations: Location[]) => {
         .filter((city, index, self) => city && self.indexOf(city) === index && city.toLowerCase().includes(text.toLowerCase()));
 };
 
-const createNotification = async (userId: number, title: string, content: string) => {
-    try {
-        await axios.post(`https://sanquin-api.onrender.com/users/${userId}/notifications`, {
-            title,
-            content,
-            user_id: userId,
-        });
-    } catch (error) {
-        console.error(`Error sending notification to user ID ${userId}:`, error);
-    }
-};
+
 
