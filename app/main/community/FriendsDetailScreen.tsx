@@ -280,7 +280,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "transparent",
     padding: 20,
-    width: "95%",
+    width: "100%",
     alignSelf: "center",
   },
   title: {

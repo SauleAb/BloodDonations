@@ -232,12 +232,6 @@ export default function Community() {
     return (
       <CommonScrollElement>
         <View style={styles.headerButtonsContainer}>
-          <TouchableOpacity
-            style={styles.iconButton}
-            onPress={() => router.push("/main/community/FriendRequestsScreen")}
-          >
-            <Image source={FriendRequestsIcon} style={styles.iconImage} />
-          </TouchableOpacity>
           <TouchableOpacity style={styles.iconButton} onPress={handleRefresh}>
             <Image source={RefreshIcon} style={styles.iconImage} />
           </TouchableOpacity>
@@ -294,11 +288,7 @@ export default function Community() {
             </View>
           ))}
   
-        <Text style={styles.sectionTitle}>Sent Friend Requests</Text>
-        {loadingSents && <ActivityIndicator size="large" />}
-        {sentRequestUsers.length === 0 && !loadingSents && (
-          <Text style={styles.noDataText}>No sent requests.</Text>
-        )}
+        
         {sentRequestUsers
           .filter((reqUser) => {
             const fullName = `${reqUser.first_name} ${reqUser.last_name}`.toLowerCase();
@@ -380,6 +370,10 @@ const styles = StyleSheet.create({
   noDataText: {
     color: "gray",
     marginBottom: 10,
+    // Optionally ensure it takes full width:
+    width: "100%",
+    textAlign: "center",
+    marginHorizontal: -20
   },
   friendContainer: {
     marginVertical: 8,
@@ -429,6 +423,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginRight: 10,
+    borderRadius: 20
   },
   iconImage: {
     width: 24,

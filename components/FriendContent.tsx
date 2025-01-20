@@ -86,8 +86,9 @@ const FriendContent: React.FC<FriendContentProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    width: "100%",
+    width: "95%",
     marginBottom: 20,
+    
   },
   greyBar: {
     backgroundColor: "rgba(223,223,223,0.5)",
@@ -99,6 +100,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 16,
     color: "#404040",
+    marginHorizontal: 20
   },
   contentWrapper: {
     overflow: "hidden",
