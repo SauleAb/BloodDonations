@@ -10,13 +10,13 @@ const HomeScreenBottom = () => {
                 Nothing more to see
             </CommonText>
             <CommonText style={styles.textAdvice}>
-                Customize your home screen or take a test to see if you can donate
+                Customize your home screen or register for a donation!
             </CommonText>
-            <CommonButton style={styles.margin} href="/main/home">
+            <CommonButton style={styles.margin} href="/main/profile">
                 Customize
             </CommonButton>
-            <CommonButton href="/main/home">
-                Take Test
+            <CommonButton href="/main/donate">
+                Donate
             </CommonButton>
         </View>
     )
@@ -26,7 +26,8 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         alignItems: "center",
-        marginTop: 200
+        marginTop: 200,
+        marginBottom: '60%',
     },
     margin: {
         margin: 15
