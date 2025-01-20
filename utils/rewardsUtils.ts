@@ -31,10 +31,9 @@ export async function getPoints(userId: Int32): Promise<number | null> {
 
 export async function redeem(currentPoints: number, rewardCost: number): Promise<boolean> {
     if (currentPoints >= rewardCost) {
-        // Simulate an API call or perform any required logic here
         console.log("Redeeming reward...");
-        return true; // Reward is successfully redeemed
+        return true; 
     } else {
-        return false; // Not enough points
+        return false;
     }
 }

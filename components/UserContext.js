@@ -34,8 +34,8 @@ export const UserProvider = ({ children }) => {
         try {
             const userToLogin = { ...defaultUser, ...userData };
 
-            setUser(userToLogin); 
             await AsyncStorage.setItem('user', JSON.stringify(userToLogin));
+            setUser(userToLogin); 
         } catch (error) {
             console.error('Login Error:', error.message);
         }
