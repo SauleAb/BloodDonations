@@ -104,3 +104,15 @@ export const stopNotificationPolling = () => {
         pollingInterval = null;
     }
 };
+
+export const createNotification = async (userId: number, title: string, content: string) => {
+    try {
+        await axios.post(`https://sanquin-api.onrender.com/users/${userId}/notifications`, {
+            title,
+            content,
+            user_id: userId,
+        });
+    } catch (error) {
+        console.error(`Error sending notification to user ID ${userId}:`, error);
+    }
+};
