@@ -12,6 +12,7 @@ type CustomInputProps = {
     suggestions?: string[];  
     onSuggestionSelect?: (suggestion: string) => void; 
     keyboardType?: KeyboardTypeOptions; 
+    prefilledText?: string;
 };
 
 const CustomInput: React.FC<CustomInputProps> = ({
@@ -23,8 +24,19 @@ const CustomInput: React.FC<CustomInputProps> = ({
     placeholderTextColor = '#888',
     suggestions = [],
     onSuggestionSelect,
-    keyboardType = 'default',  
+    keyboardType = 'default',
+    prefilledText = '',
 }) => {
+    const handleChange = (text: string) => {
+        if (prefilledText && text.startsWith(prefilledText)) {
+            onChangeText(text); // Allow updates starting with prefilled text
+        } else if (text === '') {
+            onChangeText(prefilledText); // Reset to prefilled text if cleared
+        } else {
+            onChangeText(text);
+        }
+    };
+
     return (
         <View style={[styles.container, styles.shadow]}>
             <View style={styles.greyBar}>
@@ -33,11 +45,11 @@ const CustomInput: React.FC<CustomInputProps> = ({
 
             <TextInput
                 style={[styles.input, style]}
-                value={value}
-                onChangeText={onChangeText}
+                value={value || prefilledText} // Display prefilled text if value is empty
+                onChangeText={handleChange}
                 secureTextEntry={secureTextEntry}
                 placeholderTextColor={placeholderTextColor}
-                keyboardType={keyboardType} 
+                keyboardType={keyboardType}
             />
 
             {suggestions.length > 0 && (
@@ -57,6 +69,7 @@ const CustomInput: React.FC<CustomInputProps> = ({
         </View>
     );
 };
+
 
 const styles = StyleSheet.create({
     container: {

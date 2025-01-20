@@ -15,7 +15,7 @@ export default function Register() {
 
     const handleRegister = async () => {
         try {
-            if (!email || !password || !confirmPassword) {
+            if (!email || !password) {
                 Alert.alert('Error', 'All fields are required!');
                 return;
             }
@@ -26,12 +26,7 @@ export default function Register() {
                 return;
             }
 
-            if (password !== confirmPassword) {
-                Alert.alert('Error', 'Passwords do not match!');
-                return;
-            }
-
-            const emailExists = false; // api request to check if email exists (waiting for nina)
+            const emailExists = false;
             if (emailExists) {
                 Alert.alert('Error', 'An account with this email already exists.');
                 return;
@@ -54,17 +49,13 @@ export default function Register() {
                     placeholder="Email"
                     value={email}
                     onChangeText={setEmail}
-                />
+                    prefilledText='@gmail.com'
+                >
+                </InputField>
                 <InputField
                     placeholder="Password"
                     value={password}
                     onChangeText={setPassword}
-                    secureTextEntry
-                />
-                <InputField
-                    placeholder="Confirm Password"
-                    value={confirmPassword}
-                    onChangeText={setConfirmPassword}
                     secureTextEntry
                 />
                 <CommonButton
