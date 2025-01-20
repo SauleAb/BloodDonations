@@ -57,8 +57,8 @@ export default function Login() {
                 ...userObject,
             };
 
-            login(userData);
             await AsyncStorage.setItem('user', JSON.stringify(userData));
+            login(userData);
             router.replace('/main/home');
         } catch (error) {
             console.error('Error:', error);

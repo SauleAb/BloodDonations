@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, Image, TouchableOpacity, Modal, Button } from '
 import { IconNames, iconMap } from "@/components/common/CommonIcons";
 import CommonText from "@/components/common/CommonText";
 import { useUser } from '@/components/UserContext';
-import {redeem} from "@/utils/rewardsUtils";
+import {updateUserPoints} from "@/utils/rewardsUtils";
 
 type CommonRewardBoxProps = {
     titleText: string;
@@ -18,7 +18,7 @@ const CommonRewardBox: React.FC<CommonRewardBoxProps> = ({ titleText, icon, amou
     const [isLoading, setIsLoading] = useState(false);
     const iconSource = iconMap[icon];
 
-    const { user, setUser } = useUser(); // Include setUser
+    const { user, setUser } = useUser(); 
 
     const handlePress = () => {
         setErrorMessage('');
@@ -32,7 +32,7 @@ const CommonRewardBox: React.FC<CommonRewardBoxProps> = ({ titleText, icon, amou
         const price = parseInt(amountText);
 
         try {
-            const success = await redeem(user.rewardPoints, price); // Pass current points directly
+            const success = await updateUserPoints(user.id, price, true);
             if (success) {
                 const updatedPoints = user.rewardPoints - price;
 

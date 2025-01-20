@@ -4,6 +4,7 @@ import {
     fetchUserDonations,
 } from "@/utils/donationUtils";
 import moment from "moment";
+import { getPoints } from "@/utils/rewardsUtils";
 
 export const useHomeScreenData = (userId: number) => {
     const [totalBloodDonated, setTotalBloodDonated] = useState(0);
@@ -22,8 +23,8 @@ export const useHomeScreenData = (userId: number) => {
             setTotalBloodDonated(totalBlood);
 
             // Rewards points
-            const totalRewards = completedDonations.length * 200;
-            setTotalRewardsPoints(totalRewards);
+            const { currentPoints } = await getPoints(userId);
+            setTotalRewardsPoints(currentPoints);
 
             // Next donation message
             const pendingDonations = donations.filter((donation) => donation.status === "pending");

@@ -1,13 +1,13 @@
 // Rewards.tsx
 import React, {useEffect, useState, useCallback} from "react";
-import { View } from "react-native";
+import { Alert, View } from "react-native";
 import CommonBackground from "@/components/common/CommonBackground";
 import CommonContent from "@/components/common/CommonContent";
 import CommonScrollElement from "@/components/common/CommonScrollElement";
 import CommonRewardBox from "@/components/common/CommonRewardBox";
 import { rewardsStyles } from "../styles/RewardsStyle";
 import commonStyles from "../styles/CommonStyles";
-import { rewardPairs } from "@/utils/rewardsUtils";
+import { getPoints, rewardPairs, updateUserPoints } from "@/utils/rewardsUtils";
 import { useUser } from '@/components/UserContext';
 import {IconNames} from "@/components/common/CommonIcons";
 import SecondaryNavBar from "@/components/common/CommonSecondaryNavBar";
@@ -23,9 +23,43 @@ export default function Rewards() {
     const { user } = useUser();
 
     const rewardPairsList = rewardPairs();
+    const [rewardPoints, setRewardPoints] = useState(0);
 
     const [userChallenges, setUserChallenges] = useState<any[]>([]);
     const [otherChallenges, setOtherChallenges] = useState<any[]>([]);
+
+    const fetchRewardPoints = async () => {
+        if (!user?.id) return;
+        try {
+            const response = await getPoints(user.id);
+            setRewardPoints(response.currentPoints);
+        } catch (error) {
+            console.error("Error fetching reward points:", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchRewardPoints();
+        const intervalId = setInterval(fetchRewardPoints, 5000); 
+        return () => clearInterval(intervalId);
+    }, [user]);
+
+    const handleRedeem = async (rewardCost: number) => {
+        if (rewardPoints < rewardCost) {
+            Alert.alert("Insufficient Points", "You do not have enough points to redeem this reward.");
+            return;
+        }
+
+        try {
+            const { currentPoints } = await updateUserPoints(user.id, rewardCost, true);
+            setRewardPoints(currentPoints);
+            Alert.alert("Redemption Successful", `You redeemed ${rewardCost} points!`);
+        } catch (error) {
+            console.error("Error redeeming reward points:", error);
+            Alert.alert("Error", "An error occurred while redeeming points. Please try again.");
+        }
+    };
+
 
     const loadChallenges = useCallback(async () => {
         const { raw: rawUserChallenges, transformed: transformedUserChallenges } = await fetchUserChallenges(user.id);
@@ -76,9 +110,9 @@ export default function Rewards() {
                         <CommonContent
                             titleText="Reward Points"
                             icon={IconNames.Notification}
-                            contentText={user.rewardPoints.toString() ?? '0'}
+                            contentText={rewardPoints.toString()}
                         />
-                        {rewardPairsList.map((pair, index) => (
+                         {rewardPairsList.map((pair, index) => (
                             <View style={rewardsStyles.row} key={index}>
                                 <CommonRewardBox
                                     titleText={pair[0].titleText}
