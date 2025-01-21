@@ -12,8 +12,9 @@ import { startNotificationPolling, stopNotificationPolling } from "@/utils/notif
 export default function Home() {
     const { user } = useUser();
     const userId = user?.id || 0; 
+    const firstName = user?.first_name;
 
-    const homeScreenContent = useHomeScreenData(userId);
+    const homeScreenContent = useHomeScreenData(userId, firstName);
 
     useEffect(() => {
         if (userId) startNotificationPolling(userId);

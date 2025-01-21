@@ -6,13 +6,16 @@ import {
 import moment from "moment";
 import { getPoints } from "@/utils/rewardsUtils";
 
-export const useHomeScreenData = (userId: number) => {
+export const useHomeScreenData = (userId: number, firstName: string) => {
     const [totalBloodDonated, setTotalBloodDonated] = useState(0);
     const [totalRewardsPoints, setTotalRewardsPoints] = useState(0);
     const [nextDonationMessage, setNextDonationMessage] = useState("Loading...");
+    const [welcomeMessage, setWelcomeMessage] = useState("");
 
     useEffect(() => {
         if (!userId) return;
+
+        setWelcomeMessage(`Welcome to Sanquin app, ${firstName}!`)
 
         const calculateData = async () => {
             const donations = await fetchUserDonations(userId);
@@ -60,6 +63,11 @@ export const useHomeScreenData = (userId: number) => {
     }, [userId]);
 
     return [
+        {
+            titleText: "Welcome",
+            contentText: welcomeMessage,
+            icon: IconNames.BloodDonated,
+        },
         {
             titleText: "Next Blood Donation",
             contentText: nextDonationMessage,

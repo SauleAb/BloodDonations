@@ -43,7 +43,6 @@ export const UserProvider = ({ children }) => {
 
     const logout = async () => {
         await AsyncStorage.removeItem('user');
-        setUser(null);
     };
 
     return (
