@@ -6,6 +6,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   Image,
+  RefreshControl,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { useUser } from "@/components/UserContext";
@@ -67,6 +68,8 @@ export default function Community() {
 
   const [activeTab, setActiveTab] = useState<"feed" | "friends">("feed");
   const [search, setSearch] = useState("");
+
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     if (loggedInUserId) {
@@ -211,9 +214,29 @@ export default function Community() {
     }
   };
 
+  const onRefresh = async () => {
+    setRefreshing(true);
+    if (loggedInUserId) {
+      await Promise.all([
+        fetchFriends(loggedInUserId),
+        fetchSuggestions(loggedInUserId),
+        fetchFriendRequests(loggedInUserId),
+      ]);
+    }
+    setRefreshing(false);
+  };
+
   function renderFeed() {
     return (
-      <CommonScrollElement>
+      <CommonScrollElement
+        refreshControl={
+          <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              colors={['#333333']}
+          />
+        }
+      >
         {mockAchievements.map((ach: Achievement, i: number) => (
           <AchievementCard
             key={i}
@@ -230,12 +253,15 @@ export default function Community() {
 
   function renderFriendsTab() {
     return (
-      <CommonScrollElement>
-        <View style={styles.headerButtonsContainer}>
-          <TouchableOpacity style={styles.iconButton} onPress={handleRefresh}>
-            <Image source={RefreshIcon} style={styles.iconImage} />
-          </TouchableOpacity>
-        </View>
+        <CommonScrollElement
+            refreshControl={
+              <RefreshControl
+                  refreshing={refreshing}
+                  onRefresh={onRefresh}
+                  colors={['#333333']}
+              />
+            }
+        >
   
         <InputField
           placeholder="Search..."
@@ -245,7 +271,7 @@ export default function Community() {
         />
   
         <Text style={styles.sectionTitle}>My Friends</Text>
-        {loadingFriends && <ActivityIndicator size="large" />}
+          {loadingFriends && <Text style={styles.noDataText}>Loading...</Text>}
         {friends.length === 0 && !loadingFriends && (
           <Text style={styles.noDataText}>No friends found.</Text>
         )}
@@ -268,7 +294,7 @@ export default function Community() {
           ))}
   
         <Text style={styles.sectionTitle}>Received Friend Requests</Text>
-        {loadingRequests && <ActivityIndicator size="large" />}
+        {loadingRequests && <Text style={styles.noDataText}>Loading...</Text>}
         {receivedRequestsUsers.length === 0 && !loadingRequests && (
           <Text style={styles.noDataText}>No pending requests.</Text>
         )}
@@ -306,7 +332,7 @@ export default function Community() {
           ))}
   
         <Text style={styles.sectionTitle}>Friend Suggestions</Text>
-        {loadingSuggestions && <ActivityIndicator size="large" />}
+        {loadingSuggestions && <Text style={styles.noDataText}>Loading...</Text>}
         {finalSuggestions.length === 0 && !loadingSuggestions && (
           <Text style={styles.noDataText}>No suggestions available.</Text>
         )}
@@ -345,17 +371,16 @@ export default function Community() {
 
   return (
     <CommonBackground logoVisible={true} mainPage={true}>
-      <View>
         {renderContent()}
         <SecondaryNavBar
-          tabs={[
-            { key: "feed", label: "Feed" },
-            { key: "friends", label: "Friends" },
-          ]}
-          activeTab={activeTab}
-          onTabChange={setActiveTab}
+            tabs={[
+              { key: "feed", label: "Feed" },
+              { key: "friends", label: "Friends" },
+            ]}
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+            style={styles.secondaryNavBar}
         />
-      </View>
     </CommonBackground>
   );
 }
@@ -370,7 +395,6 @@ const styles = StyleSheet.create({
   noDataText: {
     color: "gray",
     marginBottom: 10,
-    // Optionally ensure it takes full width:
     width: "100%",
     textAlign: "center",
     marginHorizontal: -20
@@ -436,5 +460,8 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   searchField: {
+  },
+  secondaryNavBar: {
+    width: "100%",
   },
 });
