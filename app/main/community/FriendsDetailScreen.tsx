@@ -156,7 +156,7 @@ export default function FriendsDetailScreen() {
     return (
       <CommonBackground logoVisible={true} mainPage={false}>
         <View style={styles.container}>
-          <ActivityIndicator size="large" />
+          <Text style={styles.statusText}>Loading...</Text>
         </View>
       </CommonBackground>
     );
@@ -246,6 +246,7 @@ export default function FriendsDetailScreen() {
               onPress={sendFriendRequest}
               style={styles.addButton}
               disabled={actionLoading}
+              activeOpacity={1}
             >
               {actionLoading ? (
                 <ActivityIndicator color="#fff" />
@@ -270,6 +271,7 @@ const styles = StyleSheet.create({
     padding: 20,
     width: "100%",
     alignSelf: "center",
+    alignItems: "center",
   },
   text: {
     fontSize: 16,
@@ -280,9 +282,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 20,
     padding: 10,
-    backgroundColor: "#40b6ff",
+    backgroundColor: "#ffffff",
     borderRadius: 8,
     justifyContent: "center",
+    borderColor: "#000",
+    borderWidth: 1,
   },
   addButtonIcon: {
     width: 20,
@@ -291,7 +295,7 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   buttonText: {
-    color: "#fff",
+    color: "#000000",
     fontSize: 16,
     fontWeight: "bold",
   },

@@ -6,6 +6,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   Image,
+  RefreshControl,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { useUser } from "@/components/UserContext";
@@ -50,6 +51,8 @@ export default function Community() {
   const [activeTab, setActiveTab] = useState<"feed" | "friends">("feed");
   const [search, setSearch] = useState("");
 
+  const [refreshing, setRefreshing] = useState(false);
+  
   const {
     sentFriendRequests,
     receivedFriendRequests,
@@ -58,7 +61,7 @@ export default function Community() {
     removeSentFriendRequest,
     removeReceivedFriendRequest,
   } = useFriendRequests();
-
+  
   useEffect(() => {
     if (loggedInUserId) {
       handleRefresh();
@@ -180,9 +183,29 @@ export default function Community() {
     return "friend_suggestion";
   }
 
+  const onRefresh = async () => {
+    setRefreshing(true);
+    if (loggedInUserId) {
+      await Promise.all([
+        fetchFriends(loggedInUserId),
+        fetchSuggestions(loggedInUserId),
+        fetchFriendRequests(loggedInUserId),
+      ]);
+    }
+    setRefreshing(false);
+  };
+
   function renderFeed() {
     return (
-      <CommonScrollElement>
+      <CommonScrollElement
+        refreshControl={
+          <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              colors={['#333333']}
+          />
+        }
+      >
         {mockAchievements.map((ach, i) => (
           <AchievementCard
             key={i}
@@ -218,16 +241,19 @@ export default function Community() {
     });
 
     return (
-      <CommonScrollElement>
-        <View style={styles.headerButtonsContainer}>
-          <TouchableOpacity style={styles.iconButton} onPress={handleRefresh}>
-            <Image source={RefreshIcon} style={styles.iconImage} />
-          </TouchableOpacity>
-        </View>
+      <CommonScrollElement
+            refreshControl={
+              <RefreshControl
+                  refreshing={refreshing}
+                  onRefresh={onRefresh}
+                  colors={['#333333']}
+              />
+            }
+        >
         <InputField placeholder="Search..." value={search} onChangeText={setSearch} style={styles.searchField} />
 
         <Text style={styles.sectionTitle}>My Friends</Text>
-        {loadingAll && <ActivityIndicator size="large" />}
+        {loadingFriends && <Text style={styles.noDataText}>Loading...</Text>}
         {!loadingAll && myFriends.length === 0 && (
           <Text style={styles.noDataText}>No friends found.</Text>
         )}
@@ -243,6 +269,7 @@ export default function Community() {
         ))}
 
         <Text style={styles.sectionTitle}>Received Friend Requests</Text>
+
         {!loadingAll && myReceived.length === 0 && (
           <Text style={styles.noDataText}>No pending requests.</Text>
         )}
@@ -296,17 +323,16 @@ export default function Community() {
 
   return (
     <CommonBackground logoVisible={true} mainPage={true}>
-      <View>
         {renderContent()}
         <SecondaryNavBar
-          tabs={[
-            { key: "feed", label: "Feed" },
-            { key: "friends", label: "Friends" },
-          ]}
-          activeTab={activeTab}
-          onTabChange={setActiveTab}
+            tabs={[
+              { key: "feed", label: "Feed" },
+              { key: "friends", label: "Friends" },
+            ]}
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+            style={styles.secondaryNavBar}
         />
-      </View>
     </CommonBackground>
   );
 }
@@ -321,6 +347,7 @@ const styles = StyleSheet.create({
   noDataText: {
     color: "gray",
     marginBottom: 10,
+    width: "100%",
     textAlign: "center",
   },
   friendContainer: {
@@ -349,5 +376,14 @@ const styles = StyleSheet.create({
     height: 24,
     resizeMode: "contain",
   },
-  searchField: {},
+  buttonText: {
+    color: "#fff",
+    textAlign: "center",
+    fontSize: 14,
+  },
+  searchField: {
+  },
+  secondaryNavBar: {
+    width: "100%",
+  },
 });

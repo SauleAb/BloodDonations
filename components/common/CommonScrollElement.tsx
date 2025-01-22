@@ -1,18 +1,26 @@
-import { ScrollView, StyleSheet, View } from "react-native";
+import {ScrollView, ScrollViewProps, StyleSheet, View} from "react-native";
 import React from "react";
 
 type ScrollProps = {
     children: React.ReactNode;
     scrollEnabled?: boolean;
-};
+    refreshControl?: React.ReactElement;
+} & ScrollViewProps;
 
-const CommonScrollElement: React.FC<ScrollProps> = ({ children, scrollEnabled = true }) => {
+const CommonScrollElement: React.FC<ScrollProps> = ({
+    children,
+    scrollEnabled = true,
+    refreshControl,
+    ...rest
+}) => {
     return (
         <ScrollView
             style={styles.scrollView}
             keyboardShouldPersistTaps="handled"
             showsVerticalScrollIndicator={false}
             scrollEnabled={scrollEnabled}
+            refreshControl={refreshControl}
+            {...rest}
         >
             <View style={styles.contentWrapper}>{children}</View>
         </ScrollView>
