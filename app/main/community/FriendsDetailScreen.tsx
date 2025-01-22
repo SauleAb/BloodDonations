@@ -15,15 +15,15 @@ import CommonScrollElement from "@/components/common/CommonScrollElement";
 import { createNotification } from "@/utils/notificationUtils";
 
 export default function FriendsDetailScreen() {
-  const { id, isFriend } = useLocalSearchParams();
+  const { id: routeId, isFriend } = useLocalSearchParams();
+  const friendId = routeId ? parseInt(routeId as string, 10) : NaN;
   const router = useRouter();
   const { user } = useUser();
   const loggedInUserId = user?.id;
 
   const [friend, setFriend] = useState<FriendObject | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-  const [actionLoading, setActionLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState(true);
+  const [actionLoading, setActionLoading] = useState(false);
 
   const {
     sentFriendRequests,
@@ -33,142 +33,120 @@ export default function FriendsDetailScreen() {
     removeReceivedFriendRequest,
   } = useFriendRequests();
 
-  const isFriendRequestSent = sentFriendRequests.has(Number(id));
-  const isFriendRequestReceived = receivedFriendRequests.has(Number(id));
+  const isFriendRequestSent = sentFriendRequests.has(friendId);
+  const isFriendRequestReceived = receivedFriendRequests.has(friendId);
 
   useEffect(() => {
-    if (!id) {
+    if (!friendId || Number.isNaN(friendId)) {
       setLoading(false);
       return;
     }
-
-    const fetchFriend = async () => {
+    (async () => {
       try {
-        const response = await fetch(`https://sanquin-api.onrender.com/users/id/${id}`);
-        if (!response.ok) {
-          if (response.status === 500) {
-            setFriend(null);
-            setLoading(false);
-            return;
-          }
-          setError("Error fetching friend.");
+        const resp = await fetch(`https://sanquin-api.onrender.com/users/id/${friendId}`);
+        if (!resp.ok) {
           setLoading(false);
+          setFriend(null);
           return;
         }
-        const result = await response.json();
-        const arrayPairs = result?.data;
-
-        let friendObj: FriendObject | null = null;
-        if (Array.isArray(arrayPairs)) {
-          friendObj = Object.fromEntries(arrayPairs) as FriendObject;
+        const data = await resp.json();
+        let userData = data?.data;
+        if (Array.isArray(userData)) {
+          userData = Object.fromEntries(userData);
         }
-        setFriend(friendObj);
-      } catch {
-        setError("Error fetching friend.");
+        setFriend(userData);
       } finally {
         setLoading(false);
       }
-    };
-
-    fetchFriend();
-  }, [id, loggedInUserId]);
+    })();
+  }, [friendId]);
 
   const sendFriendRequest = async () => {
-    if (!id || !loggedInUserId) return;
-    const targetId = Number(id);
-    if (isNaN(targetId)) {
-      return;
-    }
-
+    if (!loggedInUserId || Number.isNaN(friendId)) return;
     setActionLoading(true);
     try {
-      const url = `https://sanquin-api.onrender.com/users/${loggedInUserId}/friends/${targetId}`;
-      const resp = await fetch(url, { method: "POST" });
-
-      if (resp.ok) {
-        addSentFriendRequest(targetId);
-        createNotification(
-          targetId,
-          "New Friend Request",
-          `${user.username} has sent you a friend request!`
-        );
-        console.log(error)
-      } else {
-        setError("Error sending friend request.");
+      const url = `https://sanquin-api.onrender.com/users/${loggedInUserId}/friends/${friendId}`;
+      const r = await fetch(url, { method: "POST" });
+      if (r.ok) {
+        addSentFriendRequest(friendId);
+        createNotification(friendId, "New Friend Request", `${user.username} sent you a friend request!`);
+        router.back();
       }
-    } catch {
-      setError("Error sending friend request.");
     } finally {
       setActionLoading(false);
     }
   };
 
   const cancelFriendRequest = async () => {
-    if (!id || !loggedInUserId) return;
-    const targetId = Number(id);
-    if (isNaN(targetId)) {
-      return;
-    }
-
+    if (!loggedInUserId || Number.isNaN(friendId)) return;
     setActionLoading(true);
     try {
-      const url = `https://sanquin-api.onrender.com/users/${loggedInUserId}/friends/${targetId}`;
-      const resp = await fetch(url, { method: "DELETE" });
-      if (resp.ok) {
-        removeSentFriendRequest(targetId);
-      } else {
-      }
-    } catch {
-      setError("Error canceling friend request.");
+      await fetch(
+        `https://sanquin-api.onrender.com/users/${loggedInUserId}/friends/${friendId}?status=accepted`,
+        { method: "PUT" }
+      );
+      await fetch(`https://sanquin-api.onrender.com/users/${loggedInUserId}/friends/${friendId}`, {
+        method: "DELETE",
+      });
+      removeSentFriendRequest(friendId);
+      router.back();
     } finally {
       setActionLoading(false);
     }
   };
 
   const acceptFriendRequest = async () => {
-    if (!id || !loggedInUserId) return;
-    const senderId = Number(id);
-    if (isNaN(senderId)) {
-      return;
-    }
-
+    if (!loggedInUserId || Number.isNaN(friendId)) return;
     setActionLoading(true);
     try {
-      const url = `https://sanquin-api.onrender.com/users/${senderId}/friends/${loggedInUserId}?status=accepted`;
-      const resp = await fetch(url, { method: "PUT" });
-      if (resp.ok) {
-        removeReceivedFriendRequest(senderId);
-        createNotification(
-          senderId,
-          "New Friend Request",
-          `${user.username} has sent you a friend request!`
-        );
+      const url = `https://sanquin-api.onrender.com/users/${friendId}/friends/${loggedInUserId}?status=accepted`;
+      const r = await fetch(url, { method: "PUT" });
+      if (r.ok) {
+        removeReceivedFriendRequest(friendId);
+        createNotification(friendId, "Friend Request Accepted", `${user.username} accepted your request!`);
         router.back();
-      } else {
-        setError("Error accepting friend request.");
       }
-    } catch {
-      setError("Error accepting friend request.");
     } finally {
       setActionLoading(false);
     }
   };
 
   const declineFriendRequest = async () => {
-    if (!id || !loggedInUserId) return;
-    const senderId = Number(id);
-    if (isNaN(senderId)) {
-      return;
-    }
-
+    if (!loggedInUserId || Number.isNaN(friendId)) return;
     setActionLoading(true);
     try {
-        removeReceivedFriendRequest(senderId);
-        router.back();
-    } catch {
-      setError("Error declining friend request.");
-      console.log(error);
+      await fetch(
+        `https://sanquin-api.onrender.com/users/${friendId}/friends/${loggedInUserId}?status=accepted`,
+        { method: "PUT" }
+      );
+      await fetch(`https://sanquin-api.onrender.com/users/${friendId}/friends/${loggedInUserId}`, {
+        method: "DELETE",
+      });
+      removeReceivedFriendRequest(friendId);
+      router.back();
+    } finally {
+      setActionLoading(false);
+    }
+  };
 
+  const removeFriend = async () => {
+    if (!loggedInUserId || Number.isNaN(friendId)) return;
+    setActionLoading(true);
+    try {
+      let url = `https://sanquin-api.onrender.com/users/${loggedInUserId}/friends/${friendId}`;
+      let resp = await fetch(url, { method: "DELETE" });
+  
+      if (!resp.ok) {
+        url = `https://sanquin-api.onrender.com/users/${friendId}/friends/${loggedInUserId}`;
+        resp = await fetch(url, { method: "DELETE" });
+      }
+  
+      if (resp.ok) {
+        removeSentFriendRequest(friendId);
+        removeReceivedFriendRequest(friendId);
+      }
+  
+      router.back();
     } finally {
       setActionLoading(false);
     }
@@ -184,103 +162,102 @@ export default function FriendsDetailScreen() {
     );
   }
 
-  if (error) {
-    return (
-      <CommonBackground logoVisible={true} mainPage={false}>
-        <View style={styles.container}>
-          <Text style={styles.text}>Error: {error}</Text>
-        </View>
-      </CommonBackground>
-    );
-  }
-
   if (!friend) {
     return (
       <CommonBackground logoVisible={true} mainPage={false}>
         <View style={styles.container}>
-          <Text style={styles.text}>Friend not found.</Text>
+          <Text style={styles.text}>User not found.</Text>
         </View>
       </CommonBackground>
     );
   }
 
-  const dateWithoutTime = (friend.birthdate).toString().split('T')[0];
+  const dateWithoutTime = friend.birthdate?.split("T")[0] || "N/A";
 
   return (
     <CommonBackground logoVisible={true} mainPage={true}>
       <CommonScrollElement>
-      <View style={styles.container}>
-        <CommonContent titleText={'First Name'} contentText={friend.first_name ?? 'N/A'} />
-        <CommonContent titleText={'Last Name'} contentText={friend.last_name ?? 'N/A'} />
-        <CommonContent titleText={'Username'} contentText={friend.username ?? 'N/A'} />
-        <CommonContent titleText={'Email'} contentText={friend.email ?? 'N/A'} />
-        <CommonContent titleText={'Birth Date'} contentText = {dateWithoutTime} />
-        <CommonContent titleText={'City'} contentText={friend.city ?? 'N/A'} />
-
-        {isFriend ? (
-          <View style={styles.statusContainer}>
-            <Image source={FriendIcon} style={styles.statusIcon} />
-            <Text style={styles.statusText}>You are friends</Text>
-          </View>
-        ) : isFriendRequestSent ? (
-          <View style={styles.statusContainer}>
-            <Image source={RequestSentIcon} style={styles.statusIcon} />
-            <Text style={styles.statusText}>Friend Request Sent</Text>
+        <View style={styles.container}>
+          <CommonContent titleText="First Name" contentText={friend.first_name || "N/A"} />
+          <CommonContent titleText="Last Name" contentText={friend.last_name || "N/A"} />
+          <CommonContent titleText="Username" contentText={friend.username || "N/A"} />
+          <CommonContent titleText="Email" contentText={friend.email || "N/A"} />
+          <CommonContent titleText="Birth Date" contentText={dateWithoutTime} />
+          <CommonContent titleText="City" contentText={friend.city || "N/A"} />
+          {isFriend ? (
+            <View style={styles.statusContainer}>
+              <Image source={FriendIcon} style={styles.statusIcon} />
+              <Text style={styles.statusText}>You are friends</Text>
+              <TouchableOpacity
+                onPress={removeFriend}
+                style={styles.removeButton}
+                disabled={actionLoading}
+              >
+                {actionLoading ? (
+                  <ActivityIndicator color="#fff" />
+                ) : (
+                  <Text style={styles.removeButtonText}>Remove Friend</Text>
+                )}
+              </TouchableOpacity>
+            </View>
+          ) : isFriendRequestSent ? (
+            <View style={styles.statusContainer}>
+              <Image source={RequestSentIcon} style={styles.statusIcon} />
+              <Text style={styles.statusText}>Friend Request Sent</Text>
+              <TouchableOpacity
+                onPress={cancelFriendRequest}
+                style={styles.cancelButton}
+                disabled={actionLoading}
+              >
+                {actionLoading ? (
+                  <ActivityIndicator color="#fff" />
+                ) : (
+                  <Text style={styles.cancelButtonText}>Cancel</Text>
+                )}
+              </TouchableOpacity>
+            </View>
+          ) : isFriendRequestReceived ? (
+            <View style={styles.actionButtonsContainer}>
+              <TouchableOpacity
+                onPress={acceptFriendRequest}
+                style={styles.acceptButton}
+                disabled={actionLoading}
+              >
+                {actionLoading ? (
+                  <ActivityIndicator color="#fff" />
+                ) : (
+                  <Image source={CheckIcon} style={styles.actionIcon} />
+                )}
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={declineFriendRequest}
+                style={styles.declineButton}
+                disabled={actionLoading}
+              >
+                {actionLoading ? (
+                  <ActivityIndicator color="#fff" />
+                ) : (
+                  <Image source={MultiplyIcon} style={styles.actionIcon} />
+                )}
+              </TouchableOpacity>
+            </View>
+          ) : (
             <TouchableOpacity
-              onPress={cancelFriendRequest}
-              style={styles.cancelButton}
+              onPress={sendFriendRequest}
+              style={styles.addButton}
               disabled={actionLoading}
             >
               {actionLoading ? (
                 <ActivityIndicator color="#fff" />
               ) : (
-                <Text style={styles.cancelButtonText}>Cancel</Text>
+                <>
+                  <Image source={AddFriendIcon} style={styles.addButtonIcon} />
+                  <Text style={styles.buttonText}>Add Friend</Text>
+                </>
               )}
             </TouchableOpacity>
-          </View>
-        ) : isFriendRequestReceived ? (
-          <View style={styles.actionButtonsContainer}>
-            <TouchableOpacity
-              onPress={acceptFriendRequest}
-              style={styles.acceptButton}
-              disabled={actionLoading}
-            >
-              {actionLoading ? (
-                <ActivityIndicator color="#fff" />
-              ) : (
-                <Image source={CheckIcon} style={styles.actionIcon} />
-              )}
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              onPress={declineFriendRequest}
-              style={styles.declineButton}
-              disabled={actionLoading}
-            >
-              {actionLoading ? (
-                <ActivityIndicator color="#fff" />
-              ) : (
-                <Image source={MultiplyIcon} style={styles.actionIcon} />
-              )}
-            </TouchableOpacity>
-          </View>
-        ) : (
-          <TouchableOpacity
-            onPress={sendFriendRequest}
-            style={styles.addButton}
-            disabled={actionLoading}
-          >
-            {actionLoading ? (
-              <ActivityIndicator color="#fff" />
-            ) : (
-              <>
-                <Image source={AddFriendIcon} style={styles.addButtonIcon} />
-                <Text style={styles.buttonText}>Add Friend</Text>
-              </>
-            )}
-          </TouchableOpacity>
-        )}
-      </View>
+          )}
+        </View>
       </CommonScrollElement>
     </CommonBackground>
   );
@@ -293,12 +270,6 @@ const styles = StyleSheet.create({
     padding: 20,
     width: "100%",
     alignSelf: "center",
-  },
-  title: {
-    alignSelf: "center",
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 16,
   },
   text: {
     fontSize: 16,
@@ -340,11 +311,23 @@ const styles = StyleSheet.create({
     fontSize: 16,
     flex: 1,
   },
+  removeButton: {
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    backgroundColor: "#f44336",
+    borderRadius: 4,
+    marginLeft: 10,
+  },
+  removeButtonText: {
+    color: "#fff",
+    fontSize: 14,
+  },
   cancelButton: {
     paddingVertical: 6,
     paddingHorizontal: 12,
     backgroundColor: "#f44336",
     borderRadius: 4,
+    marginLeft: 10,
   },
   cancelButtonText: {
     color: "#fff",
