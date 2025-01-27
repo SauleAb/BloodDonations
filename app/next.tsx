@@ -44,6 +44,7 @@ export default function NextScreen() {
     const { email, password } = useLocalSearchParams() as { email: string; password: string };
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
+    const [username, setUsername] = useState('');
     const router = useRouter();
     const { login } = useUser();
 
@@ -77,15 +78,14 @@ export default function NextScreen() {
 
     const saveUser = async () => {
         try {
-            // 1. Prepare User Data for Registration
             const newUserData = {
                 ...defaultUser,
-                username: email,
+                username: username,
                 email: email,
                 password: password,
                 first_name: firstName,
                 last_name: lastName,
-                nationality: nationality,
+                nationality: "Netherlands",
                 gender: gender,
                 plasmaDonor: !donorTypeAnswer,
                 bloodDonor: donorTypeAnswer,
@@ -95,7 +95,6 @@ export default function NextScreen() {
                 city: "Amsterdam"
             };
 
-            // 2. Register the User
             const response = await fetch(`${API_BASE_URL}/users/`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -106,12 +105,11 @@ export default function NextScreen() {
                 const errorMessage = await response.text();
                 console.error('Server error while creating user:', errorMessage);
                 Alert.alert('Registration Error', 'Could not create account. Please try again.');
-                return; // Stop further execution if registration fails
+                return;
             }
 
             Alert.alert('Success', 'Account created successfully! Attempting to log in...');
 
-            // 3. Log the User in Automatically After Successful Registration
             const _email = email.replace(/@/g, "%40");
             const loginUrl = `https://sanquin-api.onrender.com/users/email/${_email}?password=${password}`;
 
@@ -121,15 +119,15 @@ export default function NextScreen() {
                 throw new Error("Automatic login failed after registration.");
             }
 
-            // 4. Process Successful Login
             const loginData = await loginResponse.json();
+            const userObject = Object.fromEntries(loginData.data);
             const userData = {
                 ...defaultUser,
-                ...loginData.data,
+                ...userObject,
             };
-
-            await login(userData);
+            console.log("User data: ", userData);
             await AsyncStorage.setItem('user', JSON.stringify(userData));
+            await login(userData);
 
             Alert.alert('Success', 'You have been logged in successfully!');
             router.replace('/main/home');
@@ -138,7 +136,6 @@ export default function NextScreen() {
             const errorMessage = (error as Error).message;
             console.error('Error:', errorMessage);
 
-            // 5. Handle Login-Specific Errors
             if (errorMessage.includes("Automatic login failed")) {
                 Alert.alert(
                     'Login Error',
@@ -146,14 +143,13 @@ export default function NextScreen() {
                 );
                 router.replace('/login');
             } else {
-                // 6. General Error Handling
                 Alert.alert('Error', 'Something went wrong. Please try again.');
             }
         }
     };
 
     const handleFinish = () => {
-        if (!firstName || !lastName || !nationality || !gender || !donorTypeAnswer) {
+        if (!firstName || !lastName || !username || !gender || !donorTypeAnswer) {
             Alert.alert('Error', 'Please fill out all fields');
             return;
         }
@@ -167,7 +163,6 @@ export default function NextScreen() {
             titleText={"Complete Your Profile"}
             titleSubText={"Fill in the fields to create your account"}
             logoVisible={true}
-
         >
             <FlatList
                 data={[]}
@@ -188,12 +183,10 @@ export default function NextScreen() {
                         onChangeText={setLastName}
                     />
 
-                    <CustomInput
-                        placeholder="Select a country"
-                        value={nationalityInput}
-                        onChangeText={handleNationalityChange}
-                        suggestions={countrySuggestions}
-                        onSuggestionSelect={handleCountrySelect}
+                    <InputField
+                        placeholder="Username"
+                        value={username}
+                        onChangeText={setUsername}
                     />
 
                     <TwoQuestions

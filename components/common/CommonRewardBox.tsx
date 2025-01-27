@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, Image, TouchableOpacity, Modal, Button } from '
 import { IconNames, iconMap } from "@/components/common/CommonIcons";
 import CommonText from "@/components/common/CommonText";
 import { useUser } from '@/components/UserContext';
-import {redeem} from "@/utils/rewardsUtils";
+import {updateUserPoints} from "@/utils/rewardsUtils";
 
 type CommonRewardBoxProps = {
     titleText: string;
@@ -18,7 +18,7 @@ const CommonRewardBox: React.FC<CommonRewardBoxProps> = ({ titleText, icon, amou
     const [isLoading, setIsLoading] = useState(false);
     const iconSource = iconMap[icon];
 
-    const { user, setUser } = useUser(); // Include setUser
+    const { user, setUser } = useUser(); 
 
     const handlePress = () => {
         setErrorMessage('');
@@ -32,7 +32,7 @@ const CommonRewardBox: React.FC<CommonRewardBoxProps> = ({ titleText, icon, amou
         const price = parseInt(amountText);
 
         try {
-            const success = await redeem(user.rewardPoints, price); // Pass current points directly
+            const success = await updateUserPoints(user.id, price, true);
             if (success) {
                 const updatedPoints = user.rewardPoints - price;
 
@@ -58,7 +58,7 @@ const CommonRewardBox: React.FC<CommonRewardBoxProps> = ({ titleText, icon, amou
 
     return (
         <>
-        <TouchableOpacity style={styles.container} onPress={handlePress}>
+        <TouchableOpacity style={styles.container} onPress={handlePress} activeOpacity={0.65}>
             <View style={styles.greyBar}>
                 <CommonText bold style={styles.label}>{titleText}</CommonText>
                 <CommonText style={styles.label}>{amountText}</CommonText>
@@ -73,7 +73,7 @@ const CommonRewardBox: React.FC<CommonRewardBoxProps> = ({ titleText, icon, amou
             {/* Confirmation Modal */}
             <Modal
                 transparent={true}
-                animationType="slide"
+                animationType="fade"
                 visible={isModalVisible}
                 onRequestClose={handleCancel} // Handle Android back button
             >
@@ -84,8 +84,12 @@ const CommonRewardBox: React.FC<CommonRewardBoxProps> = ({ titleText, icon, amou
                         </Text>
                         {errorMessage ? <Text style={styles.errorMessage}>{errorMessage}</Text> : null}
                         <View style={styles.modalButtons}>
-                            <Button title="Cancel" onPress={handleCancel} color="#888" />
-                            <Button title="Confirm" onPress={handleConfirm} color="#4CAF50" />
+                            <TouchableOpacity onPress={handleCancel} style={[styles.button, styles.cancelButton]}>
+                                <Text style={[styles.buttonText, styles.cancelButtonText]}>Cancel</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={handleConfirm} style={[styles.button, styles.confirmButton]}>
+                                <Text style={[styles.buttonText, styles.confirmButtonText]}>Confirm</Text>
+                            </TouchableOpacity>
                         </View>
                     </View>
                 </View>
@@ -166,6 +170,32 @@ const styles = StyleSheet.create({
         color: 'red',
         marginTop: 10,
         textAlign: 'center',
+    },
+    button: {
+        paddingVertical: 10,          // Vertical padding
+        paddingHorizontal: 20,        // Horizontal padding
+        borderRadius: 5,              // Rounded corners
+        borderWidth: 1,               // Border width
+        alignItems: 'center',         // Center text horizontally
+        justifyContent: 'center',     // Center text vertically
+    },
+    buttonText: {
+        fontSize: 16,                 // Text size
+        fontWeight: 'bold',           // Bold text
+    },
+    cancelButton: {
+        backgroundColor: '#ffffff',   // White background
+        borderColor: '#000000',       // Black border
+    },
+    confirmButton: {
+        backgroundColor: '#000000',   // Black background
+        borderColor: '#ffffff',       // White border
+    },
+    cancelButtonText: {
+        color: '#000000',             // Black text
+    },
+    confirmButtonText: {
+        color: '#ffffff',             // White text
     },
 });
 

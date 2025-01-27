@@ -34,15 +34,14 @@ export const UserProvider = ({ children }) => {
         try {
             const userToLogin = { ...defaultUser, ...userData };
 
-            setUser(userToLogin); // Update state
-            await AsyncStorage.setItem('user', JSON.stringify(userToLogin)); // Save to storage
+            await AsyncStorage.setItem('user', JSON.stringify(userToLogin));
+            setUser(userToLogin); 
         } catch (error) {
             console.error('Login Error:', error.message);
         }
     };
 
     const logout = async () => {
-        setUser(null);
         await AsyncStorage.removeItem('user');
     };
 

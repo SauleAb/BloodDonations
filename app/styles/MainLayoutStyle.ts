@@ -6,12 +6,12 @@ const mainLayoutStyles = StyleSheet.create({
         backgroundColor: '#fff',
     },
     icon: {
-        width: 24,
-        height: 24,
+        width: 30,
+        height: 30,
         resizeMode: 'contain',
     },
     banner: {
-        padding: 10,
+        paddingVertical: 40,
         backgroundColor: '#f8f8f8',
         alignItems: 'center',
         borderBottomWidth: 1,

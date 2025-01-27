@@ -39,6 +39,7 @@ const FriendContent: React.FC<FriendContentProps> = ({
           <TouchableOpacity
             onPress={onAddFriend}
             style={styles.actionButton}
+            activeOpacity={1}
           >
             <Image
               source={require("@/assets/icons/add-user.png")}
@@ -55,6 +56,7 @@ const FriendContent: React.FC<FriendContentProps> = ({
           <TouchableOpacity
             onPress={onCancelRequest}
             style={styles.actionButton}
+            activeOpacity={1}
           >
             <Image
               source={require("@/assets/icons/multiply.png")}
@@ -72,7 +74,7 @@ const FriendContent: React.FC<FriendContentProps> = ({
   }
 
   return (
-    <TouchableOpacity onPress={() => onPress(id)} style={styles.container}>
+    <TouchableOpacity onPress={() => onPress(id)} style={styles.container} activeOpacity={1}>
       <View style={styles.greyBar}>
         <CommonText style={styles.label}>{statusText}</CommonText>
       </View>
@@ -86,7 +88,7 @@ const FriendContent: React.FC<FriendContentProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    width: "95%",
+    width: "90%",
     marginBottom: 20,
     
   },
@@ -95,7 +97,6 @@ const styles = StyleSheet.create({
     height: 30,
     justifyContent: "center",
     alignItems: "flex-start",
-    paddingHorizontal: 20,
   },
   label: {
     fontSize: 16,

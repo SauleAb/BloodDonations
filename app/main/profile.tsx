@@ -26,7 +26,7 @@ export default function Profile() {
     };
     const renderContent = () => {
         if (activeTab === "profile") {
-            const profileContent = getProfileContent(user); // Get dynamic profile content
+            const profileContent = getProfileContent(user);
             return (
                 <CommonScrollElement>
                     {profileContent.map((item, index) => (

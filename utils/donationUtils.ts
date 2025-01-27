@@ -306,7 +306,6 @@ const fetchUserFriends = async (userId: number): Promise<{ id: string; pushToken
         const response = await axios.get(`https://sanquin-api.onrender.com/users/${userId}/friends`);
         return response.data.data;
     } catch (error) {
-        console.error("Error fetching user friends:", error);
         return [];
     }
 };

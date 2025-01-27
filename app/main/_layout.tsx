@@ -33,6 +33,11 @@ export default function MainLayout() {
               ),
               tabBarActiveTintColor: "black",
               tabBarInactiveTintColor: "gray",
+              tabBarStyle: {
+                paddingBottom: 5, 
+                paddingTop: 5, 
+                height: 60, 
+              },
               headerShown: false,
             };
           }}

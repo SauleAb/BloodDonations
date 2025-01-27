@@ -67,6 +67,16 @@ export async function fetchChallengeFriends(challengeId: number, userId: number)
         if (response.status === 200) {
             return response.data.data;
         }
+        else if (response.status === 404)
+        {
+            console.log("Get some friends");
+            return [];
+        }
+        else if (response.status === 500)
+            {
+                console.log("Get some friends");
+                return [];
+            }
         console.error("Failed to fetch challenge friends:", response.data.message);
         return [];
     } catch (error) {
